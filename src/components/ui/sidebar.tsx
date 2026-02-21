@@ -14,6 +14,8 @@ import {
   FolderOpen,
   GraduationCap,
   Home,
+  Award,
+  BarChart3,
   ImageIcon,
   Layers,
   Menu,
@@ -40,6 +42,8 @@ const adminNavItems: NavItem[] = [
   { label: 'Staff', href: '/admin/staff', icon: <GraduationCap size={20} />, section: 'admin' },
   { label: 'Billing', href: '/admin/billing', icon: <CreditCard size={20} />, section: 'admin' },
   { label: 'Media', href: '/admin/media', icon: <FolderOpen size={20} />, section: 'admin' },
+  { label: 'Calendar', href: '/admin/calendar', icon: <Calendar size={20} />, section: 'admin' },
+  { label: 'Analytics', href: '/admin/analytics', icon: <BarChart3 size={20} />, section: 'admin' },
   { label: 'Settings', href: '/admin/settings', icon: <Settings size={20} />, section: 'admin' },
 ];
 
@@ -55,6 +59,7 @@ const portalNavItems: NavItem[] = [
   { label: 'My Students', href: '/dashboard/children', icon: <Users size={20} />, section: 'portal' },
   { label: 'Invoices', href: '/dashboard/invoices', icon: <FileText size={20} />, section: 'portal' },
   { label: 'Payments', href: '/dashboard/payments', icon: <CreditCard size={20} />, section: 'portal' },
+  { label: 'Progress', href: '/dashboard/progress', icon: <Award size={20} />, section: 'portal' },
   { label: 'Media', href: '/dashboard/media', icon: <ImageIcon size={20} />, section: 'portal' },
 ];
 

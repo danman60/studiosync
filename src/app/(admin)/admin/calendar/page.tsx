@@ -1,0 +1,140 @@
+'use client';
+
+import { useMemo } from 'react';
+import { trpc } from '@/lib/trpc';
+import { Clock, MapPin, Users } from 'lucide-react';
+
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const SHORT_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+function formatTime(t: string) {
+  const [h, m] = t.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const hour = h % 12 || 12;
+  return `${hour}:${String(m).padStart(2, '0')} ${ampm}`;
+}
+
+export default function CalendarPage() {
+  const { data: classes, isLoading } = trpc.admin.listClasses.useQuery();
+
+  const classesByDay = useMemo(() => {
+    const byDay: Record<number, typeof classes> = {};
+    for (let d = 0; d < 7; d++) byDay[d] = [];
+    for (const cls of classes ?? []) {
+      byDay[cls.day_of_week]?.push(cls);
+    }
+    // Sort each day by start_time
+    for (const d of Object.keys(byDay)) {
+      byDay[Number(d)]?.sort((a, b) => a.start_time.localeCompare(b.start_time));
+    }
+    return byDay;
+  }, [classes]);
+
+  return (
+    <div>
+      <div className="mb-8">
+        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Weekly Calendar</h1>
+        <p className="mt-1 text-sm text-gray-500">All classes organized by day and time.</p>
+      </div>
+
+      {/* Loading skeleton */}
+      {isLoading && (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="animate-pulse rounded-2xl border border-gray-200/60 bg-white/80 p-5">
+              <div className="mb-3 h-5 w-24 rounded bg-gray-200/60" />
+              <div className="space-y-3">
+                <div className="h-16 rounded-xl bg-gray-200/40" />
+                <div className="h-16 rounded-xl bg-gray-200/40" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Calendar grid */}
+      {!isLoading && (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          {DAYS.map((dayName, dayIdx) => {
+            const dayClasses = classesByDay[dayIdx] ?? [];
+            if (dayClasses.length === 0) return null;
+
+            return (
+              <div
+                key={dayIdx}
+                className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-5"
+              >
+                <div className="mb-4 flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500/10 to-purple-500/10 text-xs font-bold text-indigo-600">
+                    {SHORT_DAYS[dayIdx]}
+                  </span>
+                  <h2 className="text-sm font-semibold text-gray-900">{dayName}</h2>
+                  <span className="ml-auto rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                    {dayClasses.length}
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  {dayClasses.map((cls) => {
+                    const classType = cls.class_types as { name: string; color: string } | null;
+                    const instructor = cls.staff as { id: string; display_name: string } | null;
+                    const color = classType?.color ?? '#6366f1';
+
+                    return (
+                      <div
+                        key={cls.id}
+                        className="group rounded-xl border border-gray-100 p-3 transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md hover:shadow-indigo-500/5"
+                        style={{ borderLeftWidth: 3, borderLeftColor: color }}
+                      >
+                        <p className="text-sm font-medium text-gray-900">{cls.name}</p>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                          <span className="inline-flex items-center gap-1">
+                            <Clock size={12} />
+                            {formatTime(cls.start_time)} - {formatTime(cls.end_time)}
+                          </span>
+                          {cls.room && (
+                            <span className="inline-flex items-center gap-1">
+                              <MapPin size={12} />
+                              {cls.room}
+                            </span>
+                          )}
+                          <span className="inline-flex items-center gap-1">
+                            <Users size={12} />
+                            {cls.enrolled_count}/{cls.capacity}
+                          </span>
+                        </div>
+                        {instructor && (
+                          <p className="mt-1 text-xs text-gray-400">{instructor.display_name}</p>
+                        )}
+                        {classType && (
+                          <span
+                            className="mt-1.5 inline-block rounded-full px-2 py-0.5 text-[10px] font-medium"
+                            style={{
+                              backgroundColor: `${color}20`,
+                              color: color,
+                              border: `1px solid ${color}30`,
+                            }}
+                          >
+                            {classType.name}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!isLoading && (classes ?? []).length === 0 && (
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white/60 py-20">
+          <p className="text-sm font-medium text-gray-600">No classes scheduled</p>
+          <p className="mt-1 text-xs text-gray-400">Create classes to see them on the calendar.</p>
+        </div>
+      )}
+    </div>
+  );
+}

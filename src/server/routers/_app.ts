@@ -6,6 +6,7 @@ import { portalRouter } from './portal';
 import { instructorRouter } from './instructor';
 import { invoiceRouter } from './invoice';
 import { mediaRouter } from './media';
+import { analyticsRouter } from './analytics';
 
 export const appRouter = router({
   catalog: catalogRouter,
@@ -15,6 +16,7 @@ export const appRouter = router({
   instructor: instructorRouter,
   invoice: invoiceRouter,
   media: mediaRouter,
+  analytics: analyticsRouter,
 });
 
 export type AppRouter = typeof appRouter;

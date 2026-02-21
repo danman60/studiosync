@@ -352,4 +352,108 @@ export const instructorRouter = router({
 
       return child;
     }),
+
+  // ── Progress Marks ───────────────────────────────────
+  // List marks for a class (optionally filtered by period)
+
+  listProgressMarks: instructorProcedure
+    .input(z.object({
+      classId: z.string().uuid(),
+      period: z.string().max(100).optional(),
+    }))
+    .query(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+
+      // Verify ownership
+      if (ctx.userRole === 'instructor') {
+        const { data: cls } = await supabase
+          .from('classes')
+          .select('instructor_id')
+          .eq('id', input.classId)
+          .eq('studio_id', ctx.studioId)
+          .single();
+
+        if (!cls || cls.instructor_id !== ctx.staffId) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not your class' });
+        }
+      }
+
+      let query = supabase
+        .from('progress_marks')
+        .select('*, children(first_name, last_name), staff(display_name)')
+        .eq('class_id', input.classId)
+        .eq('studio_id', ctx.studioId)
+        .order('category')
+        .order('created_at', { ascending: false });
+
+      if (input.period) query = query.eq('period', input.period);
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data ?? [];
+    }),
+
+  // ── Upsert Progress Mark ─────────────────────────────
+  // Create or update a progress mark for a student
+
+  upsertProgressMark: instructorProcedure
+    .input(z.object({
+      classId: z.string().uuid(),
+      childId: z.string().uuid(),
+      period: z.string().min(1).max(100).default('current'),
+      category: z.string().min(1).max(100).default('general'),
+      score: z.number().min(0).max(100).optional(),
+      mark: z.string().max(5).optional(),
+      comments: z.string().max(2000).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+
+      // Verify ownership
+      if (ctx.userRole === 'instructor') {
+        const { data: cls } = await supabase
+          .from('classes')
+          .select('instructor_id')
+          .eq('id', input.classId)
+          .eq('studio_id', ctx.studioId)
+          .single();
+
+        if (!cls || cls.instructor_id !== ctx.staffId) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not your class' });
+        }
+      }
+
+      // Verify student enrolled
+      const { data: enrollment } = await supabase
+        .from('enrollments')
+        .select('id')
+        .eq('child_id', input.childId)
+        .eq('class_id', input.classId)
+        .eq('studio_id', ctx.studioId)
+        .in('status', ['active', 'pending'])
+        .single();
+
+      if (!enrollment) {
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'Student not enrolled in this class' });
+      }
+
+      const { data, error } = await supabase
+        .from('progress_marks')
+        .upsert({
+          studio_id: ctx.studioId,
+          class_id: input.classId,
+          child_id: input.childId,
+          period: input.period,
+          category: input.category,
+          score: input.score ?? null,
+          mark: input.mark ?? null,
+          comments: input.comments ?? null,
+          marked_by: ctx.staffId,
+        }, { onConflict: 'class_id,child_id,period,category' })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    }),
 });

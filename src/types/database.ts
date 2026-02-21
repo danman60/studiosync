@@ -395,6 +395,54 @@ export interface Database {
         };
         Update: Partial<Database['studiosync']['Tables']['invoice_line_items']['Insert']>;
       };
+      media: {
+        Row: {
+          id: string;
+          studio_id: string;
+          class_id: string | null;
+          uploaded_by: string | null;
+          title: string | null;
+          type: 'image' | 'video' | 'audio' | 'document';
+          storage_path: string;
+          file_name: string;
+          file_size: number | null;
+          mime_type: string | null;
+          is_public: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['media']['Row'], 'id' | 'created_at' | 'updated_at' | 'is_public'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          is_public?: boolean;
+        };
+        Update: Partial<Database['studiosync']['Tables']['media']['Insert']>;
+      };
+      progress_marks: {
+        Row: {
+          id: string;
+          studio_id: string;
+          class_id: string;
+          child_id: string;
+          period: string;
+          category: string;
+          score: number | null;
+          mark: string | null;
+          comments: string | null;
+          marked_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['progress_marks']['Row'], 'id' | 'created_at' | 'updated_at' | 'period' | 'category'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          period?: string;
+          category?: string;
+        };
+        Update: Partial<Database['studiosync']['Tables']['progress_marks']['Insert']>;
+      };
     };
   };
 }
@@ -423,3 +471,6 @@ export type AttendanceStatus = Attendance['status'];
 export type Invoice = Database['studiosync']['Tables']['invoices']['Row'];
 export type InvoiceLineItem = Database['studiosync']['Tables']['invoice_line_items']['Row'];
 export type InvoiceStatus = Invoice['status'];
+export type Media = Database['studiosync']['Tables']['media']['Row'];
+export type MediaType = Media['type'];
+export type ProgressMark = Database['studiosync']['Tables']['progress_marks']['Row'];
