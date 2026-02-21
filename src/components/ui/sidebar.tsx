@@ -18,8 +18,10 @@ import {
   BarChart3,
   ImageIcon,
   Layers,
+  Megaphone,
   Menu,
   Settings,
+  Ticket,
   Users,
   UserPlus,
   X,
@@ -43,6 +45,8 @@ const adminNavItems: NavItem[] = [
   { label: 'Billing', href: '/admin/billing', icon: <CreditCard size={20} />, section: 'admin' },
   { label: 'Media', href: '/admin/media', icon: <FolderOpen size={20} />, section: 'admin' },
   { label: 'Calendar', href: '/admin/calendar', icon: <Calendar size={20} />, section: 'admin' },
+  { label: 'Events', href: '/admin/events', icon: <Ticket size={20} />, section: 'admin' },
+  { label: 'Announcements', href: '/admin/announcements', icon: <Megaphone size={20} />, section: 'admin' },
   { label: 'Analytics', href: '/admin/analytics', icon: <BarChart3 size={20} />, section: 'admin' },
   { label: 'Settings', href: '/admin/settings', icon: <Settings size={20} />, section: 'admin' },
 ];
@@ -61,6 +65,8 @@ const portalNavItems: NavItem[] = [
   { label: 'Payments', href: '/dashboard/payments', icon: <CreditCard size={20} />, section: 'portal' },
   { label: 'Progress', href: '/dashboard/progress', icon: <Award size={20} />, section: 'portal' },
   { label: 'Media', href: '/dashboard/media', icon: <ImageIcon size={20} />, section: 'portal' },
+  { label: 'Events', href: '/dashboard/events', icon: <Ticket size={20} />, section: 'portal' },
+  { label: 'Announcements', href: '/dashboard/announcements', icon: <Megaphone size={20} />, section: 'portal' },
 ];
 
 export function Sidebar({

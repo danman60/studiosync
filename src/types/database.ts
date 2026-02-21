@@ -443,6 +443,85 @@ export interface Database {
         };
         Update: Partial<Database['studiosync']['Tables']['progress_marks']['Insert']>;
       };
+      events: {
+        Row: {
+          id: string;
+          studio_id: string;
+          name: string;
+          description: string | null;
+          event_date: string;
+          event_time: string | null;
+          end_time: string | null;
+          location: string | null;
+          ticket_price: number;
+          max_tickets: number | null;
+          tickets_sold: number;
+          status: 'draft' | 'published' | 'cancelled' | 'completed';
+          is_public: boolean;
+          image_url: string | null;
+          stripe_product_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['events']['Row'], 'id' | 'created_at' | 'updated_at' | 'tickets_sold' | 'status' | 'is_public' | 'ticket_price'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          tickets_sold?: number;
+          status?: 'draft' | 'published' | 'cancelled' | 'completed';
+          is_public?: boolean;
+          ticket_price?: number;
+        };
+        Update: Partial<Database['studiosync']['Tables']['events']['Insert']>;
+      };
+      ticket_orders: {
+        Row: {
+          id: string;
+          studio_id: string;
+          event_id: string;
+          family_id: string | null;
+          buyer_name: string;
+          buyer_email: string;
+          quantity: number;
+          total_amount: number;
+          stripe_payment_intent_id: string | null;
+          status: 'pending' | 'confirmed' | 'cancelled' | 'refunded';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['ticket_orders']['Row'], 'id' | 'created_at' | 'updated_at' | 'status' | 'quantity' | 'total_amount'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          status?: 'pending' | 'confirmed' | 'cancelled' | 'refunded';
+          quantity?: number;
+          total_amount?: number;
+        };
+        Update: Partial<Database['studiosync']['Tables']['ticket_orders']['Insert']>;
+      };
+      announcements: {
+        Row: {
+          id: string;
+          studio_id: string;
+          author_id: string | null;
+          title: string;
+          body: string;
+          target_type: 'all' | 'class' | 'level' | 'class_type';
+          target_id: string | null;
+          published_at: string | null;
+          is_draft: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['announcements']['Row'], 'id' | 'created_at' | 'updated_at' | 'target_type' | 'is_draft'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          target_type?: 'all' | 'class' | 'level' | 'class_type';
+          is_draft?: boolean;
+        };
+        Update: Partial<Database['studiosync']['Tables']['announcements']['Insert']>;
+      };
     };
   };
 }
@@ -474,3 +553,9 @@ export type InvoiceStatus = Invoice['status'];
 export type Media = Database['studiosync']['Tables']['media']['Row'];
 export type MediaType = Media['type'];
 export type ProgressMark = Database['studiosync']['Tables']['progress_marks']['Row'];
+export type Event = Database['studiosync']['Tables']['events']['Row'];
+export type EventStatus = Event['status'];
+export type TicketOrder = Database['studiosync']['Tables']['ticket_orders']['Row'];
+export type TicketOrderStatus = TicketOrder['status'];
+export type Announcement = Database['studiosync']['Tables']['announcements']['Row'];
+export type AnnouncementTargetType = Announcement['target_type'];
