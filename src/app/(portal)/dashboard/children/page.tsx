@@ -36,11 +36,11 @@ export default function MyChildrenPage() {
   const [editTarget, setEditTarget] = useState<EditForm | null>(null);
 
   const utils = trpc.useUtils();
-  const children = trpc.portal.listChildren.useQuery();
+  const children = trpc.portal.listStudents.useQuery();
 
-  const updateMutation = trpc.portal.updateChild.useMutation({
+  const updateMutation = trpc.portal.updateStudent.useMutation({
     onSuccess: () => {
-      utils.portal.listChildren.invalidate();
+      utils.portal.listStudents.invalidate();
       setEditTarget(null);
     },
   });
@@ -63,8 +63,8 @@ export default function MyChildrenPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">My Children</h1>
-        <p className="mt-1 text-sm text-gray-500">Manage your children&apos;s profiles and view their enrollments.</p>
+        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">My Students</h1>
+        <p className="mt-1 text-sm text-gray-500">Manage your students&apos; profiles and view their enrollments.</p>
       </div>
 
       {children.isLoading && (
@@ -75,7 +75,7 @@ export default function MyChildrenPage() {
       )}
 
       {children.data?.length === 0 && (
-        <p className="text-sm text-gray-400">No children registered yet. Enroll in a class to get started.</p>
+        <p className="text-sm text-gray-400">No students registered yet. Enroll in a class to get started.</p>
       )}
 
       <div className="space-y-4">
@@ -153,7 +153,7 @@ export default function MyChildrenPage() {
       </div>
 
       {/* Edit Modal */}
-      <Modal open={!!editTarget} onClose={() => setEditTarget(null)} title="Edit Child">
+      <Modal open={!!editTarget} onClose={() => setEditTarget(null)} title="Edit Student">
         {editTarget && (
           <form onSubmit={handleUpdate} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">

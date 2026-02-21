@@ -46,9 +46,9 @@ export const portalRouter = router({
     };
   }),
 
-  // ── My Children ────────────────────────────────────────
+  // ── My Students ────────────────────────────────────────
 
-  listChildren: protectedProcedure.query(async ({ ctx }) => {
+  listStudents: protectedProcedure.query(async ({ ctx }) => {
     const supabase = createServiceClient();
 
     const { data: family } = await supabase
@@ -71,7 +71,7 @@ export const portalRouter = router({
     return data ?? [];
   }),
 
-  updateChild: protectedProcedure
+  updateStudent: protectedProcedure
     .input(
       z.object({
         id: z.string().uuid(),
@@ -86,7 +86,7 @@ export const portalRouter = router({
       const { id, ...updates } = input;
       const supabase = createServiceClient();
 
-      // Verify child belongs to user's family
+      // Verify student belongs to user's family
       const { data: family } = await supabase
         .from('families')
         .select('id')

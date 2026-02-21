@@ -73,7 +73,7 @@ export default function AdminDashboardPage() {
           <table className="min-w-full divide-y divide-gray-100">
             <thead>
               <tr className="bg-gray-50/60">
-                {['Child', 'Class', 'Status', 'Date'].map((h) => (
+                {['Student', 'Class', 'Status', 'Date'].map((h) => (
                   <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
                     {h}
                   </th>

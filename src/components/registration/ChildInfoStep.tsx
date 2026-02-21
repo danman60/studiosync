@@ -21,7 +21,7 @@ export function ChildInfoStep({ form, minAge, maxAge, seasonStartDate }: Props) 
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-lg font-semibold text-gray-900">Child Information</h2>
+        <h2 className="text-lg font-semibold text-gray-900">Student Information</h2>
         <p className="mt-1 text-sm text-gray-500">
           Tell us about the dancer you&apos;d like to register.
         </p>
@@ -29,63 +29,63 @@ export function ChildInfoStep({ form, minAge, maxAge, seasonStartDate }: Props) 
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="child.firstName" className="block text-sm font-medium text-gray-700">
-            First Name <span className="text-red-500">*</span>
+          <label htmlFor="student.firstName" className="block text-sm font-medium text-gray-700">
+            Student First Name <span className="text-red-500">*</span>
           </label>
           <input
-            id="child.firstName"
+            id="student.firstName"
             type="text"
-            {...register('child.firstName')}
+            {...register('student.firstName')}
             className={inputClass}
           />
-          {errors.child?.firstName && (
-            <p className="mt-1 text-sm text-red-600">{errors.child.firstName.message}</p>
+          {errors.student?.firstName && (
+            <p className="mt-1 text-sm text-red-600">{errors.student.firstName.message}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="child.lastName" className="block text-sm font-medium text-gray-700">
-            Last Name <span className="text-red-500">*</span>
+          <label htmlFor="student.lastName" className="block text-sm font-medium text-gray-700">
+            Student Last Name <span className="text-red-500">*</span>
           </label>
           <input
-            id="child.lastName"
+            id="student.lastName"
             type="text"
-            {...register('child.lastName')}
+            {...register('student.lastName')}
             className={inputClass}
           />
-          {errors.child?.lastName && (
-            <p className="mt-1 text-sm text-red-600">{errors.child.lastName.message}</p>
+          {errors.student?.lastName && (
+            <p className="mt-1 text-sm text-red-600">{errors.student.lastName.message}</p>
           )}
         </div>
       </div>
 
       <div>
-        <label htmlFor="child.dateOfBirth" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="student.dateOfBirth" className="block text-sm font-medium text-gray-700">
           Date of Birth <span className="text-red-500">*</span>
         </label>
         <input
-          id="child.dateOfBirth"
+          id="student.dateOfBirth"
           type="date"
-          {...register('child.dateOfBirth')}
+          {...register('student.dateOfBirth')}
           className={inputClass}
         />
-        {errors.child?.dateOfBirth && (
-          <p className="mt-1 text-sm text-red-600">{errors.child.dateOfBirth.message}</p>
+        {errors.student?.dateOfBirth && (
+          <p className="mt-1 text-sm text-red-600">{errors.student.dateOfBirth.message}</p>
         )}
         {minAge != null && maxAge != null && seasonStartDate && (
           <p className="mt-1 text-xs text-gray-400">
-            Ages {minAge}–{maxAge} at season start ({new Date(seasonStartDate).toLocaleDateString()})
+            Student must be ages {minAge}–{maxAge} at season start ({new Date(seasonStartDate).toLocaleDateString()})
           </p>
         )}
       </div>
 
       <div>
-        <label htmlFor="child.gender" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="student.gender" className="block text-sm font-medium text-gray-700">
           Gender <span className="text-gray-400">(optional)</span>
         </label>
         <select
-          id="child.gender"
-          {...register('child.gender')}
+          id="student.gender"
+          {...register('student.gender')}
           className={inputClass}
         >
           <option value="">Prefer not to say</option>
@@ -96,13 +96,13 @@ export function ChildInfoStep({ form, minAge, maxAge, seasonStartDate }: Props) 
       </div>
 
       <div>
-        <label htmlFor="child.medicalNotes" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="student.medicalNotes" className="block text-sm font-medium text-gray-700">
           Medical Notes / Allergies <span className="text-gray-400">(optional)</span>
         </label>
         <textarea
-          id="child.medicalNotes"
+          id="student.medicalNotes"
           rows={3}
-          {...register('child.medicalNotes')}
+          {...register('student.medicalNotes')}
           placeholder="Any medical conditions, allergies, or special needs the instructor should know about"
           className={`${inputClass} placeholder:text-gray-400`}
         />

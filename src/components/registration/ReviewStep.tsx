@@ -53,18 +53,18 @@ export function ReviewStep({ form, classInfo, isSubmitting, onSubmit }: Props) {
 
       {/* Child */}
       <div className="rounded-xl border border-gray-100 bg-gradient-to-br from-gray-50 to-gray-100/50 p-4">
-        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Child</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Student</p>
         <p className="mt-1 font-semibold text-gray-900">
-          {values.child.firstName} {values.child.lastName}
+          {values.student.firstName} {values.student.lastName}
         </p>
         <p className="text-sm text-gray-600">
-          Born: {new Date(values.child.dateOfBirth).toLocaleDateString()}
+          Born: {new Date(values.student.dateOfBirth).toLocaleDateString()}
         </p>
-        {values.child.gender && (
-          <p className="text-sm text-gray-600">Gender: {values.child.gender}</p>
+        {values.student.gender && (
+          <p className="text-sm text-gray-600">Gender: {values.student.gender}</p>
         )}
-        {values.child.medicalNotes && (
-          <p className="text-sm text-gray-600">Medical: {values.child.medicalNotes}</p>
+        {values.student.medicalNotes && (
+          <p className="text-sm text-gray-600">Medical: {values.student.medicalNotes}</p>
         )}
       </div>
 

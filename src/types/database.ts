@@ -306,6 +306,7 @@ export type Studio = Database['studiosync']['Tables']['studios']['Row'];
 export type Staff = Database['studiosync']['Tables']['staff']['Row'];
 export type Family = Database['studiosync']['Tables']['families']['Row'];
 export type Child = Database['studiosync']['Tables']['children']['Row'];
+export type Student = Child;
 export type Season = Database['studiosync']['Tables']['seasons']['Row'];
 export type ClassType = Database['studiosync']['Tables']['class_types']['Row'];
 export type Level = Database['studiosync']['Tables']['levels']['Row'];

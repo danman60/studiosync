@@ -89,7 +89,7 @@ export default function HomePage() {
               {
                 icon: Users,
                 title: 'Easy Registration',
-                desc: 'Register your child in a few clicks. Magic link login — no passwords to remember.',
+                desc: 'Register your student in a few clicks. Magic link login — no passwords to remember.',
                 gradient: 'from-emerald-500/10 to-emerald-600/5',
                 iconBg: 'bg-emerald-100 text-emerald-600',
               },

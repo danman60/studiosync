@@ -86,7 +86,7 @@ export default function ParentDashboardPage() {
           </div>
           <div>
             <p className="text-2xl font-bold text-gray-900">{d.children.length}</p>
-            <p className="text-sm text-gray-500">Children</p>
+            <p className="text-sm text-gray-500">Students</p>
           </div>
         </div>
         <div className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 p-6 animate-fade-in-up stagger-2">

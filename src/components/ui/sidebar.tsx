@@ -41,7 +41,7 @@ const adminNavItems: NavItem[] = [
 const portalNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', icon: <Home size={20} />, section: 'portal' },
   { label: 'Classes', href: '/classes', icon: <BookOpen size={20} />, section: 'portal' },
-  { label: 'My Children', href: '/dashboard/children', icon: <Users size={20} />, section: 'portal' },
+  { label: 'My Students', href: '/dashboard/children', icon: <Users size={20} />, section: 'portal' },
   { label: 'Payments', href: '/dashboard/payments', icon: <CreditCard size={20} />, section: 'portal' },
 ];
 

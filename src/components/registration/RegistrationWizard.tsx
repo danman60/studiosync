@@ -12,7 +12,7 @@ import { ReviewStep } from './ReviewStep';
 import { ConfirmationStep } from './ConfirmationStep';
 
 const registrationSchema = z.object({
-  child: z.object({
+  student: z.object({
     firstName: z.string().min(1, 'First name is required'),
     lastName: z.string().min(1, 'Last name is required'),
     dateOfBirth: z.string().min(1, 'Date of birth is required'),
@@ -31,9 +31,9 @@ const registrationSchema = z.object({
 
 export type RegistrationFormData = z.infer<typeof registrationSchema>;
 
-const STEPS = ['Child Info', 'Parent Info', 'Review', 'Confirmation'] as const;
+const STEPS = ['Student Info', 'Parent Info', 'Review', 'Confirmation'] as const;
 const STEP_FIELDS: Record<number, (keyof RegistrationFormData)[]> = {
-  0: ['child'],
+  0: ['student'],
   1: ['parent'],
 };
 
@@ -55,7 +55,7 @@ export function RegistrationWizard({ classId }: Props) {
   const form = useForm<RegistrationFormData>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
-      child: { firstName: '', lastName: '', dateOfBirth: '', gender: '', medicalNotes: '' },
+      student: { firstName: '', lastName: '', dateOfBirth: '', gender: '', medicalNotes: '' },
       parent: { firstName: '', lastName: '', email: '', phone: '', emergencyContactName: '', emergencyContactPhone: '' },
     },
     mode: 'onBlur',
@@ -68,7 +68,7 @@ export function RegistrationWizard({ classId }: Props) {
 
   function validateAge(): string | null {
     if (!cls) return null;
-    const dob = form.getValues('child.dateOfBirth');
+    const dob = form.getValues('student.dateOfBirth');
     if (!dob) return null;
 
     const seasonsData = cls.seasons as unknown as { start_date: string } | { start_date: string }[] | null;
@@ -82,10 +82,10 @@ export function RegistrationWizard({ classId }: Props) {
     if (m < 0 || (m === 0 && ref.getDate() < birth.getDate())) age--;
 
     if (cls.min_age != null && age < cls.min_age) {
-      return `Child must be at least ${cls.min_age} years old at the start of the season (currently ${age})`;
+      return `Student must be at least ${cls.min_age} years old at the start of the season (currently ${age})`;
     }
     if (cls.max_age != null && age > cls.max_age) {
-      return `Child must be ${cls.max_age} years old or younger at the start of the season (currently ${age})`;
+      return `Student must be ${cls.max_age} years old or younger at the start of the season (currently ${age})`;
     }
     return null;
   }
@@ -102,7 +102,7 @@ export function RegistrationWizard({ classId }: Props) {
     if (step === 0) {
       const ageError = validateAge();
       if (ageError) {
-        form.setError('child.dateOfBirth', { message: ageError });
+        form.setError('student.dateOfBirth', { message: ageError });
         return;
       }
     }
@@ -121,12 +121,12 @@ export function RegistrationWizard({ classId }: Props) {
     try {
       const res = await submitMutation.mutateAsync({
         classId,
-        child: {
-          firstName: values.child.firstName,
-          lastName: values.child.lastName,
-          dateOfBirth: values.child.dateOfBirth,
-          gender: values.child.gender || undefined,
-          medicalNotes: values.child.medicalNotes || undefined,
+        student: {
+          firstName: values.student.firstName,
+          lastName: values.student.lastName,
+          dateOfBirth: values.student.dateOfBirth,
+          gender: values.student.gender || undefined,
+          medicalNotes: values.student.medicalNotes || undefined,
         },
         parent: {
           firstName: values.parent.firstName,

@@ -84,7 +84,7 @@ export default function EnrollmentsPage() {
         <table className="min-w-full divide-y divide-gray-100">
           <thead>
             <tr className="bg-gray-50/60">
-              {['Child', 'Parent', 'Class', 'Status', 'Date', ''].map((h) => (
+              {['Student', 'Parent', 'Class', 'Status', 'Date', ''].map((h) => (
                 <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">{h}</th>
               ))}
             </tr>
@@ -154,7 +154,7 @@ export default function EnrollmentsPage() {
         {actionTarget && (
           <form onSubmit={handleStatusUpdate} className="space-y-4">
             <div className="rounded-xl bg-gradient-to-br from-indigo-50/80 to-purple-50/50 p-4 text-sm text-gray-700">
-              <p><span className="font-medium">Child:</span> {actionTarget.childName}</p>
+              <p><span className="font-medium">Student:</span> {actionTarget.childName}</p>
               <p><span className="font-medium">Class:</span> {actionTarget.className}</p>
               <p><span className="font-medium">Current:</span> {actionTarget.currentStatus}</p>
             </div>

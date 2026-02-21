@@ -56,7 +56,7 @@ export const registrationRouter = router({
     .input(
       z.object({
         classId: z.string().uuid(),
-        child: z.object({
+        student: z.object({
           firstName: z.string().min(1, 'First name is required'),
           lastName: z.string().min(1, 'Last name is required'),
           dateOfBirth: z.string().min(1, 'Date of birth is required'),
@@ -90,12 +90,12 @@ export const registrationRouter = router({
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Class not found or not available for registration' });
       }
 
-      // 2. Validate child age against class requirements
+      // 2. Validate student age against class requirements
       const seasonsData = cls.seasons as unknown as { start_date: string } | { start_date: string }[] | null;
       const seasonStartDate = Array.isArray(seasonsData) ? seasonsData[0]?.start_date : seasonsData?.start_date;
-      if (seasonStartDate && input.child.dateOfBirth) {
+      if (seasonStartDate && input.student.dateOfBirth) {
         const refDate = new Date(seasonStartDate);
-        const birth = new Date(input.child.dateOfBirth);
+        const birth = new Date(input.student.dateOfBirth);
         let age = refDate.getFullYear() - birth.getFullYear();
         const m = refDate.getMonth() - birth.getMonth();
         if (m < 0 || (m === 0 && refDate.getDate() < birth.getDate())) {
@@ -105,13 +105,13 @@ export const registrationRouter = router({
         if (cls.min_age != null && age < cls.min_age) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: `Child must be at least ${cls.min_age} years old at the start of the season`,
+            message: `Student must be at least ${cls.min_age} years old at the start of the season`,
           });
         }
         if (cls.max_age != null && age > cls.max_age) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: `Child must be ${cls.max_age} years old or younger at the start of the season`,
+            message: `Student must be ${cls.max_age} years old or younger at the start of the season`,
           });
         }
       }
@@ -161,23 +161,23 @@ export const registrationRouter = router({
         familyId = newFamily.id;
       }
 
-      // 4. Create child
+      // 4. Create student record
       const { data: newChild, error: childError } = await supabase
         .from('children')
         .insert({
           family_id: familyId,
           studio_id: ctx.studioId,
-          first_name: input.child.firstName,
-          last_name: input.child.lastName,
-          date_of_birth: input.child.dateOfBirth || null,
-          gender: input.child.gender || null,
-          medical_notes: input.child.medicalNotes || null,
+          first_name: input.student.firstName,
+          last_name: input.student.lastName,
+          date_of_birth: input.student.dateOfBirth || null,
+          gender: input.student.gender || null,
+          medical_notes: input.student.medicalNotes || null,
         })
         .select('id')
         .single();
 
       if (childError || !newChild) {
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to create child record' });
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to create student record' });
       }
 
       // 5. Call atomic enrollment RPC
@@ -194,7 +194,7 @@ export const registrationRouter = router({
       if (enrollError) {
         // Surface duplicate or other known errors
         if (enrollError.message?.includes('already enrolled')) {
-          throw new TRPCError({ code: 'CONFLICT', message: 'This child is already enrolled in this class' });
+          throw new TRPCError({ code: 'CONFLICT', message: 'This student is already enrolled in this class' });
         }
         throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: enrollError.message ?? 'Enrollment failed' });
       }
@@ -223,7 +223,7 @@ export const registrationRouter = router({
         status: result.status as 'pending' | 'waitlisted',
         waitlistPosition: result.waitlist_position,
         familyId,
-        childName: `${input.child.firstName} ${input.child.lastName}`,
+        childName: `${input.student.firstName} ${input.student.lastName}`,
         className: cls.name,
       };
     }),

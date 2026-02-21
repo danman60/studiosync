@@ -81,7 +81,7 @@ export default function FamiliesPage() {
         <table className="min-w-full divide-y divide-gray-100">
           <thead>
             <tr className="bg-gray-50/60">
-              {['Parent Name', 'Email', 'Phone', 'Children', ''].map((h) => (
+              {['Parent Name', 'Email', 'Phone', 'Students', ''].map((h) => (
                 <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">{h}</th>
               ))}
             </tr>
@@ -233,9 +233,9 @@ export default function FamiliesPage() {
               </div>
 
               <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-900">
-                <Users size={16} /> Children
+                <Users size={16} /> Students
               </h3>
-              {children.length === 0 && <p className="text-sm text-gray-400">No children registered.</p>}
+              {children.length === 0 && <p className="text-sm text-gray-400">No students registered.</p>}
               {children.map((child) => (
                 <div key={child.id} className="glass-card rounded-xl p-4">
                   <p className="font-medium text-gray-900">

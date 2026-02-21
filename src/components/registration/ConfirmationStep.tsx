@@ -62,7 +62,7 @@ export function ConfirmationStep({ status, waitlistPosition, childName, classNam
           href="/classes"
           className="flex h-11 items-center justify-center rounded-xl border border-gray-200 bg-white px-6 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
         >
-          Register Another Child
+          Register Another Student
         </Link>
         <Link
           href="/"
