@@ -206,9 +206,12 @@ export default async function ClassDetailPage({
 
               {/* CTA */}
               {isFull ? (
-                <button className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm font-semibold text-indigo-700 hover:bg-indigo-100">
+                <Link
+                  href={`/register?class=${cls.id}`}
+                  className="block w-full rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3 text-center text-sm font-semibold text-indigo-700 hover:bg-indigo-100"
+                >
                   Join Waitlist
-                </button>
+                </Link>
               ) : (
                 <Link
                   href={`/register?class=${cls.id}`}
