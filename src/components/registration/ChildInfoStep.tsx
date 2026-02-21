@@ -10,6 +10,8 @@ interface Props {
   seasonStartDate: string | null;
 }
 
+const inputClass = 'mt-1 block w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
+
 export function ChildInfoStep({ form, minAge, maxAge, seasonStartDate }: Props) {
   const {
     register,
@@ -34,7 +36,7 @@ export function ChildInfoStep({ form, minAge, maxAge, seasonStartDate }: Props) 
             id="child.firstName"
             type="text"
             {...register('child.firstName')}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className={inputClass}
           />
           {errors.child?.firstName && (
             <p className="mt-1 text-sm text-red-600">{errors.child.firstName.message}</p>
@@ -49,7 +51,7 @@ export function ChildInfoStep({ form, minAge, maxAge, seasonStartDate }: Props) 
             id="child.lastName"
             type="text"
             {...register('child.lastName')}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className={inputClass}
           />
           {errors.child?.lastName && (
             <p className="mt-1 text-sm text-red-600">{errors.child.lastName.message}</p>
@@ -65,7 +67,7 @@ export function ChildInfoStep({ form, minAge, maxAge, seasonStartDate }: Props) 
           id="child.dateOfBirth"
           type="date"
           {...register('child.dateOfBirth')}
-          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className={inputClass}
         />
         {errors.child?.dateOfBirth && (
           <p className="mt-1 text-sm text-red-600">{errors.child.dateOfBirth.message}</p>
@@ -84,7 +86,7 @@ export function ChildInfoStep({ form, minAge, maxAge, seasonStartDate }: Props) 
         <select
           id="child.gender"
           {...register('child.gender')}
-          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className={inputClass}
         >
           <option value="">Prefer not to say</option>
           <option value="female">Female</option>
@@ -102,7 +104,7 @@ export function ChildInfoStep({ form, minAge, maxAge, seasonStartDate }: Props) 
           rows={3}
           {...register('child.medicalNotes')}
           placeholder="Any medical conditions, allergies, or special needs the instructor should know about"
-          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className={`${inputClass} placeholder:text-gray-400`}
         />
       </div>
     </div>

@@ -66,7 +66,7 @@ export function CatalogView({ classes, classTypes, levels }: CatalogViewProps) {
     <div className="flex gap-8">
       {/* Desktop sidebar filters */}
       <aside className="hidden w-64 shrink-0 lg:block">
-        <div className="sticky top-8 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="sticky top-24 glass-card rounded-2xl p-5 animate-fade-in-up">
           <ClassFilters
             classTypes={classTypes}
             levels={levels}
@@ -85,14 +85,14 @@ export function CatalogView({ classes, classTypes, levels }: CatalogViewProps) {
       {/* Main content */}
       <div className="flex-1">
         {/* Mobile filter toggle + result count */}
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex items-center justify-between animate-fade-in-up">
           <p className="text-sm text-gray-600">
             {filteredClasses.length} class{filteredClasses.length !== 1 ? 'es' : ''}
             {hasActiveFilters ? ' (filtered)' : ''}
           </p>
           <button
             onClick={() => setMobileFiltersOpen(true)}
-            className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 lg:hidden"
+            className="flex h-10 items-center gap-2 rounded-xl border border-gray-200 bg-white/80 px-4 text-sm font-medium text-gray-700 backdrop-blur-sm transition-colors hover:border-indigo-200 hover:bg-indigo-50/50 lg:hidden"
           >
             <SlidersHorizontal size={16} />
             Filters
@@ -111,12 +111,12 @@ export function CatalogView({ classes, classTypes, levels }: CatalogViewProps) {
       {mobileFiltersOpen && (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/30 lg:hidden"
+            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px] lg:hidden"
             onClick={() => setMobileFiltersOpen(false)}
           />
           <div
             className={cn(
-              'fixed inset-y-0 right-0 z-50 w-80 bg-white p-6 shadow-xl lg:hidden',
+              'fixed inset-y-0 right-0 z-50 w-80 bg-white/95 backdrop-blur-md p-6 shadow-xl lg:hidden',
               'overflow-y-auto'
             )}
           >
@@ -124,7 +124,7 @@ export function CatalogView({ classes, classTypes, levels }: CatalogViewProps) {
               <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
               <button
                 onClick={() => setMobileFiltersOpen(false)}
-                className="rounded p-1 text-gray-400 hover:text-gray-600"
+                className="flex h-10 w-10 items-center justify-center rounded-xl text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
               >
                 <X size={20} />
               </button>

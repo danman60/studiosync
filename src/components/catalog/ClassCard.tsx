@@ -46,11 +46,11 @@ export function ClassCard({
   return (
     <Link
       href={`/classes/${id}`}
-      className="group block rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:border-indigo-200 hover:shadow-md"
+      className="group block glass-card rounded-2xl transition-all hover:shadow-lg hover:shadow-indigo-500/8"
     >
       {/* Color accent bar */}
       <div
-        className="h-1.5 rounded-t-xl"
+        className="h-1.5 rounded-t-2xl"
         style={{ backgroundColor: classType?.color ?? '#6366f1' }}
       />
 
@@ -66,19 +66,19 @@ export function ClassCard({
             </span>
           )}
           {level && (
-            <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
+            <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-gray-700">
               {level.name}
             </span>
           )}
           {(minAge || maxAge) && (
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-400">
               Ages {minAge ?? '?'}–{maxAge ?? '?'}
             </span>
           )}
         </div>
 
         {/* Title */}
-        <h3 className="text-base font-semibold text-gray-900 group-hover:text-indigo-600">
+        <h3 className="text-base font-semibold text-gray-900 transition-colors group-hover:text-indigo-600">
           {name}
         </h3>
 
@@ -92,12 +92,12 @@ export function ClassCard({
         {/* Schedule row */}
         <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-600">
           <span className="flex items-center gap-1.5">
-            <Clock size={14} className="text-gray-400" />
+            <Clock size={14} className="text-indigo-400" />
             {DAYS_OF_WEEK[dayOfWeek]}s {formatTime(startTime)}–{formatTime(endTime)}
           </span>
           {room && (
             <span className="flex items-center gap-1.5">
-              <MapPin size={14} className="text-gray-400" />
+              <MapPin size={14} className="text-indigo-400" />
               {room}
             </span>
           )}
@@ -123,13 +123,13 @@ export function ClassCard({
 
           <span
             className={cn(
-              'flex items-center gap-1.5 text-sm font-medium',
-              isFull && 'text-red-600',
-              isAlmostFull && 'text-amber-600',
-              !isFull && !isAlmostFull && 'text-green-600'
+              'flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium',
+              isFull && 'bg-red-500/15 text-red-600 border border-red-500/25',
+              isAlmostFull && 'bg-amber-500/15 text-amber-600 border border-amber-500/25',
+              !isFull && !isAlmostFull && 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25'
             )}
           >
-            <Users size={14} />
+            <Users size={12} />
             {isFull
               ? 'Full'
               : isAlmostFull

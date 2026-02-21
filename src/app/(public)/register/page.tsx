@@ -19,15 +19,17 @@ export default async function RegisterPage({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="border-b border-gray-200 bg-white">
+      <header className="sticky top-0 z-50 border-b border-white/60 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2">
-            <Layers size={24} className="text-indigo-600" />
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 shadow-sm">
+              <Layers size={18} className="text-white" />
+            </div>
             <span className="text-lg font-bold text-gray-900">StudioSync</span>
           </Link>
           <Link
             href="/login"
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+            className="btn-gradient flex h-10 items-center rounded-xl px-5 text-sm font-medium"
           >
             Sign In
           </Link>
@@ -35,7 +37,9 @@ export default async function RegisterPage({
       </header>
 
       <div className="mx-auto max-w-5xl px-6 py-8">
-        <h1 className="mb-6 text-2xl font-bold text-gray-900">Class Registration</h1>
+        <h1 className="mb-6 text-[clamp(1.5rem,2.5vw,1.75rem)] font-bold text-gray-900 animate-fade-in-up">
+          Class Registration
+        </h1>
         <RegistrationWizard classId={classId} />
       </div>
     </div>

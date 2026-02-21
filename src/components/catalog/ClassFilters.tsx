@@ -35,16 +35,16 @@ export function ClassFilters({
   onClearAll,
 }: ClassFiltersProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Filter header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400">
           Filters
         </h2>
         {hasActiveFilters && (
           <button
             onClick={onClearAll}
-            className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700"
+            className="flex h-7 items-center gap-1 rounded-lg px-2 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-50"
           >
             <X size={12} />
             Clear all
@@ -54,7 +54,7 @@ export function ClassFilters({
 
       {/* Class Type */}
       <div>
-        <h3 className="mb-2 text-sm font-medium text-gray-700">Style</h3>
+        <h3 className="mb-2.5 text-sm font-medium text-gray-700">Style</h3>
         <div className="flex flex-wrap gap-2">
           {classTypes.map((type) => (
             <button
@@ -63,10 +63,10 @@ export function ClassFilters({
                 onTypeChange(selectedTypeId === type.id ? null : type.id)
               }
               className={cn(
-                'rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
+                'h-8 rounded-full px-3 text-xs font-medium transition-all',
                 selectedTypeId === type.id
-                  ? 'text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'text-white shadow-sm'
+                  : 'border border-gray-200 bg-white text-gray-700 hover:border-indigo-200 hover:bg-indigo-50/50'
               )}
               style={
                 selectedTypeId === type.id
@@ -82,7 +82,7 @@ export function ClassFilters({
 
       {/* Level */}
       <div>
-        <h3 className="mb-2 text-sm font-medium text-gray-700">Level</h3>
+        <h3 className="mb-2.5 text-sm font-medium text-gray-700">Level</h3>
         <div className="flex flex-wrap gap-2">
           {levels.map((level) => (
             <button
@@ -91,10 +91,10 @@ export function ClassFilters({
                 onLevelChange(selectedLevelId === level.id ? null : level.id)
               }
               className={cn(
-                'rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
+                'h-8 rounded-full px-3 text-xs font-medium transition-all',
                 selectedLevelId === level.id
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'border border-gray-200 bg-white text-gray-700 hover:border-indigo-200 hover:bg-indigo-50/50'
               )}
             >
               {level.name}
@@ -105,17 +105,17 @@ export function ClassFilters({
 
       {/* Day of Week */}
       <div>
-        <h3 className="mb-2 text-sm font-medium text-gray-700">Day</h3>
+        <h3 className="mb-2.5 text-sm font-medium text-gray-700">Day</h3>
         <div className="flex flex-wrap gap-2">
           {DAYS_OF_WEEK.map((day, i) => (
             <button
               key={day}
               onClick={() => onDayChange(selectedDay === i ? null : i)}
               className={cn(
-                'rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
+                'h-8 rounded-full px-3 text-xs font-medium transition-all',
                 selectedDay === i
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'border border-gray-200 bg-white text-gray-700 hover:border-indigo-200 hover:bg-indigo-50/50'
               )}
             >
               {day.slice(0, 3)}

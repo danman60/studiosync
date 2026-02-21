@@ -33,15 +33,17 @@ export default async function ClassDetailPage({
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="border-b border-gray-200 bg-white">
+      <header className="sticky top-0 z-50 border-b border-white/60 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2">
-            <Layers size={24} className="text-indigo-600" />
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 shadow-sm">
+              <Layers size={18} className="text-white" />
+            </div>
             <span className="text-lg font-bold text-gray-900">StudioSync</span>
           </Link>
           <Link
             href="/login"
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+            className="btn-gradient flex h-10 items-center rounded-xl px-5 text-sm font-medium"
           >
             Sign In
           </Link>
@@ -52,19 +54,19 @@ export default async function ClassDetailPage({
         {/* Back link */}
         <Link
           href="/classes"
-          className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700"
+          className="mb-6 inline-flex h-10 items-center gap-1.5 rounded-xl px-3 text-sm font-medium text-gray-500 transition-colors hover:bg-indigo-50 hover:text-indigo-600 animate-fade-in-up"
         >
           <ArrowLeft size={16} />
           Back to Classes
         </Link>
 
-        <div className="grid gap-8 lg:grid-cols-3">
+        <div className="grid gap-6 lg:grid-cols-3">
           {/* Main info */}
           <div className="lg:col-span-2">
-            <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="glass-card overflow-hidden rounded-2xl animate-fade-in-up stagger-1">
               {/* Color bar */}
               <div
-                className="h-2 rounded-t-xl"
+                className="h-1.5"
                 style={{
                   backgroundColor:
                     (cls.class_types as { color: string } | null)?.color ?? '#6366f1',
@@ -84,13 +86,13 @@ export default async function ClassDetailPage({
                     </span>
                   )}
                   {cls.levels && (
-                    <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+                    <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-700">
                       {(cls.levels as { name: string }).name}
                     </span>
                   )}
                 </div>
 
-                <h1 className="text-2xl font-bold text-gray-900">{cls.name}</h1>
+                <h1 className="text-[clamp(1.5rem,2.5vw,1.75rem)] font-bold text-gray-900">{cls.name}</h1>
 
                 {cls.description && (
                   <p className="mt-3 text-base leading-relaxed text-gray-600">
@@ -99,66 +101,40 @@ export default async function ClassDetailPage({
                 )}
 
                 {/* Details grid */}
-                <div className="mt-6 grid grid-cols-2 gap-4">
-                  <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-4">
-                    <Calendar size={20} className="mt-0.5 text-indigo-500" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">Schedule</p>
-                      <p className="text-sm text-gray-600">
-                        {DAYS_OF_WEEK[cls.day_of_week]}s
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-4">
-                    <Clock size={20} className="mt-0.5 text-indigo-500" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">Time</p>
-                      <p className="text-sm text-gray-600">
-                        {formatTime(cls.start_time)} – {formatTime(cls.end_time)}
-                      </p>
-                    </div>
-                  </div>
-                  {cls.room && (
-                    <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-4">
-                      <MapPin size={20} className="mt-0.5 text-indigo-500" />
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                  {[
+                    { icon: Calendar, label: 'Schedule', value: `${DAYS_OF_WEEK[cls.day_of_week]}s` },
+                    { icon: Clock, label: 'Time', value: `${formatTime(cls.start_time)} – ${formatTime(cls.end_time)}` },
+                    ...(cls.room ? [{ icon: MapPin, label: 'Location', value: cls.room }] : []),
+                    { icon: Users, label: 'Ages', value: `${cls.min_age ?? '?'} – ${cls.max_age ?? '?'} years` },
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-start gap-3 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100/50 p-4">
+                      <item.icon size={18} className="mt-0.5 text-indigo-500" />
                       <div>
-                        <p className="text-sm font-medium text-gray-900">Location</p>
-                        <p className="text-sm text-gray-600">{cls.room}</p>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">{item.label}</p>
+                        <p className="mt-0.5 text-sm font-medium text-gray-900">{item.value}</p>
                       </div>
                     </div>
-                  )}
-                  <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-4">
-                    <Users size={20} className="mt-0.5 text-indigo-500" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">Ages</p>
-                      <p className="text-sm text-gray-600">
-                        {cls.min_age ?? '?'} – {cls.max_age ?? '?'} years
-                      </p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
 
                 {/* Instructor */}
                 {cls.staff && (
-                  <div className="mt-6">
-                    <p className="text-sm text-gray-500">
-                      Instructor:{' '}
-                      <span className="font-medium text-gray-900">
-                        {(cls.staff as { display_name: string }).display_name}
-                      </span>
-                    </p>
+                  <div className="mt-6 text-sm text-gray-500">
+                    Instructor:{' '}
+                    <span className="font-medium text-gray-900">
+                      {(cls.staff as { display_name: string }).display_name}
+                    </span>
                   </div>
                 )}
 
                 {/* Season */}
                 {cls.seasons && (
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-500">
-                      Season:{' '}
-                      <span className="font-medium text-gray-900">
-                        {(cls.seasons as { name: string }).name}
-                      </span>
-                    </p>
+                  <div className="mt-2 text-sm text-gray-500">
+                    Season:{' '}
+                    <span className="font-medium text-gray-900">
+                      {(cls.seasons as { name: string }).name}
+                    </span>
                   </div>
                 )}
               </div>
@@ -167,7 +143,7 @@ export default async function ClassDetailPage({
 
           {/* Sidebar: pricing + CTA */}
           <div>
-            <div className="sticky top-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="sticky top-24 glass-card rounded-2xl p-6 animate-fade-in-up stagger-2">
               {/* Price */}
               {cls.monthly_price != null && (
                 <div className="mb-4">
@@ -187,14 +163,14 @@ export default async function ClassDetailPage({
               )}
 
               {/* Availability */}
-              <div className="mb-6 flex items-center gap-2">
+              <div className="mb-6 flex items-center gap-2.5">
                 <div
                   className={`h-2.5 w-2.5 rounded-full ${
                     isFull
                       ? 'bg-red-500'
                       : spotsLeft <= 3
                         ? 'bg-amber-500'
-                        : 'bg-green-500'
+                        : 'bg-emerald-500'
                   }`}
                 />
                 <span className="text-sm font-medium text-gray-700">
@@ -208,14 +184,14 @@ export default async function ClassDetailPage({
               {isFull ? (
                 <Link
                   href={`/register?class=${cls.id}`}
-                  className="block w-full rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3 text-center text-sm font-semibold text-indigo-700 hover:bg-indigo-100"
+                  className="flex h-12 w-full items-center justify-center rounded-xl border border-indigo-200 bg-indigo-50/80 text-sm font-semibold text-indigo-700 transition-colors hover:bg-indigo-100"
                 >
                   Join Waitlist
                 </Link>
               ) : (
                 <Link
                   href={`/register?class=${cls.id}`}
-                  className="block w-full rounded-lg bg-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-700"
+                  className="btn-gradient flex h-12 w-full items-center justify-center rounded-xl text-sm font-semibold shadow-lg shadow-indigo-500/20"
                 >
                   Register Now
                 </Link>

@@ -35,8 +35,8 @@ export function ReviewStep({ form, classInfo, isSubmitting, onSubmit }: Props) {
       </div>
 
       {/* Class */}
-      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-        <h3 className="text-sm font-medium text-gray-500">Class</h3>
+      <div className="rounded-xl border border-gray-100 bg-gradient-to-br from-gray-50 to-gray-100/50 p-4">
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Class</p>
         <p className="mt-1 font-semibold text-gray-900">{classInfo.name}</p>
         <p className="text-sm text-gray-600">
           {DAYS_OF_WEEK[classInfo.day_of_week]}s, {formatTime(classInfo.start_time)} – {formatTime(classInfo.end_time)}
@@ -52,8 +52,8 @@ export function ReviewStep({ form, classInfo, isSubmitting, onSubmit }: Props) {
       </div>
 
       {/* Child */}
-      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-        <h3 className="text-sm font-medium text-gray-500">Child</h3>
+      <div className="rounded-xl border border-gray-100 bg-gradient-to-br from-gray-50 to-gray-100/50 p-4">
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Child</p>
         <p className="mt-1 font-semibold text-gray-900">
           {values.child.firstName} {values.child.lastName}
         </p>
@@ -69,8 +69,8 @@ export function ReviewStep({ form, classInfo, isSubmitting, onSubmit }: Props) {
       </div>
 
       {/* Parent */}
-      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-        <h3 className="text-sm font-medium text-gray-500">Parent / Guardian</h3>
+      <div className="rounded-xl border border-gray-100 bg-gradient-to-br from-gray-50 to-gray-100/50 p-4">
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Parent / Guardian</p>
         <p className="mt-1 font-semibold text-gray-900">
           {values.parent.firstName} {values.parent.lastName}
         </p>
@@ -90,9 +90,13 @@ export function ReviewStep({ form, classInfo, isSubmitting, onSubmit }: Props) {
         type="button"
         onClick={onSubmit}
         disabled={isSubmitting}
-        className="w-full rounded-lg bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className="btn-gradient flex h-12 w-full items-center justify-center rounded-xl text-sm font-semibold shadow-lg shadow-indigo-500/20"
       >
-        {isSubmitting ? 'Submitting...' : 'Submit Registration'}
+        {isSubmitting ? (
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+        ) : (
+          'Submit Registration'
+        )}
       </button>
     </div>
   );

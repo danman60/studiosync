@@ -154,15 +154,36 @@ export function RegistrationWizard({ classId }: Props) {
 
   if (classQuery.isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600" />
+      <div className="grid gap-6 lg:grid-cols-3 animate-fade-in-up">
+        <div className="lg:col-span-2">
+          <div className="glass-card rounded-2xl p-6">
+            <div className="skeleton h-6 w-40 mb-4" />
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="skeleton h-10 w-full rounded-xl" />
+                <div className="skeleton h-10 w-full rounded-xl" />
+              </div>
+              <div className="skeleton h-10 w-full rounded-xl" />
+              <div className="skeleton h-10 w-full rounded-xl" />
+              <div className="skeleton h-20 w-full rounded-xl" />
+            </div>
+          </div>
+        </div>
+        <div>
+          <div className="glass-card rounded-2xl p-5">
+            <div className="skeleton h-5 w-16 rounded-full mb-2" />
+            <div className="skeleton h-5 w-32 mb-1" />
+            <div className="skeleton h-4 w-40 mb-3" />
+            <div className="skeleton h-4 w-24" />
+          </div>
+        </div>
       </div>
     );
   }
 
   if (classQuery.error || !cls) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
+      <div className="glass-card rounded-2xl border-red-200 p-6 text-center animate-fade-in-up">
         <p className="font-medium text-red-800">Class not found</p>
         <p className="mt-1 text-sm text-red-600">This class may no longer be available for registration.</p>
       </div>
@@ -177,10 +198,10 @@ export function RegistrationWizard({ classId }: Props) {
   const seasons = Array.isArray(rawSeasons) ? rawSeasons[0] ?? null : rawSeasons;
 
   return (
-    <div className="grid gap-8 lg:grid-cols-3">
+    <div className="grid gap-6 lg:grid-cols-3">
       {/* Class Summary Sidebar */}
       <div className="order-first lg:order-last">
-        <div className="sticky top-8 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="sticky top-24 glass-card rounded-2xl p-5 animate-fade-in-up">
           <div className="flex items-center gap-2">
             {classTypes && (
               <span
@@ -191,7 +212,7 @@ export function RegistrationWizard({ classId }: Props) {
               </span>
             )}
             {levels && (
-              <span className="inline-flex rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
+              <span className="inline-flex rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-gray-700">
                 {levels.name}
               </span>
             )}
@@ -203,10 +224,10 @@ export function RegistrationWizard({ classId }: Props) {
           {seasons && (
             <p className="text-sm text-gray-500">{seasons.name}</p>
           )}
-          <div className="mt-3 flex items-center gap-2">
+          <div className="mt-3 flex items-center gap-2.5">
             <div
               className={`h-2 w-2 rounded-full ${
-                isFull ? 'bg-red-500' : spotsLeft <= 3 ? 'bg-amber-500' : 'bg-green-500'
+                isFull ? 'bg-red-500' : spotsLeft <= 3 ? 'bg-amber-500' : 'bg-emerald-500'
               }`}
             />
             <span className="text-sm text-gray-600">
@@ -220,13 +241,13 @@ export function RegistrationWizard({ classId }: Props) {
       <div className="lg:col-span-2">
         {/* Step Indicator */}
         {step < 3 && (
-          <div className="mb-6 flex items-center gap-2">
+          <div className="mb-6 flex items-center gap-2 animate-fade-in-up">
             {STEPS.slice(0, 3).map((label, i) => (
               <div key={label} className="flex items-center gap-2">
                 <div
-                  className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-medium ${
+                  className={`flex h-8 w-8 items-center justify-center rounded-xl text-xs font-medium transition-all ${
                     i === step
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-sm'
                       : i < step
                         ? 'bg-indigo-100 text-indigo-700'
                         : 'bg-gray-100 text-gray-400'
@@ -247,9 +268,9 @@ export function RegistrationWizard({ classId }: Props) {
           </div>
         )}
 
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="glass-card rounded-2xl p-6 animate-fade-in-up stagger-1">
           {submitError && (
-            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+            <div className="mb-4 rounded-xl border border-red-500/25 bg-red-500/10 p-3 text-sm text-red-700">
               {submitError}
             </div>
           )}
@@ -301,7 +322,7 @@ export function RegistrationWizard({ classId }: Props) {
                 <button
                   type="button"
                   onClick={handleBack}
-                  className="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                  className="flex h-11 items-center rounded-xl border border-gray-200 bg-white px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                 >
                   Back
                 </button>
@@ -311,7 +332,7 @@ export function RegistrationWizard({ classId }: Props) {
               <button
                 type="button"
                 onClick={handleNext}
-                className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+                className="btn-gradient flex h-11 items-center rounded-xl px-6 text-sm font-medium"
               >
                 Next
               </button>
@@ -323,7 +344,7 @@ export function RegistrationWizard({ classId }: Props) {
               <button
                 type="button"
                 onClick={handleBack}
-                className="text-sm font-medium text-gray-500 hover:text-gray-700"
+                className="flex h-10 items-center rounded-xl px-3 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700"
               >
                 &larr; Go back and edit
               </button>

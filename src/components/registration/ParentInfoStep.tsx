@@ -10,6 +10,8 @@ interface Props {
   onExistingFamily: (familyId: string | null) => void;
 }
 
+const inputClass = 'mt-1 block w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
+
 export function ParentInfoStep({ form, onExistingFamily }: Props) {
   const {
     register,
@@ -66,13 +68,13 @@ export function ParentInfoStep({ form, onExistingFamily }: Props) {
       </div>
 
       {familyStatus === 'returning' && (
-        <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
+        <div className="rounded-xl border border-blue-500/25 bg-blue-500/10 p-3 text-sm text-blue-700">
           Welcome back! We found your family on file. Your info has been pre-filled.
         </div>
       )}
 
       {familyStatus === 'has_auth' && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+        <div className="rounded-xl border border-amber-500/25 bg-amber-500/10 p-3 text-sm text-amber-700">
           This email is already associated with an account. Please{' '}
           <a href="/login" className="font-medium underline">
             sign in
@@ -90,7 +92,7 @@ export function ParentInfoStep({ form, onExistingFamily }: Props) {
           type="email"
           {...register('parent.email')}
           onBlur={handleEmailBlur}
-          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className={inputClass}
         />
         {errors.parent?.email && (
           <p className="mt-1 text-sm text-red-600">{errors.parent.email.message}</p>
@@ -106,7 +108,7 @@ export function ParentInfoStep({ form, onExistingFamily }: Props) {
             id="parent.firstName"
             type="text"
             {...register('parent.firstName')}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className={inputClass}
           />
           {errors.parent?.firstName && (
             <p className="mt-1 text-sm text-red-600">{errors.parent.firstName.message}</p>
@@ -121,7 +123,7 @@ export function ParentInfoStep({ form, onExistingFamily }: Props) {
             id="parent.lastName"
             type="text"
             {...register('parent.lastName')}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className={inputClass}
           />
           {errors.parent?.lastName && (
             <p className="mt-1 text-sm text-red-600">{errors.parent.lastName.message}</p>
@@ -137,7 +139,7 @@ export function ParentInfoStep({ form, onExistingFamily }: Props) {
           id="parent.phone"
           type="tel"
           {...register('parent.phone')}
-          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className={inputClass}
         />
       </div>
 
@@ -150,7 +152,7 @@ export function ParentInfoStep({ form, onExistingFamily }: Props) {
             id="parent.emergencyContactName"
             type="text"
             {...register('parent.emergencyContactName')}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className={inputClass}
           />
         </div>
 
@@ -162,7 +164,7 @@ export function ParentInfoStep({ form, onExistingFamily }: Props) {
             id="parent.emergencyContactPhone"
             type="tel"
             {...register('parent.emergencyContactPhone')}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className={inputClass}
           />
         </div>
       </div>
