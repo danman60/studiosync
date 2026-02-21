@@ -11,8 +11,10 @@ import {
   ChevronRight,
   CreditCard,
   FileText,
+  FolderOpen,
   GraduationCap,
   Home,
+  ImageIcon,
   Layers,
   Menu,
   Settings,
@@ -37,6 +39,7 @@ const adminNavItems: NavItem[] = [
   { label: 'Families', href: '/admin/families', icon: <Users size={20} />, section: 'admin' },
   { label: 'Staff', href: '/admin/staff', icon: <GraduationCap size={20} />, section: 'admin' },
   { label: 'Billing', href: '/admin/billing', icon: <CreditCard size={20} />, section: 'admin' },
+  { label: 'Media', href: '/admin/media', icon: <FolderOpen size={20} />, section: 'admin' },
   { label: 'Settings', href: '/admin/settings', icon: <Settings size={20} />, section: 'admin' },
 ];
 
@@ -52,6 +55,7 @@ const portalNavItems: NavItem[] = [
   { label: 'My Students', href: '/dashboard/children', icon: <Users size={20} />, section: 'portal' },
   { label: 'Invoices', href: '/dashboard/invoices', icon: <FileText size={20} />, section: 'portal' },
   { label: 'Payments', href: '/dashboard/payments', icon: <CreditCard size={20} />, section: 'portal' },
+  { label: 'Media', href: '/dashboard/media', icon: <ImageIcon size={20} />, section: 'portal' },
 ];
 
 export function Sidebar({
