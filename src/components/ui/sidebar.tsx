@@ -47,6 +47,7 @@ const adminNavItems: NavItem[] = [
   { label: 'Calendar', href: '/admin/calendar', icon: <Calendar size={20} />, section: 'admin' },
   { label: 'Events', href: '/admin/events', icon: <Ticket size={20} />, section: 'admin' },
   { label: 'Announcements', href: '/admin/announcements', icon: <Megaphone size={20} />, section: 'admin' },
+  { label: 'Attendance', href: '/admin/attendance', icon: <CheckSquare size={20} />, section: 'admin' },
   { label: 'Analytics', href: '/admin/analytics', icon: <BarChart3 size={20} />, section: 'admin' },
   { label: 'Settings', href: '/admin/settings', icon: <Settings size={20} />, section: 'admin' },
 ];
@@ -71,6 +72,7 @@ const portalNavItems: NavItem[] = [
   { label: 'Media', href: '/dashboard/media', icon: <ImageIcon size={20} />, section: 'portal' },
   { label: 'Events', href: '/dashboard/events', icon: <Ticket size={20} />, section: 'portal' },
   { label: 'Announcements', href: '/dashboard/announcements', icon: <Megaphone size={20} />, section: 'portal' },
+  { label: 'Profile', href: '/dashboard/profile', icon: <Users size={20} />, section: 'portal' },
 ];
 
 export function Sidebar({

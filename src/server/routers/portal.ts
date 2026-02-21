@@ -71,6 +71,48 @@ export const portalRouter = router({
     return data ?? [];
   }),
 
+  addStudent: protectedProcedure
+    .input(
+      z.object({
+        first_name: z.string().min(1).max(100),
+        last_name: z.string().min(1).max(100),
+        date_of_birth: z.string().nullable().optional(),
+        gender: z.string().nullable().optional(),
+        medical_notes: z.string().max(2000).nullable().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+
+      const { data: family } = await supabase
+        .from('families')
+        .select('id')
+        .eq('studio_id', ctx.studioId)
+        .eq('auth_user_id', ctx.userId)
+        .single();
+
+      if (!family) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'No family found.' });
+      }
+
+      const { data, error } = await supabase
+        .from('children')
+        .insert({
+          studio_id: ctx.studioId,
+          family_id: family.id,
+          first_name: input.first_name,
+          last_name: input.last_name,
+          date_of_birth: input.date_of_birth ?? null,
+          gender: input.gender ?? null,
+          medical_notes: input.medical_notes ?? null,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    }),
+
   updateStudent: protectedProcedure
     .input(
       z.object({

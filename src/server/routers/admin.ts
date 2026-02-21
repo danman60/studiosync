@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { adminProcedure, router } from '../trpc';
+import { adminProcedure, ownerProcedure, router } from '../trpc';
 import { createServiceClient } from '@/lib/supabase-server';
 
 const classInput = z.object({
@@ -557,4 +557,155 @@ export const adminRouter = router({
     if (error) throw error;
     return data ?? [];
   }),
+
+  // ── Studio Settings ──────────────────────────────────
+
+  updateStudio: ownerProcedure
+    .input(
+      z.object({
+        name: z.string().min(1).max(200).optional(),
+        email: z.string().email().nullable().optional(),
+        phone: z.string().max(30).nullable().optional(),
+        website: z.string().max(500).nullable().optional(),
+        address_line1: z.string().max(500).nullable().optional(),
+        city: z.string().max(100).nullable().optional(),
+        state: z.string().max(50).nullable().optional(),
+        zip: z.string().max(20).nullable().optional(),
+        primary_color: z.string().max(20).nullable().optional(),
+        secondary_color: z.string().max(20).nullable().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+      const { data, error } = await supabase
+        .from('studios')
+        .update(input)
+        .eq('id', ctx.studioId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    }),
+
+  // ── Attendance Reports ─────────────────────────────────
+
+  attendanceReport: adminProcedure
+    .input(
+      z.object({
+        startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+        endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+      }).optional()
+    )
+    .query(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+
+      // Get all sessions in date range
+      let sessionQuery = supabase
+        .from('class_sessions')
+        .select('id, class_id, session_date, status, classes(name)')
+        .eq('studio_id', ctx.studioId)
+        .order('session_date', { ascending: false });
+
+      if (input?.startDate) sessionQuery = sessionQuery.gte('session_date', input.startDate);
+      if (input?.endDate) sessionQuery = sessionQuery.lte('session_date', input.endDate);
+
+      const { data: sessions } = await sessionQuery.limit(500);
+      if (!sessions || sessions.length === 0) {
+        return { sessions: [], attendanceByClass: [], absenteeReport: [] };
+      }
+
+      const sessionIds = sessions.map((s) => s.id);
+      const { data: records } = await supabase
+        .from('attendance')
+        .select('*, children(first_name, last_name), class_sessions(class_id, session_date, classes(name))')
+        .eq('studio_id', ctx.studioId)
+        .in('class_session_id', sessionIds);
+
+      // Aggregate by class
+      const classTotals: Record<string, { name: string; present: number; absent: number; late: number; excused: number; total: number }> = {};
+      for (const r of records ?? []) {
+        const cs = r.class_sessions as unknown as { class_id: string; classes: { name: string } | null } | null;
+        const classId = cs?.class_id ?? 'unknown';
+        const className = cs?.classes?.name ?? 'Unknown';
+        if (!classTotals[classId]) {
+          classTotals[classId] = { name: className, present: 0, absent: 0, late: 0, excused: 0, total: 0 };
+        }
+        classTotals[classId]!.total++;
+        if (r.status === 'present') classTotals[classId]!.present++;
+        else if (r.status === 'absent') classTotals[classId]!.absent++;
+        else if (r.status === 'late') classTotals[classId]!.late++;
+        else if (r.status === 'excused') classTotals[classId]!.excused++;
+      }
+
+      // Absentee report — students with >30% absences
+      const studentTotals: Record<string, { name: string; absent: number; total: number }> = {};
+      for (const r of records ?? []) {
+        const child = r.children as unknown as { first_name: string; last_name: string } | null;
+        if (!child) continue;
+        const key = r.child_id;
+        if (!studentTotals[key]) {
+          studentTotals[key] = { name: `${child.first_name} ${child.last_name}`, absent: 0, total: 0 };
+        }
+        studentTotals[key]!.total++;
+        if (r.status === 'absent') studentTotals[key]!.absent++;
+      }
+
+      const absenteeReport = Object.entries(studentTotals)
+        .filter(([, v]) => v.total > 0 && v.absent / v.total > 0.3)
+        .map(([id, v]) => ({ childId: id, ...v, rate: Math.round((v.absent / v.total) * 100) }))
+        .sort((a, b) => b.rate - a.rate);
+
+      return {
+        sessions: sessions.slice(0, 50),
+        attendanceByClass: Object.entries(classTotals).map(([id, v]) => ({ classId: id, ...v })),
+        absenteeReport,
+      };
+    }),
+
+  // ── Waitlist Management ────────────────────────────────
+
+  promoteFromWaitlist: adminProcedure
+    .input(z.object({ enrollmentId: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+
+      const { data: enrollment } = await supabase
+        .from('enrollments')
+        .select('id, status, class_id, classes(capacity)')
+        .eq('id', input.enrollmentId)
+        .eq('studio_id', ctx.studioId)
+        .single();
+
+      if (!enrollment) throw new TRPCError({ code: 'NOT_FOUND' });
+      if (enrollment.status !== 'waitlisted') {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'Only waitlisted enrollments can be promoted' });
+      }
+
+      // Check capacity
+      const cls = enrollment.classes as unknown as { capacity: number | null } | null;
+      if (cls?.capacity) {
+        const { count } = await supabase
+          .from('enrollments')
+          .select('id', { count: 'exact', head: true })
+          .eq('class_id', enrollment.class_id)
+          .eq('studio_id', ctx.studioId)
+          .in('status', ['active', 'pending']);
+
+        if ((count ?? 0) >= cls.capacity) {
+          throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'Class is at capacity' });
+        }
+      }
+
+      const { data, error } = await supabase
+        .from('enrollments')
+        .update({ status: 'active' })
+        .eq('id', input.enrollmentId)
+        .eq('studio_id', ctx.studioId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    }),
 });

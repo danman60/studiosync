@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Modal } from '@/components/admin/Modal';
-import { Pencil } from 'lucide-react';
+import { Pencil, Plus, Users } from 'lucide-react';
 
 const STATUS_BADGE: Record<string, string> = {
   active: 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25',
@@ -34,6 +34,8 @@ function ShimmerCard() {
 
 export default function MyChildrenPage() {
   const [editTarget, setEditTarget] = useState<EditForm | null>(null);
+  const [showAdd, setShowAdd] = useState(false);
+  const [addForm, setAddForm] = useState({ first_name: '', last_name: '', date_of_birth: '', gender: '', medical_notes: '' });
 
   const utils = trpc.useUtils();
   const children = trpc.portal.listStudents.useQuery();
@@ -44,6 +46,26 @@ export default function MyChildrenPage() {
       setEditTarget(null);
     },
   });
+
+  const addMutation = trpc.portal.addStudent.useMutation({
+    onSuccess: () => {
+      utils.portal.listStudents.invalidate();
+      utils.portal.dashboardData.invalidate();
+      setShowAdd(false);
+      setAddForm({ first_name: '', last_name: '', date_of_birth: '', gender: '', medical_notes: '' });
+    },
+  });
+
+  function handleAdd(e: React.FormEvent) {
+    e.preventDefault();
+    addMutation.mutate({
+      first_name: addForm.first_name,
+      last_name: addForm.last_name,
+      date_of_birth: addForm.date_of_birth || null,
+      gender: addForm.gender || null,
+      medical_notes: addForm.medical_notes || null,
+    });
+  }
 
   function handleUpdate(e: React.FormEvent) {
     e.preventDefault();
@@ -62,9 +84,17 @@ export default function MyChildrenPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">My Students</h1>
-        <p className="mt-1 text-sm text-gray-500">Manage your students&apos; profiles and view their enrollments.</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">My Students</h1>
+          <p className="mt-1 text-sm text-gray-500">Manage your students&apos; profiles and view their enrollments.</p>
+        </div>
+        <button
+          onClick={() => setShowAdd(true)}
+          className="btn-gradient inline-flex h-10 items-center gap-2 rounded-xl px-5 text-sm font-medium"
+        >
+          <Plus size={16} /> Add Student
+        </button>
       </div>
 
       {children.isLoading && (
@@ -74,8 +104,12 @@ export default function MyChildrenPage() {
         </div>
       )}
 
-      {children.data?.length === 0 && (
-        <p className="text-sm text-gray-400">No students registered yet. Enroll in a class to get started.</p>
+      {children.data?.length === 0 && !children.isLoading && (
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white/60 py-20">
+          <Users size={24} className="mb-3 text-indigo-400" />
+          <p className="text-sm font-medium text-gray-600">No students yet</p>
+          <p className="mt-1 text-xs text-gray-400">Add your first student to get started.</p>
+        </div>
       )}
 
       <div className="space-y-4">
@@ -151,6 +185,62 @@ export default function MyChildrenPage() {
           );
         })}
       </div>
+
+      {/* Add Student Modal */}
+      <Modal open={showAdd} onClose={() => setShowAdd(false)} title="Add Student">
+        <form onSubmit={handleAdd} className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">First Name *</label>
+              <input type="text" required value={addForm.first_name}
+                onChange={(e) => setAddForm({ ...addForm, first_name: e.target.value })}
+                className={inputClass} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Last Name *</label>
+              <input type="text" required value={addForm.last_name}
+                onChange={(e) => setAddForm({ ...addForm, last_name: e.target.value })}
+                className={inputClass} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+              <input type="date" value={addForm.date_of_birth}
+                onChange={(e) => setAddForm({ ...addForm, date_of_birth: e.target.value })}
+                className={inputClass} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Gender</label>
+              <select value={addForm.gender}
+                onChange={(e) => setAddForm({ ...addForm, gender: e.target.value })}
+                className={inputClass}>
+                <option value="">Not specified</option>
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+                <option value="Non-binary">Non-binary</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Medical Notes</label>
+            <textarea rows={3} value={addForm.medical_notes}
+              onChange={(e) => setAddForm({ ...addForm, medical_notes: e.target.value })}
+              className={inputClass}
+              placeholder="Allergies, conditions, or other notes for instructors" />
+          </div>
+          {addMutation.error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{addMutation.error.message}</p>}
+          <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
+            <button type="button" onClick={() => setShowAdd(false)}
+              className="h-11 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">Cancel</button>
+            <button type="submit" disabled={addMutation.isPending}
+              className="btn-gradient h-11 rounded-xl px-5 text-sm font-medium">
+              {addMutation.isPending ? 'Adding...' : 'Add Student'}
+            </button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Edit Modal */}
       <Modal open={!!editTarget} onClose={() => setEditTarget(null)} title="Edit Student">

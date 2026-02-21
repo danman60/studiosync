@@ -17,7 +17,6 @@ export default function ParentAttendancePage() {
   const byChild = new Map<string, { childName: string; records: typeof attendance }>();
   for (const rec of attendance ?? []) {
     const child = rec.children as unknown as { first_name: string; last_name: string } | null;
-    const session = rec.class_sessions as unknown as { session_date: string; classes: { name: string } | null } | null;
     if (!child) continue;
     const key = rec.child_id;
     const name = `${child.first_name} ${child.last_name}`;
