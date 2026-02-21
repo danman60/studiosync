@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { httpBatchLink } from '@trpc/client';
 import superjson from 'superjson';
 import { trpc } from '@/lib/trpc';
+import { createClient } from '@/lib/supabase';
 
 function getBaseUrl() {
   if (typeof window !== 'undefined') return '';
@@ -30,6 +31,15 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
           transformer: superjson,
+          async headers() {
+            const supabase = createClient();
+            const { data: { session } } = await supabase.auth.getSession();
+            const headers: Record<string, string> = {};
+            if (session?.access_token) {
+              headers['authorization'] = `Bearer ${session.access_token}`;
+            }
+            return headers;
+          },
         }),
       ],
     })
