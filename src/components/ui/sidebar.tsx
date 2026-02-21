@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CreditCard,
+  FileText,
   GraduationCap,
   Home,
   Layers,
@@ -49,6 +50,7 @@ const portalNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', icon: <Home size={20} />, section: 'portal' },
   { label: 'Classes', href: '/classes', icon: <BookOpen size={20} />, section: 'portal' },
   { label: 'My Students', href: '/dashboard/children', icon: <Users size={20} />, section: 'portal' },
+  { label: 'Invoices', href: '/dashboard/invoices', icon: <FileText size={20} />, section: 'portal' },
   { label: 'Payments', href: '/dashboard/payments', icon: <CreditCard size={20} />, section: 'portal' },
 ];
 

@@ -4,6 +4,7 @@ import { registrationRouter } from './registration';
 import { adminRouter } from './admin';
 import { portalRouter } from './portal';
 import { instructorRouter } from './instructor';
+import { invoiceRouter } from './invoice';
 
 export const appRouter = router({
   catalog: catalogRouter,
@@ -11,6 +12,7 @@ export const appRouter = router({
   admin: adminRouter,
   portal: portalRouter,
   instructor: instructorRouter,
+  invoice: invoiceRouter,
 });
 
 export type AppRouter = typeof appRouter;

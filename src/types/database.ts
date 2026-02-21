@@ -338,6 +338,63 @@ export interface Database {
         };
         Update: Partial<Database['studiosync']['Tables']['attendance']['Insert']>;
       };
+      invoices: {
+        Row: {
+          id: string;
+          studio_id: string;
+          family_id: string;
+          invoice_number: string;
+          status: 'draft' | 'sent' | 'paid' | 'partial' | 'overdue' | 'void' | 'cancelled';
+          issue_date: string;
+          due_date: string;
+          subtotal: number;
+          tax_rate: number;
+          tax_amount: number;
+          total: number;
+          amount_paid: number;
+          notes: string | null;
+          stripe_invoice_id: string | null;
+          stripe_payment_intent_id: string | null;
+          sent_at: string | null;
+          paid_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['invoices']['Row'], 'id' | 'created_at' | 'updated_at' | 'status' | 'subtotal' | 'tax_amount' | 'total' | 'amount_paid' | 'tax_rate'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          status?: 'draft' | 'sent' | 'paid' | 'partial' | 'overdue' | 'void' | 'cancelled';
+          subtotal?: number;
+          tax_rate?: number;
+          tax_amount?: number;
+          total?: number;
+          amount_paid?: number;
+        };
+        Update: Partial<Database['studiosync']['Tables']['invoices']['Insert']>;
+      };
+      invoice_line_items: {
+        Row: {
+          id: string;
+          invoice_id: string;
+          studio_id: string;
+          description: string;
+          quantity: number;
+          unit_price: number;
+          total: number;
+          enrollment_id: string | null;
+          sort_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['invoice_line_items']['Row'], 'id' | 'created_at' | 'updated_at' | 'sort_order'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          sort_order?: number;
+        };
+        Update: Partial<Database['studiosync']['Tables']['invoice_line_items']['Insert']>;
+      };
     };
   };
 }
@@ -363,3 +420,6 @@ export type ClassSession = Database['studiosync']['Tables']['class_sessions']['R
 export type Attendance = Database['studiosync']['Tables']['attendance']['Row'];
 export type ClassSessionStatus = ClassSession['status'];
 export type AttendanceStatus = Attendance['status'];
+export type Invoice = Database['studiosync']['Tables']['invoices']['Row'];
+export type InvoiceLineItem = Database['studiosync']['Tables']['invoice_line_items']['Row'];
+export type InvoiceStatus = Invoice['status'];
