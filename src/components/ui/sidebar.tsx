@@ -62,7 +62,7 @@ export function Sidebar({
       {/* Mobile toggle */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="fixed top-4 left-4 z-50 rounded-lg bg-white p-2 shadow-md lg:hidden"
+        className="fixed top-4 left-4 z-50 flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm shadow-md border border-white/60 lg:hidden"
         aria-label="Open menu"
       >
         <Menu size={20} className="text-gray-700" />
@@ -71,7 +71,7 @@ export function Sidebar({
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/30 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[1px] lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -79,27 +79,33 @@ export function Sidebar({
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed left-0 top-0 z-50 flex h-full flex-col border-r border-gray-200 bg-white transition-all duration-200',
+          'fixed left-0 top-0 z-50 flex h-full flex-col border-r border-gray-200/80 bg-white/90 backdrop-blur-md transition-all duration-200',
           collapsed ? 'w-16' : 'w-64',
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         )}
       >
         {/* Header */}
-        <div className="flex h-16 items-center justify-between border-b border-gray-200 px-4">
+        <div className="flex h-16 items-center justify-between border-b border-gray-200/80 px-4">
           {!collapsed && (
-            <div className="flex items-center gap-2 overflow-hidden">
-              <Layers size={24} className="shrink-0 text-indigo-600" />
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600">
+                <Layers size={18} className="text-white" />
+              </div>
               <span className="truncate text-lg font-bold text-gray-900">
                 {studioName ?? 'StudioSync'}
               </span>
             </div>
           )}
-          {collapsed && <Layers size={24} className="mx-auto text-indigo-600" />}
+          {collapsed && (
+            <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600">
+              <Layers size={18} className="text-white" />
+            </div>
+          )}
 
           {/* Mobile close */}
           <button
             onClick={() => setMobileOpen(false)}
-            className="rounded p-1 text-gray-400 hover:text-gray-600 lg:hidden"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 lg:hidden"
           >
             <X size={18} />
           </button>
@@ -107,7 +113,7 @@ export function Sidebar({
           {/* Desktop collapse */}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="hidden rounded p-1 text-gray-400 hover:text-gray-600 lg:block"
+            className="hidden h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 lg:flex"
           >
             {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
           </button>
@@ -129,15 +135,15 @@ export function Sidebar({
                     href={item.href}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
-                      'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                      'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
                       isActive
-                        ? 'bg-indigo-50 text-indigo-700'
+                        ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 shadow-sm shadow-indigo-500/5'
                         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
                       collapsed && 'justify-center px-2'
                     )}
                     title={collapsed ? item.label : undefined}
                   >
-                    <span className="shrink-0">{item.icon}</span>
+                    <span className={cn('shrink-0', isActive && 'text-indigo-600')}>{item.icon}</span>
                     {!collapsed && <span>{item.label}</span>}
                   </Link>
                 </li>
@@ -147,7 +153,7 @@ export function Sidebar({
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-gray-200 p-4">
+        <div className="border-t border-gray-200/80 p-4">
           {!collapsed && (
             <p className="text-xs text-gray-400">
               Powered by StudioSync

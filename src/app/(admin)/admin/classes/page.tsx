@@ -55,6 +55,16 @@ const emptyForm: FormData = {
   allow_drop_in: false,
 };
 
+function ShimmerRow() {
+  return (
+    <tr>
+      {[...Array(8)].map((_, i) => (
+        <td key={i} className="px-5 py-4"><div className="skeleton h-4 w-20" /></td>
+      ))}
+    </tr>
+  );
+}
+
 export default function ClassesPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -150,34 +160,36 @@ export default function ClassesPage() {
   }
 
   const isSaving = createMutation.isPending || updateMutation.isPending;
+  const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
+  const selectClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Classes</h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Classes</h1>
+          <p className="mt-1 text-sm text-gray-500">
             Manage your studio&apos;s class schedule
           </p>
         </div>
         <button
           onClick={openCreate}
-          className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
+          className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-medium"
         >
           <Plus size={16} /> Add Class
         </button>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
+      <div className="glass-card overflow-x-auto rounded-2xl">
+        <table className="min-w-full divide-y divide-gray-100">
+          <thead>
+            <tr className="bg-gray-50/60">
               {['Name', 'Type', 'Level', 'Day / Time', 'Instructor', 'Enrolled', 'Season', ''].map(
                 (h) => (
                   <th
                     key={h}
-                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500"
+                    className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
                   >
                     {h}
                   </th>
@@ -185,25 +197,25 @@ export default function ClassesPage() {
               )}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-50">
             {classes.isLoading && (
-              <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-sm text-gray-400">
-                  Loading...
-                </td>
-              </tr>
+              <>
+                <ShimmerRow />
+                <ShimmerRow />
+                <ShimmerRow />
+              </>
             )}
             {classes.data?.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-sm text-gray-400">
+                <td colSpan={8} className="px-5 py-10 text-center text-sm text-gray-400">
                   No classes yet. Click &quot;Add Class&quot; to create one.
                 </td>
               </tr>
             )}
             {classes.data?.map((cls) => (
-              <tr key={cls.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 text-sm font-medium text-gray-900">{cls.name}</td>
-                <td className="px-4 py-3">
+              <tr key={cls.id} className="transition-colors hover:bg-indigo-50/40">
+                <td className="px-5 py-3.5 text-sm font-medium text-gray-900">{cls.name}</td>
+                <td className="px-5 py-3.5">
                   <span
                     className="inline-block rounded-full px-2.5 py-0.5 text-xs font-medium text-white"
                     style={{ backgroundColor: cls.class_types?.color ?? '#6366f1' }}
@@ -211,31 +223,32 @@ export default function ClassesPage() {
                     {cls.class_types?.name ?? '—'}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600">{cls.levels?.name ?? '—'}</td>
-                <td className="px-4 py-3 text-sm text-gray-600">
+                <td className="px-5 py-3.5 text-sm text-gray-600">{cls.levels?.name ?? '—'}</td>
+                <td className="px-5 py-3.5 text-sm text-gray-600">
                   {DAYS[cls.day_of_week]} {formatTime(cls.start_time)}–{formatTime(cls.end_time)}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600">
+                <td className="px-5 py-3.5 text-sm text-gray-600">
                   {cls.staff?.display_name ?? '—'}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600">
-                  {cls.enrolled_count}/{cls.capacity}
+                <td className="px-5 py-3.5 text-sm text-gray-600">
+                  <span className="font-medium text-gray-900">{cls.enrolled_count}</span>
+                  <span className="text-gray-400">/{cls.capacity}</span>
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600">
+                <td className="px-5 py-3.5 text-sm text-gray-600">
                   {cls.seasons?.name ?? '—'}
                 </td>
-                <td className="px-4 py-3 text-right">
+                <td className="px-5 py-3.5 text-right">
                   <div className="flex items-center justify-end gap-1">
                     <button
                       onClick={() => openEdit(cls)}
-                      className="rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-indigo-600"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-indigo-50 hover:text-indigo-600"
                       title="Edit"
                     >
                       <Pencil size={15} />
                     </button>
                     <button
                       onClick={() => setDeleteId(cls.id)}
-                      className="rounded p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
                       title="Delete"
                     >
                       <Trash2 size={15} />
@@ -256,28 +269,19 @@ export default function ClassesPage() {
         wide
       >
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Row 1: Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Name *</label>
-            <input
-              type="text"
-              required
-              value={form.name}
+            <input type="text" required value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-            />
+              className={inputClass} />
           </div>
 
-          {/* Row 2: Season, Type, Level */}
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700">Season *</label>
-              <select
-                required
-                value={form.season_id}
+              <select required value={form.season_id}
                 onChange={(e) => setForm({ ...form, season_id: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-              >
+                className={selectClass}>
                 <option value="">Select...</option>
                 {seasons.data?.map((s) => (
                   <option key={s.id} value={s.id}>{s.name}</option>
@@ -286,12 +290,9 @@ export default function ClassesPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Type *</label>
-              <select
-                required
-                value={form.class_type_id}
+              <select required value={form.class_type_id}
                 onChange={(e) => setForm({ ...form, class_type_id: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-              >
+                className={selectClass}>
                 <option value="">Select...</option>
                 {classTypes.data?.map((t) => (
                   <option key={t.id} value={t.id}>{t.name}</option>
@@ -300,11 +301,9 @@ export default function ClassesPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Level</label>
-              <select
-                value={form.level_id}
+              <select value={form.level_id}
                 onChange={(e) => setForm({ ...form, level_id: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-              >
+                className={selectClass}>
                 <option value="">None</option>
                 {levels.data?.map((l) => (
                   <option key={l.id} value={l.id}>{l.name}</option>
@@ -313,15 +312,12 @@ export default function ClassesPage() {
             </div>
           </div>
 
-          {/* Row 3: Instructor, Day, Times */}
           <div className="grid grid-cols-4 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700">Instructor</label>
-              <select
-                value={form.instructor_id}
+              <select value={form.instructor_id}
                 onChange={(e) => setForm({ ...form, instructor_id: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-              >
+                className={selectClass}>
                 <option value="">None</option>
                 {instructors.data?.map((i) => (
                   <option key={i.id} value={i.id}>{i.display_name}</option>
@@ -330,12 +326,9 @@ export default function ClassesPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Day *</label>
-              <select
-                required
-                value={form.day_of_week}
+              <select required value={form.day_of_week}
                 onChange={(e) => setForm({ ...form, day_of_week: Number(e.target.value) })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-              >
+                className={selectClass}>
                 {DAYS.map((d, i) => (
                   <option key={i} value={i}>{d}</option>
                 ))}
@@ -343,165 +336,104 @@ export default function ClassesPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Start *</label>
-              <input
-                type="time"
-                required
-                value={form.start_time}
+              <input type="time" required value={form.start_time}
                 onChange={(e) => setForm({ ...form, start_time: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-              />
+                className={inputClass} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">End *</label>
-              <input
-                type="time"
-                required
-                value={form.end_time}
+              <input type="time" required value={form.end_time}
                 onChange={(e) => setForm({ ...form, end_time: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-              />
+                className={inputClass} />
             </div>
           </div>
 
-          {/* Row 4: Room, Capacity */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700">Room</label>
-              <input
-                type="text"
-                value={form.room}
+              <input type="text" value={form.room}
                 onChange={(e) => setForm({ ...form, room: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-                placeholder="e.g. Studio A"
-              />
+                className={inputClass} placeholder="e.g. Studio A" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Capacity</label>
-              <input
-                type="number"
-                min={1}
-                value={form.capacity}
+              <input type="number" min={1} value={form.capacity}
                 onChange={(e) => setForm({ ...form, capacity: Number(e.target.value) })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-              />
+                className={inputClass} />
             </div>
           </div>
 
-          {/* Row 5: Prices */}
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700">Monthly Price ($)</label>
-              <input
-                type="number"
-                min={0}
-                step="0.01"
-                value={form.monthly_price}
+              <input type="number" min={0} step="0.01" value={form.monthly_price}
                 onChange={(e) => setForm({ ...form, monthly_price: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-              />
+                className={inputClass} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Drop-in Price ($)</label>
-              <input
-                type="number"
-                min={0}
-                step="0.01"
-                value={form.drop_in_price}
+              <input type="number" min={0} step="0.01" value={form.drop_in_price}
                 onChange={(e) => setForm({ ...form, drop_in_price: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-              />
+                className={inputClass} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Reg. Fee ($)</label>
-              <input
-                type="number"
-                min={0}
-                step="0.01"
-                value={form.registration_fee}
+              <input type="number" min={0} step="0.01" value={form.registration_fee}
                 onChange={(e) => setForm({ ...form, registration_fee: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-              />
+                className={inputClass} />
             </div>
           </div>
 
-          {/* Row 6: Age range */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700">Min Age</label>
-              <input
-                type="number"
-                min={0}
-                value={form.min_age}
+              <input type="number" min={0} value={form.min_age}
                 onChange={(e) => setForm({ ...form, min_age: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-              />
+                className={inputClass} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Max Age</label>
-              <input
-                type="number"
-                min={0}
-                value={form.max_age}
+              <input type="number" min={0} value={form.max_age}
                 onChange={(e) => setForm({ ...form, max_age: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-              />
+                className={inputClass} />
             </div>
           </div>
 
-          {/* Row 7: Toggles */}
           <div className="flex items-center gap-6">
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input
-                type="checkbox"
-                checked={form.is_public}
+            <label className="flex items-center gap-2.5 text-sm text-gray-700">
+              <input type="checkbox" checked={form.is_public}
                 onChange={(e) => setForm({ ...form, is_public: e.target.checked })}
-                className="h-4 w-4 rounded border-gray-300 text-indigo-600"
-              />
+                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500/30" />
               Public (visible in catalog)
             </label>
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input
-                type="checkbox"
-                checked={form.allow_drop_in}
+            <label className="flex items-center gap-2.5 text-sm text-gray-700">
+              <input type="checkbox" checked={form.allow_drop_in}
                 onChange={(e) => setForm({ ...form, allow_drop_in: e.target.checked })}
-                className="h-4 w-4 rounded border-gray-300 text-indigo-600"
-              />
+                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500/30" />
               Allow drop-in
             </label>
           </div>
 
-          {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Description</label>
-            <textarea
-              rows={3}
-              value={form.description}
+            <textarea rows={3} value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-            />
+              className={inputClass} />
           </div>
 
-          {/* Error */}
           {(createMutation.error || updateMutation.error) && (
-            <p className="text-sm text-red-600">
+            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
               {createMutation.error?.message || updateMutation.error?.message}
             </p>
           )}
 
-          {/* Actions */}
-          <div className="flex justify-end gap-3 border-t border-gray-200 pt-4">
-            <button
-              type="button"
-              onClick={closeModal}
-              className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
+          <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
+            <button type="button" onClick={closeModal}
+              className="h-11 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
               Cancel
             </button>
-            <button
-              type="submit"
-              disabled={isSaving}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-            >
+            <button type="submit" disabled={isSaving}
+              className="btn-gradient h-11 rounded-xl px-5 text-sm font-medium">
               {isSaving ? 'Saving...' : editingId ? 'Update Class' : 'Create Class'}
             </button>
           </div>
@@ -514,20 +446,16 @@ export default function ClassesPage() {
           Are you sure you want to delete this class? This action cannot be undone.
         </p>
         {deleteMutation.error && (
-          <p className="mt-2 text-sm text-red-600">{deleteMutation.error.message}</p>
+          <p className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{deleteMutation.error.message}</p>
         )}
         <div className="mt-6 flex justify-end gap-3">
-          <button
-            onClick={() => setDeleteId(null)}
-            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
+          <button onClick={() => setDeleteId(null)}
+            className="h-11 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
             Cancel
           </button>
-          <button
-            onClick={() => deleteId && deleteMutation.mutate({ id: deleteId })}
+          <button onClick={() => deleteId && deleteMutation.mutate({ id: deleteId })}
             disabled={deleteMutation.isPending}
-            className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
-          >
+            className="h-11 rounded-xl bg-red-600 px-5 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50">
             {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
           </button>
         </div>

@@ -5,15 +5,25 @@ import { trpc } from '@/lib/trpc';
 import { Modal } from '@/components/admin/Modal';
 import { ChevronDown } from 'lucide-react';
 
-const STATUS_COLORS: Record<string, string> = {
-  active: 'bg-green-100 text-green-700',
-  pending: 'bg-yellow-100 text-yellow-700',
-  waitlisted: 'bg-blue-100 text-blue-700',
-  dropped: 'bg-gray-100 text-gray-500',
-  cancelled: 'bg-red-100 text-red-600',
+const STATUS_BADGE: Record<string, string> = {
+  active: 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25',
+  pending: 'bg-amber-500/15 text-amber-600 border border-amber-500/25',
+  waitlisted: 'bg-blue-500/15 text-blue-600 border border-blue-500/25',
+  dropped: 'bg-gray-500/15 text-gray-500 border border-gray-500/20',
+  cancelled: 'bg-red-500/15 text-red-600 border border-red-500/25',
 };
 
 type StatusAction = { id: string; childName: string; className: string; currentStatus: string };
+
+function ShimmerRow() {
+  return (
+    <tr>
+      {[...Array(6)].map((_, i) => (
+        <td key={i} className="px-5 py-4"><div className="skeleton h-4 w-24" /></td>
+      ))}
+    </tr>
+  );
+}
 
 export default function EnrollmentsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('');
@@ -44,18 +54,20 @@ export default function EnrollmentsPage() {
     });
   }
 
+  const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
+
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Enrollments</h1>
-          <p className="mt-1 text-sm text-gray-600">View and manage class enrollments</p>
+          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Enrollments</h1>
+          <p className="mt-1 text-sm text-gray-500">View and manage class enrollments</p>
         </div>
         <div className="relative">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none rounded-lg border border-gray-300 bg-white py-2 pl-3 pr-8 text-sm text-gray-700"
+            className="h-11 appearance-none rounded-xl border border-gray-200 bg-white py-2 pl-4 pr-9 text-sm text-gray-700 transition-shadow input-glow"
           >
             <option value="">All statuses</option>
             <option value="active">Active</option>
@@ -64,25 +76,29 @@ export default function EnrollmentsPage() {
             <option value="dropped">Dropped</option>
             <option value="cancelled">Cancelled</option>
           </select>
-          <ChevronDown size={14} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <ChevronDown size={14} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
+      <div className="glass-card overflow-x-auto rounded-2xl">
+        <table className="min-w-full divide-y divide-gray-100">
+          <thead>
+            <tr className="bg-gray-50/60">
               {['Child', 'Parent', 'Class', 'Status', 'Date', ''].map((h) => (
-                <th key={h} className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">{h}</th>
+                <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">{h}</th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-50">
             {enrollments.isLoading && (
-              <tr><td colSpan={6} className="px-4 py-8 text-center text-sm text-gray-400">Loading...</td></tr>
+              <>
+                <ShimmerRow />
+                <ShimmerRow />
+                <ShimmerRow />
+              </>
             )}
             {enrollments.data?.length === 0 && (
-              <tr><td colSpan={6} className="px-4 py-8 text-center text-sm text-gray-400">No enrollments found.</td></tr>
+              <tr><td colSpan={6} className="px-5 py-10 text-center text-sm text-gray-400">No enrollments found.</td></tr>
             )}
             {enrollments.data?.map((en) => {
               const child = en.children as { first_name: string; last_name: string } | null;
@@ -92,12 +108,12 @@ export default function EnrollmentsPage() {
               const className = cls?.name ?? '—';
 
               return (
-                <tr key={en.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">{childName}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
+                <tr key={en.id} className="transition-colors hover:bg-indigo-50/40">
+                  <td className="px-5 py-3.5 text-sm font-medium text-gray-900">{childName}</td>
+                  <td className="px-5 py-3.5 text-sm text-gray-600">
                     {family ? `${family.parent_first_name} ${family.parent_last_name}` : '—'}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
+                  <td className="px-5 py-3.5 text-sm text-gray-600">
                     {cls?.class_types && (
                       <span className="mr-1.5 inline-block rounded-full px-2 py-0.5 text-xs font-medium text-white" style={{ backgroundColor: cls.class_types.color }}>
                         {cls.class_types.name}
@@ -105,22 +121,22 @@ export default function EnrollmentsPage() {
                     )}
                     {className}
                   </td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_COLORS[en.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                  <td className="px-5 py-3.5">
+                    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[en.status] ?? 'bg-gray-100 text-gray-600'}`}>
                       {en.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">
+                  <td className="px-5 py-3.5 text-sm text-gray-500">
                     {new Date(en.created_at).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-5 py-3.5 text-right">
                     {['active', 'pending', 'waitlisted'].includes(en.status) && (
                       <button
                         onClick={() => {
                           setActionTarget({ id: en.id, childName, className, currentStatus: en.status });
                           setNewStatus(en.status === 'pending' || en.status === 'waitlisted' ? 'active' : 'dropped');
                         }}
-                        className="rounded px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50"
+                        className="h-8 rounded-lg px-3 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-50"
                       >
                         Update
                       </button>
@@ -137,7 +153,7 @@ export default function EnrollmentsPage() {
       <Modal open={!!actionTarget} onClose={() => setActionTarget(null)} title="Update Enrollment Status">
         {actionTarget && (
           <form onSubmit={handleStatusUpdate} className="space-y-4">
-            <div className="rounded-lg bg-gray-50 p-3 text-sm text-gray-700">
+            <div className="rounded-xl bg-gradient-to-br from-indigo-50/80 to-purple-50/50 p-4 text-sm text-gray-700">
               <p><span className="font-medium">Child:</span> {actionTarget.childName}</p>
               <p><span className="font-medium">Class:</span> {actionTarget.className}</p>
               <p><span className="font-medium">Current:</span> {actionTarget.currentStatus}</p>
@@ -145,11 +161,9 @@ export default function EnrollmentsPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700">New Status</label>
-              <select
-                value={newStatus}
+              <select value={newStatus}
                 onChange={(e) => setNewStatus(e.target.value as 'active' | 'dropped' | 'cancelled')}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-              >
+                className={inputClass}>
                 <option value="active">Active</option>
                 <option value="dropped">Dropped</option>
                 <option value="cancelled">Cancelled</option>
@@ -159,22 +173,20 @@ export default function EnrollmentsPage() {
             {newStatus === 'dropped' && (
               <div>
                 <label className="block text-sm font-medium text-gray-700">Reason (optional)</label>
-                <textarea
-                  value={dropReason}
-                  onChange={(e) => setDropReason(e.target.value)}
-                  rows={2}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
-                />
+                <textarea value={dropReason} onChange={(e) => setDropReason(e.target.value)}
+                  rows={2} className={inputClass} />
               </div>
             )}
 
             {updateMutation.error && (
-              <p className="text-sm text-red-600">{updateMutation.error.message}</p>
+              <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{updateMutation.error.message}</p>
             )}
 
-            <div className="flex justify-end gap-3 border-t border-gray-200 pt-4">
-              <button type="button" onClick={() => setActionTarget(null)} className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
-              <button type="submit" disabled={updateMutation.isPending} className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50">
+            <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
+              <button type="button" onClick={() => setActionTarget(null)}
+                className="h-11 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">Cancel</button>
+              <button type="submit" disabled={updateMutation.isPending}
+                className="btn-gradient h-11 rounded-xl px-5 text-sm font-medium">
                 {updateMutation.isPending ? 'Updating...' : 'Update'}
               </button>
             </div>

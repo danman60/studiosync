@@ -16,6 +16,24 @@ type EditForm = {
   notes: string;
 };
 
+const STATUS_BADGE: Record<string, string> = {
+  active: 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25',
+  pending: 'bg-amber-500/15 text-amber-600 border border-amber-500/25',
+  waitlisted: 'bg-blue-500/15 text-blue-600 border border-blue-500/25',
+  dropped: 'bg-gray-500/15 text-gray-500 border border-gray-500/20',
+  cancelled: 'bg-red-500/15 text-red-600 border border-red-500/25',
+};
+
+function ShimmerRow() {
+  return (
+    <tr>
+      {[...Array(5)].map((_, i) => (
+        <td key={i} className="px-5 py-4"><div className="skeleton h-4 w-24" /></td>
+      ))}
+    </tr>
+  );
+}
+
 export default function FamiliesPage() {
   const [editTarget, setEditTarget] = useState<EditForm | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
@@ -50,53 +68,50 @@ export default function FamiliesPage() {
     });
   }
 
-  const STATUS_COLORS: Record<string, string> = {
-    active: 'bg-green-100 text-green-700',
-    pending: 'bg-yellow-100 text-yellow-700',
-    waitlisted: 'bg-blue-100 text-blue-700',
-    dropped: 'bg-gray-100 text-gray-500',
-    cancelled: 'bg-red-100 text-red-600',
-  };
+  const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Families</h1>
-        <p className="mt-1 text-sm text-gray-600">View and manage registered families</p>
+      <div className="mb-8">
+        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Families</h1>
+        <p className="mt-1 text-sm text-gray-500">View and manage registered families</p>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
+      <div className="glass-card overflow-x-auto rounded-2xl">
+        <table className="min-w-full divide-y divide-gray-100">
+          <thead>
+            <tr className="bg-gray-50/60">
               {['Parent Name', 'Email', 'Phone', 'Children', ''].map((h) => (
-                <th key={h} className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">{h}</th>
+                <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">{h}</th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-50">
             {families.isLoading && (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-400">Loading...</td></tr>
+              <>
+                <ShimmerRow />
+                <ShimmerRow />
+              </>
             )}
             {families.data?.length === 0 && (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-400">No families yet.</td></tr>
+              <tr><td colSpan={5} className="px-5 py-10 text-center text-sm text-gray-400">No families yet.</td></tr>
             )}
             {families.data?.map((f) => {
               const children = (f.children ?? []) as { id: string; first_name: string; last_name: string; active: boolean }[];
               const activeChildren = children.filter((c) => c.active);
               return (
-                <tr key={f.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                <tr key={f.id} className="transition-colors hover:bg-indigo-50/40">
+                  <td className="px-5 py-3.5 text-sm font-medium text-gray-900">
                     {f.parent_first_name} {f.parent_last_name}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{f.email}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{f.phone ?? '—'}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
+                  <td className="px-5 py-3.5 text-sm text-gray-600">{f.email}</td>
+                  <td className="px-5 py-3.5 text-sm text-gray-600">{f.phone ?? '—'}</td>
+                  <td className="px-5 py-3.5 text-sm text-gray-600">
                     {activeChildren.length > 0
                       ? activeChildren.map((c) => `${c.first_name} ${c.last_name}`).join(', ')
                       : '—'}
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-5 py-3.5 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => setEditTarget({
@@ -109,14 +124,14 @@ export default function FamiliesPage() {
                           emergency_contact_phone: f.emergency_contact_phone ?? '',
                           notes: f.notes ?? '',
                         })}
-                        className="rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-indigo-600"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-indigo-50 hover:text-indigo-600"
                         title="Edit"
                       >
                         <Pencil size={15} />
                       </button>
                       <button
                         onClick={() => setDetailId(f.id)}
-                        className="rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-indigo-600"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-indigo-50 hover:text-indigo-600"
                         title="View details"
                       >
                         <ChevronRight size={15} />
@@ -139,53 +154,55 @@ export default function FamiliesPage() {
                 <label className="block text-sm font-medium text-gray-700">First Name *</label>
                 <input type="text" required value={editTarget.parent_first_name}
                   onChange={(e) => setEditTarget({ ...editTarget, parent_first_name: e.target.value })}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                  className={inputClass} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Last Name *</label>
                 <input type="text" required value={editTarget.parent_last_name}
                   onChange={(e) => setEditTarget({ ...editTarget, parent_last_name: e.target.value })}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                  className={inputClass} />
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Email *</label>
               <input type="email" required value={editTarget.email}
                 onChange={(e) => setEditTarget({ ...editTarget, email: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                className={inputClass} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Phone</label>
               <input type="tel" value={editTarget.phone}
                 onChange={(e) => setEditTarget({ ...editTarget, phone: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                className={inputClass} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Emergency Contact</label>
                 <input type="text" value={editTarget.emergency_contact_name}
                   onChange={(e) => setEditTarget({ ...editTarget, emergency_contact_name: e.target.value })}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900" />
+                  className={inputClass} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Emergency Phone</label>
                 <input type="tel" value={editTarget.emergency_contact_phone}
                   onChange={(e) => setEditTarget({ ...editTarget, emergency_contact_phone: e.target.value })}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900" />
+                  className={inputClass} />
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Notes</label>
               <textarea rows={2} value={editTarget.notes}
                 onChange={(e) => setEditTarget({ ...editTarget, notes: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900" />
+                className={inputClass} />
             </div>
 
-            {updateMutation.error && <p className="text-sm text-red-600">{updateMutation.error.message}</p>}
+            {updateMutation.error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{updateMutation.error.message}</p>}
 
-            <div className="flex justify-end gap-3 border-t border-gray-200 pt-4">
-              <button type="button" onClick={() => setEditTarget(null)} className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
-              <button type="submit" disabled={updateMutation.isPending} className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50">
+            <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
+              <button type="button" onClick={() => setEditTarget(null)}
+                className="h-11 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">Cancel</button>
+              <button type="submit" disabled={updateMutation.isPending}
+                className="btn-gradient h-11 rounded-xl px-5 text-sm font-medium">
                 {updateMutation.isPending ? 'Saving...' : 'Save'}
               </button>
             </div>
@@ -195,7 +212,12 @@ export default function FamiliesPage() {
 
       {/* Detail Modal */}
       <Modal open={!!detailId} onClose={() => setDetailId(null)} title="Family Details" wide>
-        {familyDetail.isLoading && <p className="text-sm text-gray-400">Loading...</p>}
+        {familyDetail.isLoading && (
+          <div className="space-y-3">
+            <div className="skeleton h-16 w-full" />
+            <div className="skeleton h-20 w-full" />
+          </div>
+        )}
         {familyDetail.data && (() => {
           const f = familyDetail.data;
           const children = (f.children ?? []) as {
@@ -204,7 +226,7 @@ export default function FamiliesPage() {
           }[];
           return (
             <div className="space-y-4">
-              <div className="rounded-lg bg-gray-50 p-4">
+              <div className="rounded-xl bg-gradient-to-br from-indigo-50/80 to-purple-50/50 p-4">
                 <p className="font-medium text-gray-900">{f.parent_first_name} {f.parent_last_name}</p>
                 <p className="text-sm text-gray-600">{f.email}</p>
                 {f.phone && <p className="text-sm text-gray-600">{f.phone}</p>}
@@ -215,14 +237,14 @@ export default function FamiliesPage() {
               </h3>
               {children.length === 0 && <p className="text-sm text-gray-400">No children registered.</p>}
               {children.map((child) => (
-                <div key={child.id} className="rounded-lg border border-gray-200 p-3">
+                <div key={child.id} className="glass-card rounded-xl p-4">
                   <p className="font-medium text-gray-900">
                     {child.first_name} {child.last_name}
                     {child.date_of_birth && <span className="ml-2 text-sm font-normal text-gray-500">DOB: {child.date_of_birth}</span>}
-                    {!child.active && <span className="ml-2 rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-500">Inactive</span>}
+                    {!child.active && <span className="ml-2 rounded-full bg-gray-500/15 px-2 py-0.5 text-xs text-gray-500 border border-gray-500/20">Inactive</span>}
                   </p>
                   {child.enrollments?.length > 0 && (
-                    <div className="mt-2 space-y-1">
+                    <div className="mt-2.5 space-y-1.5">
                       {child.enrollments.map((en) => (
                         <div key={en.id} className="flex items-center gap-2 text-sm text-gray-600">
                           {en.classes?.class_types && (
@@ -231,7 +253,7 @@ export default function FamiliesPage() {
                             </span>
                           )}
                           <span>{en.classes?.name ?? '—'}</span>
-                          <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[en.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                          <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE[en.status] ?? 'bg-gray-100 text-gray-600'}`}>
                             {en.status}
                           </span>
                         </div>

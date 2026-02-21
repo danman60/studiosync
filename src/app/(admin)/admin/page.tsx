@@ -5,44 +5,60 @@ import { BookOpen, Users, UserPlus, GraduationCap } from 'lucide-react';
 import Link from 'next/link';
 
 const STAT_CARDS = [
-  { key: 'totalClasses', label: 'Total Classes', icon: BookOpen, href: '/admin/classes', color: 'bg-indigo-50 text-indigo-600' },
-  { key: 'activeEnrollments', label: 'Active Enrollments', icon: UserPlus, href: '/admin/enrollments', color: 'bg-emerald-50 text-emerald-600' },
-  { key: 'totalFamilies', label: 'Families', icon: Users, href: '/admin/families', color: 'bg-amber-50 text-amber-600' },
-  { key: 'activeStaff', label: 'Active Staff', icon: GraduationCap, href: '/admin/staff', color: 'bg-purple-50 text-purple-600' },
+  { key: 'totalClasses', label: 'Total Classes', icon: BookOpen, href: '/admin/classes', gradient: 'from-indigo-500/10 to-indigo-600/5', iconBg: 'bg-indigo-100 text-indigo-600' },
+  { key: 'activeEnrollments', label: 'Active Enrollments', icon: UserPlus, href: '/admin/enrollments', gradient: 'from-emerald-500/10 to-emerald-600/5', iconBg: 'bg-emerald-100 text-emerald-600' },
+  { key: 'totalFamilies', label: 'Families', icon: Users, href: '/admin/families', gradient: 'from-amber-500/10 to-amber-600/5', iconBg: 'bg-amber-100 text-amber-600' },
+  { key: 'activeStaff', label: 'Active Staff', icon: GraduationCap, href: '/admin/staff', gradient: 'from-purple-500/10 to-purple-600/5', iconBg: 'bg-purple-100 text-purple-600' },
 ] as const;
 
-const STATUS_COLORS: Record<string, string> = {
-  active: 'bg-green-100 text-green-700',
-  pending: 'bg-yellow-100 text-yellow-700',
-  waitlisted: 'bg-blue-100 text-blue-700',
-  dropped: 'bg-gray-100 text-gray-500',
-  cancelled: 'bg-red-100 text-red-600',
+const STATUS_BADGE: Record<string, string> = {
+  active: 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25',
+  pending: 'bg-amber-500/15 text-amber-600 border border-amber-500/25',
+  waitlisted: 'bg-blue-500/15 text-blue-600 border border-blue-500/25',
+  dropped: 'bg-gray-500/15 text-gray-500 border border-gray-500/20',
+  cancelled: 'bg-red-500/15 text-red-600 border border-red-500/25',
 };
+
+function ShimmerRow() {
+  return (
+    <tr>
+      {[...Array(4)].map((_, i) => (
+        <td key={i} className="px-5 py-4"><div className="skeleton h-4 w-24" /></td>
+      ))}
+    </tr>
+  );
+}
 
 export default function AdminDashboardPage() {
   const stats = trpc.admin.dashboardStats.useQuery();
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-      <p className="mt-1 text-sm text-gray-600">Studio overview at a glance</p>
+      <div className="mb-8">
+        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Dashboard</h1>
+        <p className="mt-1 text-sm text-gray-500">Studio overview at a glance</p>
+      </div>
 
       {/* Stat Cards */}
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {STAT_CARDS.map((card) => {
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {STAT_CARDS.map((card, i) => {
           const Icon = card.icon;
           const value = stats.data?.[card.key] ?? '—';
           return (
             <Link
               key={card.key}
               href={card.href}
-              className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 transition-shadow hover:shadow-md"
+              className={`glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br ${card.gradient} p-6 animate-fade-in-up stagger-${i + 1}`}
             >
-              <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${card.color}`}>
+              <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${card.iconBg}`}>
                 <Icon size={22} />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{value}</p>
+                {stats.isLoading ? (
+                  <div className="skeleton h-7 w-12 mb-1" />
+                ) : (
+                  <p className="text-2xl font-bold text-gray-900">{value}</p>
+                )}
                 <p className="text-sm text-gray-500">{card.label}</p>
               </div>
             </Link>
@@ -53,26 +69,28 @@ export default function AdminDashboardPage() {
       {/* Recent Enrollments */}
       <div className="mt-8">
         <h2 className="text-lg font-semibold text-gray-900">Recent Enrollments</h2>
-        <div className="mt-3 overflow-x-auto rounded-xl border border-gray-200 bg-white">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
+        <div className="mt-3 glass-card overflow-x-auto rounded-2xl">
+          <table className="min-w-full divide-y divide-gray-100">
+            <thead>
+              <tr className="bg-gray-50/60">
                 {['Child', 'Class', 'Status', 'Date'].map((h) => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+                  <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
                     {h}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-50">
               {stats.isLoading && (
-                <tr>
-                  <td colSpan={4} className="px-4 py-6 text-center text-sm text-gray-400">Loading...</td>
-                </tr>
+                <>
+                  <ShimmerRow />
+                  <ShimmerRow />
+                  <ShimmerRow />
+                </>
               )}
               {stats.data?.recentEnrollments.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-4 py-6 text-center text-sm text-gray-400">No enrollments yet</td>
+                  <td colSpan={4} className="px-5 py-10 text-center text-sm text-gray-400">No enrollments yet</td>
                 </tr>
               )}
               {stats.data?.recentEnrollments.map((e) => {
@@ -81,17 +99,17 @@ export default function AdminDashboardPage() {
                 const rawCls = e.classes as unknown;
                 const cls = (Array.isArray(rawCls) ? rawCls[0] : rawCls) as { name: string } | null;
                 return (
-                  <tr key={e.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                  <tr key={e.id} className="transition-colors hover:bg-indigo-50/40">
+                    <td className="px-5 py-3.5 text-sm font-medium text-gray-900">
                       {child ? `${child.first_name} ${child.last_name}` : '—'}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{cls?.name ?? '—'}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_COLORS[e.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                    <td className="px-5 py-3.5 text-sm text-gray-600">{cls?.name ?? '—'}</td>
+                    <td className="px-5 py-3.5">
+                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[e.status] ?? 'bg-gray-100 text-gray-600'}`}>
                         {e.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-500">
+                    <td className="px-5 py-3.5 text-sm text-gray-500">
                       {new Date(e.created_at).toLocaleDateString()}
                     </td>
                   </tr>

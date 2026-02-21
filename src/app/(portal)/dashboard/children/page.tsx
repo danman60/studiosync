@@ -5,12 +5,12 @@ import { trpc } from '@/lib/trpc';
 import { Modal } from '@/components/admin/Modal';
 import { Pencil } from 'lucide-react';
 
-const STATUS_COLORS: Record<string, string> = {
-  active: 'bg-green-100 text-green-700',
-  pending: 'bg-yellow-100 text-yellow-700',
-  waitlisted: 'bg-blue-100 text-blue-700',
-  dropped: 'bg-gray-100 text-gray-500',
-  cancelled: 'bg-red-100 text-red-600',
+const STATUS_BADGE: Record<string, string> = {
+  active: 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25',
+  pending: 'bg-amber-500/15 text-amber-600 border border-amber-500/25',
+  waitlisted: 'bg-blue-500/15 text-blue-600 border border-blue-500/25',
+  dropped: 'bg-gray-500/15 text-gray-500 border border-gray-500/20',
+  cancelled: 'bg-red-500/15 text-red-600 border border-red-500/25',
 };
 
 type EditForm = {
@@ -21,6 +21,16 @@ type EditForm = {
   gender: string;
   medical_notes: string;
 };
+
+function ShimmerCard() {
+  return (
+    <div className="glass-card rounded-2xl p-6">
+      <div className="skeleton h-6 w-40 mb-2" />
+      <div className="skeleton h-4 w-56 mb-4" />
+      <div className="skeleton h-20 w-full" />
+    </div>
+  );
+}
 
 export default function MyChildrenPage() {
   const [editTarget, setEditTarget] = useState<EditForm | null>(null);
@@ -48,26 +58,35 @@ export default function MyChildrenPage() {
     });
   }
 
+  const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
+
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900">My Children</h1>
-      <p className="mt-1 text-sm text-gray-600">Manage your children&apos;s profiles and view their enrollments.</p>
+      <div className="mb-8">
+        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">My Children</h1>
+        <p className="mt-1 text-sm text-gray-500">Manage your children&apos;s profiles and view their enrollments.</p>
+      </div>
 
-      {children.isLoading && <p className="mt-6 text-sm text-gray-400">Loading...</p>}
-
-      {children.data?.length === 0 && (
-        <p className="mt-6 text-sm text-gray-400">No children registered yet. Enroll in a class to get started.</p>
+      {children.isLoading && (
+        <div className="space-y-4">
+          <ShimmerCard />
+          <ShimmerCard />
+        </div>
       )}
 
-      <div className="mt-6 space-y-4">
-        {children.data?.map((child) => {
+      {children.data?.length === 0 && (
+        <p className="text-sm text-gray-400">No children registered yet. Enroll in a class to get started.</p>
+      )}
+
+      <div className="space-y-4">
+        {children.data?.map((child, i) => {
           const enrollments = (child.enrollments ?? []) as {
             id: string; status: string;
             classes: { name: string; class_types: { name: string; color: string } | null } | null;
           }[];
 
           return (
-            <div key={child.id} className="rounded-xl border border-gray-200 bg-white p-5">
+            <div key={child.id} className={`glass-card rounded-2xl p-6 animate-fade-in-up stagger-${Math.min(i + 1, 4)}`}>
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">
@@ -77,7 +96,7 @@ export default function MyChildrenPage() {
                     {child.date_of_birth && <span>DOB: {child.date_of_birth}</span>}
                     {child.gender && <span>{child.gender}</span>}
                     {!child.active && (
-                      <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-500">Inactive</span>
+                      <span className="rounded-full bg-gray-500/15 px-2 py-0.5 text-xs text-gray-500 border border-gray-500/20">Inactive</span>
                     )}
                   </div>
                 </div>
@@ -92,7 +111,7 @@ export default function MyChildrenPage() {
                       medical_notes: child.medical_notes ?? '',
                     })
                   }
-                  className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-indigo-600"
+                  className="flex h-10 w-10 items-center justify-center rounded-xl text-gray-400 transition-colors hover:bg-indigo-50 hover:text-indigo-600"
                   title="Edit"
                 >
                   <Pencil size={16} />
@@ -100,27 +119,27 @@ export default function MyChildrenPage() {
               </div>
 
               {child.medical_notes && (
-                <p className="mt-2 text-sm text-gray-600">
+                <p className="mt-3 text-sm text-gray-600">
                   <span className="font-medium">Medical notes:</span> {child.medical_notes}
                 </p>
               )}
 
               {enrollments.length > 0 && (
-                <div className="mt-3 border-t border-gray-100 pt-3">
-                  <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Enrollments</p>
-                  <div className="space-y-1.5">
+                <div className="mt-4 border-t border-gray-100 pt-4">
+                  <p className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-gray-400">Enrollments</p>
+                  <div className="space-y-2">
                     {enrollments.map((en) => (
-                      <div key={en.id} className="flex items-center gap-2 text-sm">
+                      <div key={en.id} className="flex items-center gap-2.5 text-sm">
                         {en.classes?.class_types && (
                           <span
-                            className="rounded-full px-2 py-0.5 text-xs font-medium text-white"
+                            className="rounded-full px-2.5 py-0.5 text-xs font-medium text-white"
                             style={{ backgroundColor: en.classes.class_types.color }}
                           >
                             {en.classes.class_types.name}
                           </span>
                         )}
                         <span className="text-gray-700">{en.classes?.name ?? '—'}</span>
-                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[en.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE[en.status] ?? 'bg-gray-100 text-gray-600'}`}>
                           {en.status}
                         </span>
                       </div>
@@ -142,13 +161,13 @@ export default function MyChildrenPage() {
                 <label className="block text-sm font-medium text-gray-700">First Name *</label>
                 <input type="text" required value={editTarget.first_name}
                   onChange={(e) => setEditTarget({ ...editTarget, first_name: e.target.value })}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                  className={inputClass} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Last Name *</label>
                 <input type="text" required value={editTarget.last_name}
                   onChange={(e) => setEditTarget({ ...editTarget, last_name: e.target.value })}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                  className={inputClass} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -156,13 +175,13 @@ export default function MyChildrenPage() {
                 <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
                 <input type="date" value={editTarget.date_of_birth}
                   onChange={(e) => setEditTarget({ ...editTarget, date_of_birth: e.target.value })}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900" />
+                  className={inputClass} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Gender</label>
                 <select value={editTarget.gender}
                   onChange={(e) => setEditTarget({ ...editTarget, gender: e.target.value })}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900">
+                  className={inputClass}>
                   <option value="">Not specified</option>
                   <option value="Female">Female</option>
                   <option value="Male">Male</option>
@@ -175,17 +194,17 @@ export default function MyChildrenPage() {
               <label className="block text-sm font-medium text-gray-700">Medical Notes</label>
               <textarea rows={3} value={editTarget.medical_notes}
                 onChange={(e) => setEditTarget({ ...editTarget, medical_notes: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
+                className={inputClass}
                 placeholder="Allergies, conditions, or other notes for instructors" />
             </div>
 
-            {updateMutation.error && <p className="text-sm text-red-600">{updateMutation.error.message}</p>}
+            {updateMutation.error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{updateMutation.error.message}</p>}
 
-            <div className="flex justify-end gap-3 border-t border-gray-200 pt-4">
+            <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
               <button type="button" onClick={() => setEditTarget(null)}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
+                className="h-11 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">Cancel</button>
               <button type="submit" disabled={updateMutation.isPending}
-                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50">
+                className="btn-gradient h-11 rounded-xl px-5 text-sm font-medium">
                 {updateMutation.isPending ? 'Saving...' : 'Save'}
               </button>
             </div>
