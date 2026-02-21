@@ -147,6 +147,43 @@ export const portalRouter = router({
     return data ?? [];
   }),
 
+  // ── Attendance ──────────────────────────────────────────
+
+  childAttendance: protectedProcedure.query(async ({ ctx }) => {
+    const supabase = createServiceClient();
+
+    const { data: family } = await supabase
+      .from('families')
+      .select('id')
+      .eq('studio_id', ctx.studioId)
+      .eq('auth_user_id', ctx.userId)
+      .single();
+
+    if (!family) return [];
+
+    // Get child IDs
+    const { data: children } = await supabase
+      .from('children')
+      .select('id')
+      .eq('family_id', family.id)
+      .eq('studio_id', ctx.studioId)
+      .eq('active', true);
+
+    const childIds = (children ?? []).map((c) => c.id);
+    if (childIds.length === 0) return [];
+
+    const { data, error } = await supabase
+      .from('attendance')
+      .select('*, children(first_name, last_name), class_sessions(session_date, classes(name))')
+      .eq('studio_id', ctx.studioId)
+      .in('child_id', childIds)
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (error) throw error;
+    return data ?? [];
+  }),
+
   // ── Payments ───────────────────────────────────────────
 
   listPayments: protectedProcedure.query(async ({ ctx }) => {

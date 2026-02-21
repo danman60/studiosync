@@ -80,14 +80,17 @@ export async function GET(request: NextRequest) {
         .is('auth_user_id', null);
     }
 
+    // Resolve role and set cookie for middleware route protection
+    const roleRedirect = data.user ? await resolveRoleRedirect(supabase, data.user.id, request) : null;
+    const roleName = roleRedirect === '/admin' ? 'admin' : roleRedirect === '/instructor' ? 'instructor' : 'parent';
+
     // Role-based redirect when no explicit next path was given
     const isDefaultNext = next === '/dashboard';
-    if (isDefaultNext && data.user) {
-      const redirect = await resolveRoleRedirect(supabase, data.user.id, request);
-      if (redirect) return NextResponse.redirect(`${origin}${redirect}`);
-    }
+    const finalUrl = isDefaultNext && roleRedirect ? roleRedirect : next;
 
-    return NextResponse.redirect(`${origin}${next}`);
+    const response = NextResponse.redirect(`${origin}${finalUrl}`);
+    response.cookies.set('user-role', roleName, { path: '/', maxAge: 60 * 60 * 24 * 30 }); // 30 days
+    return response;
   }
 
   // Fallback: PKCE code exchange flow

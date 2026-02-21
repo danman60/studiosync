@@ -35,6 +35,23 @@ export function middleware(request: NextRequest) {
       loginUrl.searchParams.set('next', pathname);
       return NextResponse.redirect(loginUrl);
     }
+
+    // Role-based route protection via cookie hint
+    // The `user-role` cookie is set by the auth callback after login.
+    // This prevents parents from accessing /admin or /instructor and vice versa.
+    // tRPC procedures are the authoritative enforcement layer — this is a UX guard.
+    const userRole = request.cookies.get('user-role')?.value;
+    if (userRole) {
+      if (pathname.startsWith('/admin') && !['owner', 'admin'].includes(userRole)) {
+        return NextResponse.redirect(new URL(userRole === 'instructor' ? '/instructor' : '/dashboard', request.url));
+      }
+      if (pathname.startsWith('/instructor') && !['owner', 'admin', 'instructor'].includes(userRole)) {
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+      }
+      if (pathname.startsWith('/dashboard') && ['owner', 'admin'].includes(userRole)) {
+        // Allow admins to view parent portal if they choose, don't redirect
+      }
+    }
   }
 
   const response = NextResponse.next({

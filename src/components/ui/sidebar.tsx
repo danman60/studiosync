@@ -55,6 +55,9 @@ const instructorNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/instructor', icon: <Home size={20} />, section: 'instructor' },
   { label: 'My Classes', href: '/instructor/classes', icon: <BookOpen size={20} />, section: 'instructor' },
   { label: 'Attendance', href: '/instructor/attendance', icon: <CheckSquare size={20} />, section: 'instructor' },
+  { label: 'Progress', href: '/instructor/progress', icon: <Award size={20} />, section: 'instructor' },
+  { label: 'Calendar', href: '/instructor/calendar', icon: <Calendar size={20} />, section: 'instructor' },
+  { label: 'Announcements', href: '/instructor/announcements', icon: <Megaphone size={20} />, section: 'instructor' },
 ];
 
 const portalNavItems: NavItem[] = [
@@ -63,6 +66,7 @@ const portalNavItems: NavItem[] = [
   { label: 'My Students', href: '/dashboard/children', icon: <Users size={20} />, section: 'portal' },
   { label: 'Invoices', href: '/dashboard/invoices', icon: <FileText size={20} />, section: 'portal' },
   { label: 'Payments', href: '/dashboard/payments', icon: <CreditCard size={20} />, section: 'portal' },
+  { label: 'Attendance', href: '/dashboard/attendance', icon: <CheckSquare size={20} />, section: 'portal' },
   { label: 'Progress', href: '/dashboard/progress', icon: <Award size={20} />, section: 'portal' },
   { label: 'Media', href: '/dashboard/media', icon: <ImageIcon size={20} />, section: 'portal' },
   { label: 'Events', href: '/dashboard/events', icon: <Ticket size={20} />, section: 'portal' },
