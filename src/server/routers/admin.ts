@@ -25,6 +25,36 @@ const classInput = z.object({
 });
 
 export const adminRouter = router({
+  // ── Dashboard ──────────────────────────────────────────
+
+  dashboardStats: adminProcedure.query(async ({ ctx }) => {
+    const supabase = createServiceClient();
+    const sid = ctx.studioId;
+
+    const [classesRes, enrollmentsRes, familiesRes, staffRes] = await Promise.all([
+      supabase.from('classes').select('id', { count: 'exact', head: true }).eq('studio_id', sid),
+      supabase.from('enrollments').select('id', { count: 'exact', head: true }).eq('studio_id', sid).in('status', ['active', 'pending']),
+      supabase.from('families').select('id', { count: 'exact', head: true }).eq('studio_id', sid),
+      supabase.from('staff').select('id', { count: 'exact', head: true }).eq('studio_id', sid).eq('active', true),
+    ]);
+
+    // Recent enrollments
+    const { data: recentEnrollments } = await supabase
+      .from('enrollments')
+      .select('id, status, created_at, children(first_name, last_name), classes(name)')
+      .eq('studio_id', sid)
+      .order('created_at', { ascending: false })
+      .limit(5);
+
+    return {
+      totalClasses: classesRes.count ?? 0,
+      activeEnrollments: enrollmentsRes.count ?? 0,
+      totalFamilies: familiesRes.count ?? 0,
+      activeStaff: staffRes.count ?? 0,
+      recentEnrollments: recentEnrollments ?? [],
+    };
+  }),
+
   // ── Classes ────────────────────────────────────────────
 
   listClasses: adminProcedure.query(async ({ ctx }) => {
@@ -96,7 +126,6 @@ export const adminRouter = router({
     .mutation(async ({ ctx, input }) => {
       const supabase = createServiceClient();
 
-      // Check for active enrollments
       const { count } = await supabase
         .from('enrollments')
         .select('id', { count: 'exact', head: true })
@@ -147,7 +176,6 @@ export const adminRouter = router({
     .mutation(async ({ ctx, input }) => {
       const supabase = createServiceClient();
 
-      // Check duplicate email in this studio
       const { data: existing } = await supabase
         .from('staff')
         .select('id')
@@ -162,12 +190,11 @@ export const adminRouter = router({
         });
       }
 
-      // Create a placeholder auth user id — will be linked on first login
       const { data, error } = await supabase
         .from('staff')
         .insert({
           studio_id: ctx.studioId,
-          auth_user_id: '00000000-0000-0000-0000-000000000000', // placeholder until magic link
+          auth_user_id: '00000000-0000-0000-0000-000000000000',
           display_name: input.display_name,
           email: input.email,
           role: input.role,
@@ -193,7 +220,6 @@ export const adminRouter = router({
       const { id, ...updates } = input;
       const supabase = createServiceClient();
 
-      // Prevent editing owner role
       const { data: target } = await supabase
         .from('staff')
         .select('role')
@@ -257,7 +283,7 @@ export const adminRouter = router({
       return data;
     }),
 
-  // ── Supporting Lookups ─────────────────────────────────
+  // ── Seasons ────────────────────────────────────────────
 
   getSeasons: adminProcedure.query(async ({ ctx }) => {
     const supabase = createServiceClient();
@@ -270,6 +296,227 @@ export const adminRouter = router({
     if (error) throw error;
     return data ?? [];
   }),
+
+  createSeason: adminProcedure
+    .input(
+      z.object({
+        name: z.string().min(1).max(200),
+        start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        registration_opens_at: z.string().nullable().optional(),
+        registration_closes_at: z.string().nullable().optional(),
+        is_current: z.boolean().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+
+      // If setting as current, unset others
+      if (input.is_current) {
+        await supabase
+          .from('seasons')
+          .update({ is_current: false })
+          .eq('studio_id', ctx.studioId)
+          .eq('is_current', true);
+      }
+
+      const { data, error } = await supabase
+        .from('seasons')
+        .insert({
+          studio_id: ctx.studioId,
+          name: input.name,
+          start_date: input.start_date,
+          end_date: input.end_date,
+          registration_opens_at: input.registration_opens_at ?? null,
+          registration_closes_at: input.registration_closes_at ?? null,
+          is_current: input.is_current ?? false,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    }),
+
+  updateSeason: adminProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        name: z.string().min(1).max(200).optional(),
+        start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+        end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+        registration_opens_at: z.string().nullable().optional(),
+        registration_closes_at: z.string().nullable().optional(),
+        is_current: z.boolean().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, ...updates } = input;
+      const supabase = createServiceClient();
+
+      if (updates.is_current) {
+        await supabase
+          .from('seasons')
+          .update({ is_current: false })
+          .eq('studio_id', ctx.studioId)
+          .eq('is_current', true);
+      }
+
+      const { data, error } = await supabase
+        .from('seasons')
+        .update(updates)
+        .eq('id', id)
+        .eq('studio_id', ctx.studioId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    }),
+
+  deleteSeason: adminProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+
+      const { count } = await supabase
+        .from('classes')
+        .select('id', { count: 'exact', head: true })
+        .eq('season_id', input.id)
+        .eq('studio_id', ctx.studioId);
+
+      if (count && count > 0) {
+        throw new TRPCError({
+          code: 'PRECONDITION_FAILED',
+          message: `Cannot delete season with ${count} class(es). Remove or reassign them first.`,
+        });
+      }
+
+      const { error } = await supabase
+        .from('seasons')
+        .delete()
+        .eq('id', input.id)
+        .eq('studio_id', ctx.studioId);
+
+      if (error) throw error;
+      return { success: true };
+    }),
+
+  // ── Enrollments ────────────────────────────────────────
+
+  listEnrollments: adminProcedure
+    .input(
+      z.object({
+        classId: z.string().uuid().optional(),
+        status: z.enum(['pending', 'active', 'waitlisted', 'dropped', 'cancelled']).optional(),
+      }).optional()
+    )
+    .query(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+      let query = supabase
+        .from('enrollments')
+        .select('*, children(first_name, last_name), classes(name, class_types(name, color)), families(parent_first_name, parent_last_name, email)')
+        .eq('studio_id', ctx.studioId);
+
+      if (input?.classId) query = query.eq('class_id', input.classId);
+      if (input?.status) query = query.eq('status', input.status);
+
+      const { data, error } = await query
+        .order('created_at', { ascending: false })
+        .limit(200);
+
+      if (error) throw error;
+      return data ?? [];
+    }),
+
+  updateEnrollmentStatus: adminProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        status: z.enum(['active', 'dropped', 'cancelled']),
+        drop_reason: z.string().max(500).optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+
+      const updateData: Record<string, unknown> = { status: input.status };
+      if (input.status === 'dropped') {
+        updateData.dropped_at = new Date().toISOString();
+        updateData.drop_reason = input.drop_reason ?? null;
+      }
+
+      const { data, error } = await supabase
+        .from('enrollments')
+        .update(updateData)
+        .eq('id', input.id)
+        .eq('studio_id', ctx.studioId)
+        .select('*, children(first_name, last_name), classes(name)')
+        .single();
+
+      if (error) throw error;
+      return data;
+    }),
+
+  // ── Families ───────────────────────────────────────────
+
+  listFamilies: adminProcedure.query(async ({ ctx }) => {
+    const supabase = createServiceClient();
+    const { data, error } = await supabase
+      .from('families')
+      .select('*, children(id, first_name, last_name, active)')
+      .eq('studio_id', ctx.studioId)
+      .order('parent_last_name')
+      .order('parent_first_name');
+
+    if (error) throw error;
+    return data ?? [];
+  }),
+
+  getFamily: adminProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+      const { data, error } = await supabase
+        .from('families')
+        .select('*, children(*, enrollments(*, classes(name, class_types(name, color))))')
+        .eq('id', input.id)
+        .eq('studio_id', ctx.studioId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    }),
+
+  updateFamily: adminProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        parent_first_name: z.string().min(1).max(100).optional(),
+        parent_last_name: z.string().min(1).max(100).optional(),
+        email: z.string().email().optional(),
+        phone: z.string().max(30).nullable().optional(),
+        emergency_contact_name: z.string().max(200).nullable().optional(),
+        emergency_contact_phone: z.string().max(30).nullable().optional(),
+        notes: z.string().max(2000).nullable().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, ...updates } = input;
+      const supabase = createServiceClient();
+      const { data, error } = await supabase
+        .from('families')
+        .update(updates)
+        .eq('id', id)
+        .eq('studio_id', ctx.studioId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    }),
+
+  // ── Supporting Lookups ─────────────────────────────────
 
   getClassTypes: adminProcedure.query(async ({ ctx }) => {
     const supabase = createServiceClient();
