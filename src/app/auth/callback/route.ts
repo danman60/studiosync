@@ -1,5 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { createServiceClient } from '@/lib/supabase-server';
+
+async function resolveRoleRedirect(
+  supabase: SupabaseClient,
+  userId: string,
+  request: NextRequest
+): Promise<string | null> {
+  const hostname = request.headers.get('host') ?? '';
+  const parts = hostname.split('.');
+  let slug: string | null = null;
+  if (parts.length >= 2) {
+    const candidate = parts[0];
+    if (!['www', 'app', 'api', 'studiosync', 'localhost'].includes(candidate!)) {
+      slug = candidate!;
+    }
+  }
+  if (!slug) return null;
+
+  const { data: studio } = await supabase
+    .from('studios')
+    .select('id')
+    .eq('slug', slug)
+    .single();
+  if (!studio) return null;
+
+  const { data: staff } = await supabase
+    .from('staff')
+    .select('role')
+    .eq('studio_id', studio.id)
+    .eq('auth_user_id', userId)
+    .eq('active', true)
+    .single();
+
+  if (staff?.role === 'owner' || staff?.role === 'admin') return '/admin';
+  if (staff?.role === 'instructor') return '/instructor';
+  return '/dashboard'; // family/parent default
+}
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
@@ -41,6 +78,13 @@ export async function GET(request: NextRequest) {
         .update({ auth_user_id: data.user.id })
         .eq('id', familyId)
         .is('auth_user_id', null);
+    }
+
+    // Role-based redirect when no explicit next path was given
+    const isDefaultNext = next === '/dashboard';
+    if (isDefaultNext && data.user) {
+      const redirect = await resolveRoleRedirect(supabase, data.user.id, request);
+      if (redirect) return NextResponse.redirect(`${origin}${redirect}`);
     }
 
     return NextResponse.redirect(`${origin}${next}`);

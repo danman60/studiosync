@@ -297,6 +297,47 @@ export interface Database {
         };
         Update: Partial<Database['studiosync']['Tables']['payments']['Insert']>;
       };
+      class_sessions: {
+        Row: {
+          id: string;
+          studio_id: string;
+          class_id: string;
+          session_date: string;
+          start_time: string;
+          end_time: string;
+          status: 'scheduled' | 'completed' | 'cancelled';
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['class_sessions']['Row'], 'id' | 'created_at' | 'updated_at' | 'status'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          status?: 'scheduled' | 'completed' | 'cancelled';
+        };
+        Update: Partial<Database['studiosync']['Tables']['class_sessions']['Insert']>;
+      };
+      attendance: {
+        Row: {
+          id: string;
+          studio_id: string;
+          class_session_id: string;
+          child_id: string;
+          status: 'present' | 'absent' | 'late' | 'excused';
+          marked_by: string | null;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['attendance']['Row'], 'id' | 'created_at' | 'updated_at' | 'status'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          status?: 'present' | 'absent' | 'late' | 'excused';
+        };
+        Update: Partial<Database['studiosync']['Tables']['attendance']['Insert']>;
+      };
     };
   };
 }
@@ -318,3 +359,7 @@ export type StaffRole = Staff['role'];
 export type EnrollmentStatus = Enrollment['status'];
 export type PaymentType = Payment['type'];
 export type PaymentStatus = Payment['status'];
+export type ClassSession = Database['studiosync']['Tables']['class_sessions']['Row'];
+export type Attendance = Database['studiosync']['Tables']['attendance']['Row'];
+export type ClassSessionStatus = ClassSession['status'];
+export type AttendanceStatus = Attendance['status'];

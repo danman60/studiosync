@@ -8,6 +8,7 @@ export interface TRPCContext {
   studioSlug: string | null;
   userId: string | null;
   userRole: StaffRole | null;
+  staffId: string | null;
   familyId: string | null;
 }
 
@@ -30,7 +31,7 @@ export async function createContext(opts: {
   }
 
   if (!authHeader) {
-    return { studioId, studioSlug, userId: null, userRole: null, familyId: null };
+    return { studioId, studioSlug, userId: null, userRole: null, staffId: null, familyId: null };
   }
 
   const token = authHeader.replace('Bearer ', '');
@@ -40,16 +41,17 @@ export async function createContext(opts: {
   } = await supabase.auth.getUser(token);
 
   if (error || !user) {
-    return { studioId, studioSlug, userId: null, userRole: null, familyId: null };
+    return { studioId, studioSlug, userId: null, userRole: null, staffId: null, familyId: null };
   }
 
   let userRole: StaffRole | null = null;
+  let staffId: string | null = null;
   let familyId: string | null = null;
 
   if (studioId) {
     const { data: staff } = await supabase
       .from('staff')
-      .select('role')
+      .select('id, role')
       .eq('studio_id', studioId)
       .eq('auth_user_id', user.id)
       .eq('active', true)
@@ -63,6 +65,7 @@ export async function createContext(opts: {
       .single();
 
     userRole = (staff?.role as StaffRole) ?? null;
+    staffId = staff?.id ?? null;
     familyId = family?.id ?? null;
   }
 
@@ -71,6 +74,7 @@ export async function createContext(opts: {
     studioSlug,
     userId: user.id,
     userRole,
+    staffId,
     familyId,
   };
 }
@@ -127,7 +131,29 @@ const requireOwner = t.middleware(({ ctx, next }) => {
   });
 });
 
+const requireInstructor = t.middleware(({ ctx, next }) => {
+  if (!ctx.userId || !ctx.studioId) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+  if (!ctx.userRole || !['owner', 'admin', 'instructor'].includes(ctx.userRole)) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'Instructor access required' });
+  }
+  if (!ctx.staffId) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'Staff record not found' });
+  }
+  return next({
+    ctx: {
+      ...ctx,
+      userId: ctx.userId,
+      studioId: ctx.studioId,
+      userRole: ctx.userRole,
+      staffId: ctx.staffId,
+    },
+  });
+});
+
 export const studioProcedure = publicProcedure.use(requireStudio);
 export const protectedProcedure = publicProcedure.use(requireAuth);
+export const instructorProcedure = publicProcedure.use(requireInstructor);
 export const adminProcedure = publicProcedure.use(requireAdmin);
 export const ownerProcedure = publicProcedure.use(requireOwner);

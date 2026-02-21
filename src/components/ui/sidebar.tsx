@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import {
   BookOpen,
   Calendar,
+  CheckSquare,
   ChevronLeft,
   ChevronRight,
   CreditCard,
@@ -24,7 +25,7 @@ interface NavItem {
   label: string;
   href: string;
   icon: React.ReactNode;
-  section?: 'main' | 'admin' | 'portal';
+  section?: 'main' | 'admin' | 'portal' | 'instructor';
 }
 
 const adminNavItems: NavItem[] = [
@@ -38,6 +39,12 @@ const adminNavItems: NavItem[] = [
   { label: 'Settings', href: '/admin/settings', icon: <Settings size={20} />, section: 'admin' },
 ];
 
+const instructorNavItems: NavItem[] = [
+  { label: 'Dashboard', href: '/instructor', icon: <Home size={20} />, section: 'instructor' },
+  { label: 'My Classes', href: '/instructor/classes', icon: <BookOpen size={20} />, section: 'instructor' },
+  { label: 'Attendance', href: '/instructor/attendance', icon: <CheckSquare size={20} />, section: 'instructor' },
+];
+
 const portalNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', icon: <Home size={20} />, section: 'portal' },
   { label: 'Classes', href: '/classes', icon: <BookOpen size={20} />, section: 'portal' },
@@ -49,13 +56,17 @@ export function Sidebar({
   variant = 'admin',
   studioName,
 }: {
-  variant?: 'admin' | 'portal';
+  variant?: 'admin' | 'portal' | 'instructor';
   studioName?: string;
 }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const items = variant === 'admin' ? adminNavItems : portalNavItems;
+  const items = variant === 'admin'
+    ? adminNavItems
+    : variant === 'instructor'
+      ? instructorNavItems
+      : portalNavItems;
 
   return (
     <>
@@ -127,6 +138,7 @@ export function Sidebar({
                 pathname === item.href ||
                 (item.href !== '/admin' &&
                   item.href !== '/dashboard' &&
+                  item.href !== '/instructor' &&
                   pathname.startsWith(item.href));
 
               return (

@@ -20,6 +20,23 @@ export function middleware(request: NextRequest) {
     requestHeaders.set('x-studio-slug', slug);
   }
 
+  // Protect authenticated routes — redirect to login if no auth cookie
+  const { pathname } = request.nextUrl;
+  const protectedPaths = ['/instructor', '/admin', '/dashboard'];
+  const isProtected = protectedPaths.some((p) => pathname.startsWith(p));
+
+  if (isProtected) {
+    // Check for Supabase auth cookie (sb-*-auth-token)
+    const hasAuthCookie = Array.from(request.cookies.getAll()).some(
+      (c) => c.name.includes('-auth-token') || c.name.includes('sb-')
+    );
+    if (!hasAuthCookie) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('next', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
   const response = NextResponse.next({
     request: { headers: requestHeaders },
   });
