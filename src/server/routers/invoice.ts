@@ -3,6 +3,7 @@ import { TRPCError } from '@trpc/server';
 import { adminProcedure, protectedProcedure, router } from '../trpc';
 import { createServiceClient } from '@/lib/supabase-server';
 import { getStripe } from '@/lib/stripe';
+import { sendNotification } from '@/lib/notifications';
 import type Stripe from 'stripe';
 
 export const invoiceRouter = router({
@@ -156,7 +157,7 @@ export const invoiceRouter = router({
 
       const { data: invoice } = await supabase
         .from('invoices')
-        .select('id, status, total')
+        .select('id, status, total, family_id, invoice_number, families(email, parent_first_name)')
         .eq('id', input.id)
         .eq('studio_id', ctx.studioId)
         .single();
@@ -178,6 +179,20 @@ export const invoiceRouter = router({
         .single();
 
       if (error) throw error;
+
+      // Fire notification (non-blocking)
+      const family = invoice.families as unknown as { email: string; parent_first_name: string } | null;
+      if (family?.email) {
+        sendNotification({
+          studioId: ctx.studioId,
+          familyId: invoice.family_id,
+          type: 'invoice_sent',
+          subject: `Invoice #${invoice.invoice_number} Ready`,
+          body: `Hi ${family.parent_first_name}, your invoice #${invoice.invoice_number} for $${(invoice.total / 100).toFixed(2)} is ready for payment.`,
+          recipientEmail: family.email,
+        });
+      }
+
       return data;
     }),
 

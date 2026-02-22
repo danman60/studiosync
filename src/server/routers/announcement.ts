@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { adminProcedure, protectedProcedure, instructorProcedure, router } from '../trpc';
 import { createServiceClient } from '@/lib/supabase-server';
+import { sendNotification } from '@/lib/notifications';
 
 export const announcementRouter = router({
   // ═══════════════════════════════════════════════════════
@@ -93,6 +94,42 @@ export const announcementRouter = router({
         .single();
 
       if (error) throw error;
+
+      // Notify families based on targeting (non-blocking)
+      if (data) {
+        let familyQuery = supabase
+          .from('families')
+          .select('id, email, parent_first_name')
+          .eq('studio_id', ctx.studioId);
+
+        // For class-targeted announcements, only notify enrolled families
+        if (data.target_type === 'class' && data.target_id) {
+          const { data: enrollments } = await supabase
+            .from('enrollments')
+            .select('family_id')
+            .eq('class_id', data.target_id)
+            .eq('studio_id', ctx.studioId)
+            .in('status', ['active', 'pending']);
+
+          const familyIds = [...new Set(enrollments?.map(e => e.family_id) ?? [])];
+          if (familyIds.length > 0) {
+            familyQuery = familyQuery.in('id', familyIds);
+          }
+        }
+
+        const { data: families } = await familyQuery;
+        for (const fam of families ?? []) {
+          sendNotification({
+            studioId: ctx.studioId,
+            familyId: fam.id,
+            type: 'announcement',
+            subject: `New Announcement: ${data.title}`,
+            body: data.body.substring(0, 200),
+            recipientEmail: fam.email,
+          });
+        }
+      }
+
       return data;
     }),
 

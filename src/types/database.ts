@@ -627,6 +627,67 @@ export interface Database {
         };
         Update: Partial<Database['studiosync']['Tables']['discount_applications']['Insert']>;
       };
+      notification_preferences: {
+        Row: {
+          id: string;
+          studio_id: string;
+          family_id: string;
+          email_enabled: boolean;
+          sms_enabled: boolean;
+          push_enabled: boolean;
+          invoice_notifications: boolean;
+          enrollment_notifications: boolean;
+          message_notifications: boolean;
+          announcement_notifications: boolean;
+          event_notifications: boolean;
+          attendance_notifications: boolean;
+          progress_notifications: boolean;
+          phone_number: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['notification_preferences']['Row'], 'id' | 'created_at' | 'updated_at' | 'email_enabled' | 'sms_enabled' | 'push_enabled' | 'invoice_notifications' | 'enrollment_notifications' | 'message_notifications' | 'announcement_notifications' | 'event_notifications' | 'attendance_notifications' | 'progress_notifications'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          email_enabled?: boolean;
+          sms_enabled?: boolean;
+          push_enabled?: boolean;
+          invoice_notifications?: boolean;
+          enrollment_notifications?: boolean;
+          message_notifications?: boolean;
+          announcement_notifications?: boolean;
+          event_notifications?: boolean;
+          attendance_notifications?: boolean;
+          progress_notifications?: boolean;
+        };
+        Update: Partial<Database['studiosync']['Tables']['notification_preferences']['Insert']>;
+      };
+      notification_log: {
+        Row: {
+          id: string;
+          studio_id: string;
+          family_id: string | null;
+          staff_id: string | null;
+          type: string;
+          channel: string;
+          subject: string | null;
+          body: string | null;
+          recipient_email: string | null;
+          recipient_phone: string | null;
+          status: string;
+          error_message: string | null;
+          metadata: Json;
+          sent_at: string | null;
+          created_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['notification_log']['Row'], 'id' | 'created_at' | 'status'> & {
+          id?: string;
+          created_at?: string;
+          status?: string;
+        };
+        Update: Partial<Database['studiosync']['Tables']['notification_log']['Insert']>;
+      };
       messages: {
         Row: {
           id: string;
@@ -689,3 +750,5 @@ export type Waiver = Database['studiosync']['Tables']['waivers']['Row'];
 export type WaiverSignature = Database['studiosync']['Tables']['waiver_signatures']['Row'];
 export type PromoCode = Database['studiosync']['Tables']['promo_codes']['Row'];
 export type DiscountApplication = Database['studiosync']['Tables']['discount_applications']['Row'];
+export type NotificationPreferences = Database['studiosync']['Tables']['notification_preferences']['Row'];
+export type NotificationLog = Database['studiosync']['Tables']['notification_log']['Row'];

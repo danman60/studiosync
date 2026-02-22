@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { adminProcedure, protectedProcedure, router } from '../trpc';
 import { createServiceClient } from '@/lib/supabase-server';
+import { sendNotification } from '@/lib/notifications';
 
 export const messagingRouter = router({
   // ── Admin: List conversations (families with messages) ──
@@ -91,6 +92,25 @@ export const messagingRouter = router({
         .single();
 
       if (error) throw error;
+
+      // Fire notification (non-blocking)
+      const { data: family } = await supabase
+        .from('families')
+        .select('email, parent_first_name')
+        .eq('id', input.familyId)
+        .single();
+
+      if (family?.email) {
+        sendNotification({
+          studioId: ctx.studioId,
+          familyId: input.familyId,
+          type: 'message_received',
+          subject: 'New Message from Your Studio',
+          body: `Hi ${family.parent_first_name}, you have a new message. Log in to view it.`,
+          recipientEmail: family.email,
+        });
+      }
+
       return data;
     }),
 

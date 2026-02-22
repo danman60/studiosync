@@ -13,6 +13,7 @@ import { messagingRouter } from './messaging';
 import { tuitionRouter } from './tuition';
 import { waiverRouter } from './waiver';
 import { promoRouter } from './promo';
+import { notificationRouter } from './notification';
 
 export const appRouter = router({
   catalog: catalogRouter,
@@ -29,6 +30,7 @@ export const appRouter = router({
   tuition: tuitionRouter,
   waiver: waiverRouter,
   promo: promoRouter,
+  notification: notificationRouter,
 });
 
 export type AppRouter = typeof appRouter;
