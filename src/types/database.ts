@@ -368,10 +368,12 @@ export interface Database {
           paid_at: string | null;
           late_fee_amount: number;
           late_fee_applied_at: string | null;
+          discount_amount: number;
+          promo_code_id: string | null;
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database['studiosync']['Tables']['invoices']['Row'], 'id' | 'created_at' | 'updated_at' | 'status' | 'subtotal' | 'tax_amount' | 'total' | 'amount_paid' | 'tax_rate' | 'late_fee_amount'> & {
+        Insert: Omit<Database['studiosync']['Tables']['invoices']['Row'], 'id' | 'created_at' | 'updated_at' | 'status' | 'subtotal' | 'tax_amount' | 'total' | 'amount_paid' | 'tax_rate' | 'late_fee_amount' | 'discount_amount'> & {
           id?: string;
           created_at?: string;
           updated_at?: string;
@@ -579,6 +581,52 @@ export interface Database {
         };
         Update: Partial<Database['studiosync']['Tables']['waiver_signatures']['Insert']>;
       };
+      promo_codes: {
+        Row: {
+          id: string;
+          studio_id: string;
+          code: string;
+          description: string | null;
+          discount_type: 'flat' | 'percent';
+          discount_value: number;
+          max_uses: number | null;
+          current_uses: number;
+          min_purchase: number;
+          starts_at: string | null;
+          expires_at: string | null;
+          applies_to: 'all' | 'registration' | 'invoice' | 'tuition';
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['promo_codes']['Row'], 'id' | 'created_at' | 'updated_at' | 'current_uses' | 'is_active' | 'discount_type' | 'min_purchase'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          current_uses?: number;
+          is_active?: boolean;
+          discount_type?: 'flat' | 'percent';
+          min_purchase?: number;
+        };
+        Update: Partial<Database['studiosync']['Tables']['promo_codes']['Insert']>;
+      };
+      discount_applications: {
+        Row: {
+          id: string;
+          studio_id: string;
+          promo_code_id: string;
+          family_id: string | null;
+          invoice_id: string | null;
+          enrollment_id: string | null;
+          discount_amount: number;
+          applied_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['discount_applications']['Row'], 'id' | 'applied_at'> & {
+          id?: string;
+          applied_at?: string;
+        };
+        Update: Partial<Database['studiosync']['Tables']['discount_applications']['Insert']>;
+      };
       messages: {
         Row: {
           id: string;
@@ -639,3 +687,5 @@ export type AnnouncementTargetType = Announcement['target_type'];
 export type Message = Database['studiosync']['Tables']['messages']['Row'];
 export type Waiver = Database['studiosync']['Tables']['waivers']['Row'];
 export type WaiverSignature = Database['studiosync']['Tables']['waiver_signatures']['Row'];
+export type PromoCode = Database['studiosync']['Tables']['promo_codes']['Row'];
+export type DiscountApplication = Database['studiosync']['Tables']['discount_applications']['Row'];

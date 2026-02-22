@@ -243,6 +243,100 @@ export const invoiceRouter = router({
       return data;
     }),
 
+  applyDiscount: adminProcedure
+    .input(z.object({
+      invoice_id: z.string().uuid(),
+      promo_code_id: z.string().uuid(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+
+      // Get invoice
+      const { data: invoice } = await supabase
+        .from('invoices')
+        .select('id, status, subtotal, total, family_id, discount_amount, promo_code_id')
+        .eq('id', input.invoice_id)
+        .eq('studio_id', ctx.studioId)
+        .single();
+
+      if (!invoice) throw new TRPCError({ code: 'NOT_FOUND', message: 'Invoice not found' });
+      if (!['draft', 'sent'].includes(invoice.status)) {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'Cannot apply discount to this invoice' });
+      }
+      if (invoice.promo_code_id) {
+        throw new TRPCError({ code: 'CONFLICT', message: 'Invoice already has a discount applied' });
+      }
+
+      // Get promo code
+      const { data: promo } = await supabase
+        .from('promo_codes')
+        .select('*')
+        .eq('id', input.promo_code_id)
+        .eq('studio_id', ctx.studioId)
+        .eq('is_active', true)
+        .single();
+
+      if (!promo) throw new TRPCError({ code: 'NOT_FOUND', message: 'Promo code not found' });
+      if (promo.applies_to !== 'all' && promo.applies_to !== 'invoice') {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'This code cannot be applied to invoices' });
+      }
+      if (promo.max_uses && promo.current_uses >= promo.max_uses) {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'Code has reached its usage limit' });
+      }
+
+      // Calculate discount
+      let discountAmount = 0;
+      if (promo.discount_type === 'percent') {
+        discountAmount = Math.round(invoice.subtotal * (promo.discount_value / 10000));
+      } else {
+        discountAmount = Math.min(promo.discount_value, invoice.subtotal);
+      }
+
+      if (discountAmount <= 0) {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'Discount amount is zero' });
+      }
+
+      // Add negative line item
+      await supabase.from('invoice_line_items').insert({
+        invoice_id: invoice.id,
+        studio_id: ctx.studioId,
+        description: `Discount (${promo.code})`,
+        quantity: 1,
+        unit_price: -discountAmount,
+        total: -discountAmount,
+      });
+
+      // Update invoice totals
+      const newTotal = Math.max(0, invoice.total - discountAmount);
+      await supabase
+        .from('invoices')
+        .update({
+          discount_amount: discountAmount,
+          promo_code_id: promo.id,
+          total: newTotal,
+        })
+        .eq('id', invoice.id)
+        .eq('studio_id', ctx.studioId);
+
+      // Record application
+      await supabase.from('discount_applications').insert({
+        studio_id: ctx.studioId,
+        promo_code_id: promo.id,
+        family_id: invoice.family_id,
+        invoice_id: invoice.id,
+        discount_amount: discountAmount,
+      });
+
+      // Increment usage
+      await supabase
+        .from('promo_codes')
+        .update({ current_uses: promo.current_uses + 1 })
+        .eq('id', promo.id)
+        .eq('studio_id', ctx.studioId);
+
+      return { discountAmount, newTotal };
+    }),
+
   // ── Stats ──────────────────────────────────────────────
 
   stats: adminProcedure.query(async ({ ctx }) => {

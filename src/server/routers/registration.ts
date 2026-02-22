@@ -77,6 +77,7 @@ export const registrationRouter = router({
           waiverVersion: z.number().int(),
           parentName: z.string().min(1),
         })).optional(),
+        promoCodeId: z.string().uuid().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -221,7 +222,37 @@ export const registrationRouter = router({
         await supabase.from('waiver_signatures').insert(sigRows);
       }
 
-      // 7. Send magic link for account verification
+      // 7. Record promo code usage if provided
+      if (input.promoCodeId) {
+        // Validate the code is still valid
+        const { data: promo } = await supabase
+          .from('promo_codes')
+          .select('id, discount_type, discount_value, current_uses, max_uses, is_active')
+          .eq('id', input.promoCodeId)
+          .eq('studio_id', ctx.studioId)
+          .eq('is_active', true)
+          .maybeSingle();
+
+        if (promo && (!promo.max_uses || promo.current_uses < promo.max_uses)) {
+          // Record the application
+          await supabase.from('discount_applications').insert({
+            studio_id: ctx.studioId,
+            promo_code_id: promo.id,
+            family_id: familyId,
+            enrollment_id: result.enrollment_id,
+            discount_amount: promo.discount_value,
+          });
+
+          // Increment usage count
+          await supabase
+            .from('promo_codes')
+            .update({ current_uses: promo.current_uses + 1 })
+            .eq('id', promo.id)
+            .eq('studio_id', ctx.studioId);
+        }
+      }
+
+      // 8. Send magic link for account verification
       try {
         const { error: linkError } = await supabase.auth.admin.generateLink({
           type: 'magiclink',

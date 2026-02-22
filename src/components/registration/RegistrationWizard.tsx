@@ -8,7 +8,7 @@ import { trpc } from '@/lib/trpc';
 import { DAYS_OF_WEEK, formatTime } from '@/lib/utils';
 import { ChildInfoStep } from './ChildInfoStep';
 import { ParentInfoStep } from './ParentInfoStep';
-import { ReviewStep } from './ReviewStep';
+import { ReviewStep, type PromoCodeResult } from './ReviewStep';
 import { ConfirmationStep } from './ConfirmationStep';
 import { WaiverStep } from './WaiverStep';
 
@@ -52,6 +52,7 @@ export function RegistrationWizard({ classId }: Props) {
   const [step, setStep] = useState(0);
   const [existingFamilyId, setExistingFamilyId] = useState<string | null>(null);
   const [waiverSignatures, setWaiverSignatures] = useState<WaiverSignatureData[]>([]);
+  const [appliedPromo, setAppliedPromo] = useState<PromoCodeResult | null>(null);
   const [result, setResult] = useState<{
     status: 'pending' | 'waitlisted';
     waitlistPosition: number | null;
@@ -180,6 +181,7 @@ export function RegistrationWizard({ classId }: Props) {
         },
         existingFamilyId: existingFamilyId ?? undefined,
         waiverSignatures: signedWaivers,
+        promoCodeId: appliedPromo?.promoCodeId,
       });
 
       setResult({
@@ -350,6 +352,8 @@ export function RegistrationWizard({ classId }: Props) {
               isSubmitting={!hasWaivers && submitMutation.isPending}
               onSubmit={hasWaivers ? handleNext : handleSubmit}
               submitLabel={hasWaivers ? 'Continue to Waivers' : undefined}
+              appliedPromo={appliedPromo}
+              onApplyPromo={setAppliedPromo}
             />
           )}
 
