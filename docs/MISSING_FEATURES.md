@@ -31,27 +31,29 @@ Updated: 2026-02-21
 
 | # | Feature | Status | Commit |
 |---|---------|--------|--------|
-| 1 | Waitlist management UI | TODO | |
+| 1 | Waitlist management UI | DONE | b199eb3 |
 | 2 | Parent add children | DONE | 56926ac |
 | 3 | Admin invoices page | DONE | ea71e42 |
 | 4 | Attendance reports | DONE | a179881 |
 | 5 | Instructor attendance landing | DONE | a179881 |
 | 6 | Studio settings CRUD | DONE | 56926ac |
-| 7 | Stripe Connect onboarding | TODO | |
-| 8 | Email notifications | TODO | |
+| 7 | Stripe Connect onboarding | DONE | b199eb3 |
+| 8 | Email notifications | DONE | b199eb3 (Edge Function + helper lib) |
 | 9 | Parent profile page | DONE | a179881 |
 | 10 | Class detail for parents | DONE | (Phase 2) |
-| 11 | Bulk enrollment import | TODO | |
-| 12 | Season archiving | TODO | |
-| 13 | Instructor class notes | TODO | |
-| 14 | Export/download | TODO | |
-| 15 | Parent-admin messaging | TODO | |
+| 11 | Bulk enrollment import | DONE | b199eb3 |
+| 12 | Season archiving | DONE | b199eb3 |
+| 13 | Instructor class notes | DONE | b199eb3 |
+| 14 | Export/download | DONE | b199eb3 |
+| 15 | Parent-admin messaging | DONE | b199eb3 |
 
-## Remaining Real Gaps (3 actionable)
+## ALL FEATURES COMPLETE
 
-1. **Waitlist promote UI** — Add "Promote from Waitlist" button to enrollments page for waitlisted entries
-2. **Stripe Connect onboarding** — Implement OAuth flow for studio owners to connect their Stripe account
-3. **Email notifications** — Set up Supabase Edge Function or similar for transactional emails
+All 15 tracked features are implemented. Remaining work is operational:
+- Stripe webhook handler (`/api/webhooks/stripe`) for auto-marking invoices paid
+- Resend API key configuration in Supabase Edge Function secrets
+- Seed data for testing (see plan: playful-questing-blossom.md Testing Strategy)
+- Production domain setup and Vercel deployment config
 
 ## Design System Pass — COMPLETE
 
