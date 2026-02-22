@@ -385,13 +385,13 @@ function WaiverSignaturesList({ waiverId, onBack }: { waiverId: string; onBack: 
               <tr><td colSpan={5} className="px-5 py-8 text-center text-sm text-gray-400">No signatures yet</td></tr>
             )}
             {sigs.data?.map((sig) => {
-              const child = sig.children as { first_name: string; last_name: string } | null;
+              const student = sig.students as { first_name: string; last_name: string } | null;
               return (
                 <tr key={sig.id} className="table-row-hover">
                   <td className="table-cell font-medium text-gray-900">{sig.parent_name}</td>
                   <td className="table-cell text-gray-600">{sig.parent_email}</td>
                   <td className="table-cell text-gray-600">
-                    {child ? `${child.first_name} ${child.last_name}` : '—'}
+                    {student ? `${student.first_name} ${student.last_name}` : '—'}
                   </td>
                   <td className="table-cell text-center text-gray-600">v{sig.waiver_version}</td>
                   <td className="table-cell text-right text-gray-600">

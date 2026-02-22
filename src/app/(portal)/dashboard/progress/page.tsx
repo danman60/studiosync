@@ -20,27 +20,27 @@ const MARK_COLOR: Record<string, string> = {
 
 export default function ParentProgressPage() {
   const { data: dashboardData, isLoading: loadingDash } = trpc.portal.dashboardData.useQuery();
-  const { data: marks, isLoading: loadingMarks } = trpc.portal.childProgressMarks.useQuery();
+  const { data: marks, isLoading: loadingMarks } = trpc.portal.studentProgressMarks.useQuery();
 
   const isLoading = loadingDash || loadingMarks;
-  const children = dashboardData?.children ?? [];
+  const students = dashboardData?.students ?? [];
 
-  // Group marks by child, then by class, then by category
+  // Group marks by student, then by class, then by category
   type MarkRecord = NonNullable<typeof marks>[number];
   const grouped = new Map<string, Map<string, MarkRecord[]>>();
   for (const m of marks ?? []) {
-    if (!grouped.has(m.child_id)) grouped.set(m.child_id, new Map());
-    const childMap = grouped.get(m.child_id)!;
+    if (!grouped.has(m.student_id)) grouped.set(m.student_id, new Map());
+    const studentMap = grouped.get(m.student_id)!;
     const classId = m.class_id;
-    if (!childMap.has(classId)) childMap.set(classId, []);
-    childMap.get(classId)!.push(m);
+    if (!studentMap.has(classId)) studentMap.set(classId, []);
+    studentMap.get(classId)!.push(m);
   }
 
   return (
     <div>
       <div className="mb-8">
         <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Progress Reports</h1>
-        <p className="mt-1 text-sm text-gray-500">See how your children are progressing in their classes.</p>
+        <p className="mt-1 text-sm text-gray-500">See how your students are progressing in their classes.</p>
       </div>
 
       {/* Loading skeleton */}
@@ -58,16 +58,16 @@ export default function ParentProgressPage() {
         </div>
       )}
 
-      {/* Progress by child */}
-      {!isLoading && children.length > 0 && (
+      {/* Progress by student */}
+      {!isLoading && students.length > 0 && (
         <div className="space-y-6">
-          {children.map((child, idx) => {
-            const childMarks = grouped.get(child.id);
-            const hasMarks = childMarks && childMarks.size > 0;
+          {students.map((student, idx) => {
+            const studentMarks = grouped.get(student.id);
+            const hasMarks = studentMarks && studentMarks.size > 0;
 
             return (
               <div
-                key={child.id}
+                key={student.id}
                 className={`glass-card-static rounded-2xl p-6 animate-fade-in-up stagger-${Math.min(idx + 1, 8)}`}
               >
                 <div className="mb-4 flex items-center gap-3">
@@ -76,14 +76,14 @@ export default function ParentProgressPage() {
                   </div>
                   <div className="flex-1">
                     <h2 className="text-base font-semibold text-gray-900">
-                      {child.first_name} {child.last_name}
+                      {student.first_name} {student.last_name}
                     </h2>
                     <p className="text-xs text-gray-400">
-                      {hasMarks ? `${Array.from(childMarks.values()).flat().length} marks across ${childMarks.size} class${childMarks.size > 1 ? 'es' : ''}` : 'No marks yet'}
+                      {hasMarks ? `${Array.from(studentMarks.values()).flat().length} marks across ${studentMarks.size} class${studentMarks.size > 1 ? 'es' : ''}` : 'No marks yet'}
                     </p>
                   </div>
                   <Link
-                    href={`/dashboard/report-card/${child.id}`}
+                    href={`/dashboard/report-card/${student.id}`}
                     className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-indigo-600"
                   >
                     <Printer size={14} /> Report Card
@@ -92,7 +92,7 @@ export default function ParentProgressPage() {
 
                 {hasMarks ? (
                   <div className="space-y-4">
-                    {Array.from(childMarks.entries()).map(([classId, classMarks]) => {
+                    {Array.from(studentMarks.entries()).map(([classId, classMarks]) => {
                       const classInfo = classMarks[0]?.classes as unknown as { name: string } | null;
                       return (
                         <div key={classId} className="rounded-xl border border-gray-100 p-4">
@@ -148,13 +148,13 @@ export default function ParentProgressPage() {
       )}
 
       {/* Empty state */}
-      {!isLoading && children.length === 0 && (
+      {!isLoading && students.length === 0 && (
         <div className="empty-state">
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
             <Award size={24} className="text-indigo-400" />
           </div>
           <p className="text-sm font-medium text-gray-600">No students found</p>
-          <p className="mt-1 text-xs text-gray-400">Add children to your family to see their progress.</p>
+          <p className="mt-1 text-xs text-gray-400">Add students to your family to see their progress.</p>
         </div>
       )}
     </div>

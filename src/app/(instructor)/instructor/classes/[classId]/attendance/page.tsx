@@ -41,7 +41,7 @@ export default function AttendancePage() {
     const base: Record<string, AttendanceStatus> = {};
     if (existingAttendance.data) {
       for (const r of existingAttendance.data) {
-        base[r.child_id] = r.status as AttendanceStatus;
+        base[r.student_id] = r.status as AttendanceStatus;
       }
     }
     return { ...base, ...overrides };
@@ -71,16 +71,16 @@ export default function AttendancePage() {
 
   const cls = (classes.data ?? []).find((c) => c.id === classId);
 
-  const handleStatusChange = (childId: string, status: AttendanceStatus) => {
-    setOverrides((prev) => ({ ...prev, [childId]: status }));
+  const handleStatusChange = (studentId: string, status: AttendanceStatus) => {
+    setOverrides((prev) => ({ ...prev, [studentId]: status }));
     setSaved(false);
   };
 
   const handleMarkAll = (status: AttendanceStatus) => {
     const all: Record<string, AttendanceStatus> = {};
     for (const enrollment of roster.data ?? []) {
-      const child = enrollment.children as unknown as { id: string } | null;
-      if (child) all[child.id] = status;
+      const student = enrollment.students as unknown as { id: string } | null;
+      if (student) all[student.id] = status;
     }
     setOverrides(all);
     setSaved(false);
@@ -89,8 +89,8 @@ export default function AttendancePage() {
   const handleSave = () => {
     if (!session.data?.id) return;
 
-    const attendanceRecords = Object.entries(records).map(([childId, status]) => ({
-      childId,
+    const attendanceRecords = Object.entries(records).map(([studentId, status]) => ({
+      studentId,
       status,
     }));
 
@@ -190,24 +190,24 @@ export default function AttendancePage() {
               </tr>
             )}
             {(roster.data ?? []).map((enrollment) => {
-              const child = enrollment.children as unknown as {
+              const student = enrollment.students as unknown as {
                 id: string;
                 first_name: string;
                 last_name: string;
               } | null;
-              if (!child) return null;
+              if (!student) return null;
 
-              const currentStatus = records[child.id];
+              const currentStatus = records[student.id];
 
               return (
                 <tr key={enrollment.id} className="table-row-hover">
                   <td className="table-cell font-medium text-gray-900">
-                    {child.first_name} {child.last_name}
+                    {student.first_name} {student.last_name}
                   </td>
                   {STATUS_OPTIONS.map((opt) => (
                     <td key={opt.value} className="px-3 py-3 text-center">
                       <button
-                        onClick={() => handleStatusChange(child.id, opt.value)}
+                        onClick={() => handleStatusChange(student.id, opt.value)}
                         className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-all ${
                           currentStatus === opt.value
                             ? `${opt.bg} ${opt.color} shadow-sm`

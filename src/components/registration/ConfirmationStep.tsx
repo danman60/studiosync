@@ -6,11 +6,11 @@ import { CheckCircle, Clock, Mail } from 'lucide-react';
 interface Props {
   status: 'pending' | 'waitlisted';
   waitlistPosition: number | null;
-  childName: string;
+  studentName: string;
   className: string;
 }
 
-export function ConfirmationStep({ status, waitlistPosition, childName, className }: Props) {
+export function ConfirmationStep({ status, waitlistPosition, studentName, className }: Props) {
   const isPending = status === 'pending';
 
   return (
@@ -23,7 +23,7 @@ export function ConfirmationStep({ status, waitlistPosition, childName, classNam
           <div>
             <h2 className="text-xl font-bold text-gray-900">Registration Confirmed!</h2>
             <p className="mt-2 text-gray-600">
-              <span className="font-medium">{childName}</span> has been registered for{' '}
+              <span className="font-medium">{studentName}</span> has been registered for{' '}
               <span className="font-medium">{className}</span>.
             </p>
           </div>
@@ -36,7 +36,7 @@ export function ConfirmationStep({ status, waitlistPosition, childName, classNam
           <div>
             <h2 className="text-xl font-bold text-gray-900">Added to Waitlist</h2>
             <p className="mt-2 text-gray-600">
-              <span className="font-medium">{childName}</span> is{' '}
+              <span className="font-medium">{studentName}</span> is{' '}
               <span className="inline-flex items-center rounded-full bg-amber-500/15 px-2 py-0.5 text-sm font-semibold text-amber-700 border border-amber-500/25">
                 #{waitlistPosition}
               </span>{' '}

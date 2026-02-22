@@ -24,12 +24,12 @@ const MARK_COLOR: Record<string, string> = {
 const PERIODS = ['current', 'fall-2025', 'spring-2026', 'summer-2026'];
 
 export default function ReportCardPage() {
-  const { childId } = useParams<{ childId: string }>();
+  const { studentId } = useParams<{ studentId: string }>();
   const [period, setPeriod] = useState('current');
 
   const { data, isLoading } = trpc.portal.reportCard.useQuery(
-    { childId: childId!, period },
-    { enabled: !!childId }
+    { studentId: studentId!, period },
+    { enabled: !!studentId }
   );
 
   function handlePrint() {
@@ -56,7 +56,7 @@ export default function ReportCardPage() {
     );
   }
 
-  const { child, studio, enrollments, marksByClass, attendanceByClass } = data;
+  const { student, studio, enrollments, marksByClass, attendanceByClass } = data;
   const hasAnyMarks = Object.values(marksByClass).some((m) => m && m.length > 0);
 
   return (
@@ -115,12 +115,12 @@ export default function ReportCardPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Student</p>
-              <p className="text-base font-semibold text-gray-900">{child.first_name} {child.last_name}</p>
+              <p className="text-base font-semibold text-gray-900">{student.first_name} {student.last_name}</p>
             </div>
             <div>
               <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Date of Birth</p>
               <p className="text-sm text-gray-700">
-                {child.date_of_birth ? new Date(child.date_of_birth).toLocaleDateString() : '—'}
+                {student.date_of_birth ? new Date(student.date_of_birth).toLocaleDateString() : '—'}
               </p>
             </div>
           </div>

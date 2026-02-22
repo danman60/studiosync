@@ -168,8 +168,8 @@ export const registrationRouter = router({
       }
 
       // 4. Create student record
-      const { data: newChild, error: childError } = await supabase
-        .from('children')
+      const { data: newStudent, error: studentError } = await supabase
+        .from('students')
         .insert({
           family_id: familyId,
           studio_id: ctx.studioId,
@@ -182,7 +182,7 @@ export const registrationRouter = router({
         .select('id')
         .single();
 
-      if (childError || !newChild) {
+      if (studentError || !newStudent) {
         throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to create student record' });
       }
 
@@ -192,7 +192,7 @@ export const registrationRouter = router({
         {
           p_studio_id: ctx.studioId,
           p_class_id: input.classId,
-          p_child_id: newChild.id,
+          p_student_id: newStudent.id,
           p_family_id: familyId,
         }
       );
@@ -213,7 +213,7 @@ export const registrationRouter = router({
           studio_id: ctx.studioId,
           waiver_id: sig.waiverId,
           family_id: familyId,
-          child_id: newChild.id,
+          student_id: newStudent.id,
           parent_name: sig.parentName,
           parent_email: email,
           waiver_version: sig.waiverVersion,
@@ -274,7 +274,7 @@ export const registrationRouter = router({
         status: result.status as 'pending' | 'waitlisted',
         waitlistPosition: result.waitlist_position,
         familyId,
-        childName: `${input.student.firstName} ${input.student.lastName}`,
+        studentName: `${input.student.firstName} ${input.student.lastName}`,
         className: cls.name,
       };
     }),

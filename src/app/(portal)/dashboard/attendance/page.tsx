@@ -11,24 +11,24 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function ParentAttendancePage() {
-  const { data: attendance, isLoading } = trpc.portal.childAttendance.useQuery();
+  const { data: attendance, isLoading } = trpc.portal.studentAttendance.useQuery();
 
-  // Group by child
-  const byChild = new Map<string, { childName: string; records: typeof attendance }>();
+  // Group by student
+  const byStudent = new Map<string, { studentName: string; records: typeof attendance }>();
   for (const rec of attendance ?? []) {
-    const child = rec.children as unknown as { first_name: string; last_name: string } | null;
-    if (!child) continue;
-    const key = rec.child_id;
-    const name = `${child.first_name} ${child.last_name}`;
-    if (!byChild.has(key)) byChild.set(key, { childName: name, records: [] });
-    byChild.get(key)!.records!.push(rec);
+    const student = rec.students as unknown as { first_name: string; last_name: string } | null;
+    if (!student) continue;
+    const key = rec.student_id;
+    const name = `${student.first_name} ${student.last_name}`;
+    if (!byStudent.has(key)) byStudent.set(key, { studentName: name, records: [] });
+    byStudent.get(key)!.records!.push(rec);
   }
 
   return (
     <div>
       <div className="mb-8">
         <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Attendance</h1>
-        <p className="mt-1 text-sm text-gray-500">View your children&apos;s attendance records.</p>
+        <p className="mt-1 text-sm text-gray-500">View your students&apos; attendance records.</p>
       </div>
 
       {isLoading && (
@@ -42,7 +42,7 @@ export default function ParentAttendancePage() {
         </div>
       )}
 
-      {!isLoading && byChild.size === 0 && (
+      {!isLoading && byStudent.size === 0 && (
         <div className="empty-state">
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
             <CheckSquare size={24} className="text-indigo-400" />
@@ -52,11 +52,11 @@ export default function ParentAttendancePage() {
         </div>
       )}
 
-      {!isLoading && byChild.size > 0 && (
+      {!isLoading && byStudent.size > 0 && (
         <div className="space-y-8">
-          {Array.from(byChild.entries()).map(([childId, { childName, records }]) => (
-            <div key={childId}>
-              <h2 className="section-heading text-sm mb-3"><CheckSquare size={16} /> {childName}</h2>
+          {Array.from(byStudent.entries()).map(([studentId, { studentName, records }]) => (
+            <div key={studentId}>
+              <h2 className="section-heading text-sm mb-3"><CheckSquare size={16} /> {studentName}</h2>
               <div className="glass-card-static overflow-hidden rounded-2xl">
                 <table className="w-full">
                   <thead>

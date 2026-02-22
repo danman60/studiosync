@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 export default function BulkEnrollmentImportPage() {
   const [classId, setClassId] = useState('');
-  const [pairs, setPairs] = useState<Array<{ childId: string; familyId: string }>>([]);
+  const [pairs, setPairs] = useState<Array<{ studentId: string; familyId: string }>>([]);
   const [result, setResult] = useState<{ enrolled: number; skipped: number } | null>(null);
 
   const classes = trpc.admin.listClasses.useQuery();
@@ -20,28 +20,28 @@ export default function BulkEnrollmentImportPage() {
     },
   });
 
-  // Build child options from families data
-  const childOptions: Array<{ childId: string; familyId: string; label: string }> = [];
+  // Build student options from families data
+  const studentOptions: Array<{ studentId: string; familyId: string; label: string }> = [];
   for (const fam of families.data ?? []) {
-    const children = (fam as Record<string, unknown>).children as Array<{ id: string; first_name: string; last_name: string }> | undefined;
-    if (children) {
-      for (const child of children) {
-        childOptions.push({
-          childId: child.id,
+    const students = (fam as Record<string, unknown>).students as Array<{ id: string; first_name: string; last_name: string }> | undefined;
+    if (students) {
+      for (const student of students) {
+        studentOptions.push({
+          studentId: student.id,
           familyId: fam.id,
-          label: `${child.first_name} ${child.last_name} (${fam.parent_first_name} ${fam.parent_last_name})`,
+          label: `${student.first_name} ${student.last_name} (${fam.parent_first_name} ${fam.parent_last_name})`,
         });
       }
     }
   }
 
-  function addPair(childId: string, familyId: string) {
-    if (pairs.some((p) => p.childId === childId)) return;
-    setPairs((prev) => [...prev, { childId, familyId }]);
+  function addPair(studentId: string, familyId: string) {
+    if (pairs.some((p) => p.studentId === studentId)) return;
+    setPairs((prev) => [...prev, { studentId, familyId }]);
   }
 
-  function removePair(childId: string) {
-    setPairs((prev) => prev.filter((p) => p.childId !== childId));
+  function removePair(studentId: string) {
+    setPairs((prev) => prev.filter((p) => p.studentId !== studentId));
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -106,17 +106,17 @@ export default function BulkEnrollmentImportPage() {
           <label className="block text-sm font-medium text-gray-700 mb-1">Add Students</label>
           <select
             onChange={(e) => {
-              const opt = childOptions.find((o) => o.childId === e.target.value);
-              if (opt) addPair(opt.childId, opt.familyId);
+              const opt = studentOptions.find((o) => o.studentId === e.target.value);
+              if (opt) addPair(opt.studentId, opt.familyId);
               e.target.value = '';
             }}
             className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow"
           >
             <option value="">Select a student to add...</option>
-            {childOptions
-              .filter((o) => !pairs.some((p) => p.childId === o.childId))
+            {studentOptions
+              .filter((o) => !pairs.some((p) => p.studentId === o.studentId))
               .map((o) => (
-                <option key={o.childId} value={o.childId}>
+                <option key={o.studentId} value={o.studentId}>
                   {o.label}
                 </option>
               ))}
@@ -131,16 +131,16 @@ export default function BulkEnrollmentImportPage() {
             </p>
             <div className="space-y-2">
               {pairs.map((p) => {
-                const opt = childOptions.find((o) => o.childId === p.childId);
+                const opt = studentOptions.find((o) => o.studentId === p.studentId);
                 return (
                   <div
-                    key={p.childId}
+                    key={p.studentId}
                     className="flex items-center justify-between rounded-xl bg-indigo-50/60 border border-indigo-100 px-4 py-2.5"
                   >
-                    <span className="text-sm text-gray-700">{opt?.label ?? p.childId}</span>
+                    <span className="text-sm text-gray-700">{opt?.label ?? p.studentId}</span>
                     <button
                       type="button"
-                      onClick={() => removePair(p.childId)}
+                      onClick={() => removePair(p.studentId)}
                       className="text-xs font-medium text-red-500 hover:text-red-700"
                     >
                       Remove

@@ -137,30 +137,30 @@ export default function InstructorClassDetailPage() {
                 </tr>
               )}
               {(roster.data ?? []).map((enrollment) => {
-                const child = enrollment.children as unknown as {
+                const student = enrollment.students as unknown as {
                   id: string;
                   first_name: string;
                   last_name: string;
                   date_of_birth: string | null;
                   medical_notes: string | null;
                 } | null;
-                if (!child) return null;
+                if (!student) return null;
 
-                const age = child.date_of_birth
-                  ? calculateAge(child.date_of_birth)
+                const age = student.date_of_birth
+                  ? calculateAge(student.date_of_birth)
                   : null;
 
                 return (
                   <tr key={enrollment.id} className="table-row-hover">
                     <td className="table-cell font-medium text-gray-900">
-                      {child.first_name} {child.last_name}
+                      {student.first_name} {student.last_name}
                     </td>
                     <td className="table-cell text-gray-600">
                       {age !== null ? `${age} yrs` : '—'}
                     </td>
                     <td className="table-cell text-gray-600">
-                      {child.medical_notes ? (
-                        <span className="text-amber-600">{child.medical_notes}</span>
+                      {student.medical_notes ? (
+                        <span className="text-amber-600">{student.medical_notes}</span>
                       ) : (
                         <span className="text-gray-400">None</span>
                       )}

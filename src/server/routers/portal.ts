@@ -18,12 +18,12 @@ export const portalRouter = router({
       .single();
 
     if (!family) {
-      return { family: null, children: [], enrollments: [], upcomingClasses: [] };
+      return { family: null, students: [], enrollments: [], upcomingClasses: [] };
     }
 
-    // Children
-    const { data: children } = await supabase
-      .from('children')
+    // Students
+    const { data: students } = await supabase
+      .from('students')
       .select('id, first_name, last_name, date_of_birth, active')
       .eq('family_id', family.id)
       .eq('studio_id', ctx.studioId)
@@ -33,7 +33,7 @@ export const portalRouter = router({
     // Active enrollments with class details
     const { data: enrollments } = await supabase
       .from('enrollments')
-      .select('id, status, children(first_name, last_name), classes(name, day_of_week, start_time, end_time, room, class_types(name, color), staff(display_name))')
+      .select('id, status, students(first_name, last_name), classes(name, day_of_week, start_time, end_time, room, class_types(name, color), staff(display_name))')
       .eq('family_id', family.id)
       .eq('studio_id', ctx.studioId)
       .in('status', ['active', 'pending', 'waitlisted'])
@@ -41,7 +41,7 @@ export const portalRouter = router({
 
     return {
       family,
-      children: children ?? [],
+      students: students ?? [],
       enrollments: enrollments ?? [],
     };
   }),
@@ -61,7 +61,7 @@ export const portalRouter = router({
     if (!family) return [];
 
     const { data, error } = await supabase
-      .from('children')
+      .from('students')
       .select('*, enrollments(id, status, classes(name, class_types(name, color)))')
       .eq('family_id', family.id)
       .eq('studio_id', ctx.studioId)
@@ -96,7 +96,7 @@ export const portalRouter = router({
       }
 
       const { data, error } = await supabase
-        .from('children')
+        .from('students')
         .insert({
           studio_id: ctx.studioId,
           family_id: family.id,
@@ -141,7 +141,7 @@ export const portalRouter = router({
       }
 
       const { data, error } = await supabase
-        .from('children')
+        .from('students')
         .update(updates)
         .eq('id', id)
         .eq('family_id', family.id)
@@ -155,7 +155,7 @@ export const portalRouter = router({
 
   // ── Progress Marks ────────────────────────────────────
 
-  childProgressMarks: protectedProcedure.query(async ({ ctx }) => {
+  studentProgressMarks: protectedProcedure.query(async ({ ctx }) => {
     const supabase = createServiceClient();
 
     const { data: family } = await supabase
@@ -167,22 +167,22 @@ export const portalRouter = router({
 
     if (!family) return [];
 
-    // Get child IDs
-    const { data: children } = await supabase
-      .from('children')
+    // Get student IDs
+    const { data: students } = await supabase
+      .from('students')
       .select('id')
       .eq('family_id', family.id)
       .eq('studio_id', ctx.studioId)
       .eq('active', true);
 
-    const childIds = (children ?? []).map((c) => c.id);
-    if (childIds.length === 0) return [];
+    const studentIds = (students ?? []).map((c) => c.id);
+    if (studentIds.length === 0) return [];
 
     const { data, error } = await supabase
       .from('progress_marks')
-      .select('*, classes(name), children(first_name, last_name)')
+      .select('*, classes(name), students(first_name, last_name)')
       .eq('studio_id', ctx.studioId)
-      .in('child_id', childIds)
+      .in('student_id', studentIds)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -191,7 +191,7 @@ export const portalRouter = router({
 
   // ── Attendance ──────────────────────────────────────────
 
-  childAttendance: protectedProcedure.query(async ({ ctx }) => {
+  studentAttendance: protectedProcedure.query(async ({ ctx }) => {
     const supabase = createServiceClient();
 
     const { data: family } = await supabase
@@ -203,22 +203,22 @@ export const portalRouter = router({
 
     if (!family) return [];
 
-    // Get child IDs
-    const { data: children } = await supabase
-      .from('children')
+    // Get student IDs
+    const { data: students } = await supabase
+      .from('students')
       .select('id')
       .eq('family_id', family.id)
       .eq('studio_id', ctx.studioId)
       .eq('active', true);
 
-    const childIds = (children ?? []).map((c) => c.id);
-    if (childIds.length === 0) return [];
+    const studentIds = (students ?? []).map((c) => c.id);
+    if (studentIds.length === 0) return [];
 
     const { data, error } = await supabase
       .from('attendance')
-      .select('*, children(first_name, last_name), class_sessions(session_date, classes(name))')
+      .select('*, students(first_name, last_name), class_sessions(session_date, classes(name))')
       .eq('studio_id', ctx.studioId)
-      .in('child_id', childIds)
+      .in('student_id', studentIds)
       .order('created_at', { ascending: false })
       .limit(100);
 
@@ -256,7 +256,7 @@ export const portalRouter = router({
 
   reportCard: protectedProcedure
     .input(z.object({
-      childId: z.string().uuid(),
+      studentId: z.string().uuid(),
       period: z.string().max(100).default('current'),
     }))
     .query(async ({ ctx, input }) => {
@@ -272,16 +272,16 @@ export const portalRouter = router({
 
       if (!family) throw new TRPCError({ code: 'NOT_FOUND', message: 'Family not found' });
 
-      // Verify child belongs to family
-      const { data: child } = await supabase
-        .from('children')
+      // Verify student belongs to family
+      const { data: student } = await supabase
+        .from('students')
         .select('id, first_name, last_name, date_of_birth')
-        .eq('id', input.childId)
+        .eq('id', input.studentId)
         .eq('family_id', family.id)
         .eq('studio_id', ctx.studioId)
         .single();
 
-      if (!child) throw new TRPCError({ code: 'NOT_FOUND', message: 'Student not found' });
+      if (!student) throw new TRPCError({ code: 'NOT_FOUND', message: 'Student not found' });
 
       // Get studio info for report header
       const { data: studio } = await supabase
@@ -294,7 +294,7 @@ export const portalRouter = router({
       const { data: enrollments } = await supabase
         .from('enrollments')
         .select('id, class_id, classes(name, day_of_week, start_time, end_time, class_types(name), levels(name), seasons(name), instructor_id, staff(display_name))')
-        .eq('child_id', input.childId)
+        .eq('student_id', input.studentId)
         .eq('studio_id', ctx.studioId)
         .in('status', ['active', 'pending']);
 
@@ -302,7 +302,7 @@ export const portalRouter = router({
       const { data: marks } = await supabase
         .from('progress_marks')
         .select('*, classes(name), staff(display_name)')
-        .eq('child_id', input.childId)
+        .eq('student_id', input.studentId)
         .eq('studio_id', ctx.studioId)
         .eq('period', input.period)
         .order('category');
@@ -311,7 +311,7 @@ export const portalRouter = router({
       const { data: attendance } = await supabase
         .from('attendance')
         .select('status, class_sessions(class_id)')
-        .eq('child_id', input.childId)
+        .eq('student_id', input.studentId)
         .eq('studio_id', ctx.studioId);
 
       // Compute attendance stats per class
@@ -335,7 +335,7 @@ export const portalRouter = router({
       }
 
       return {
-        child,
+        student,
         studio: studio ?? { name: '', logo_url: null, phone: null, email: null, settings: {} },
         period: input.period,
         enrollments: enrollments ?? [],

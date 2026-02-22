@@ -114,7 +114,7 @@ export function ReviewStep({ form, classInfo, isSubmitting, onSubmit, submitLabe
         )}
       </div>
 
-      {/* Child */}
+      {/* Student */}
       <div className="rounded-xl border border-gray-100 bg-gradient-to-br from-gray-50 to-gray-100/50 p-4">
         <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Student</p>
         <p className="mt-1 font-semibold text-gray-900">

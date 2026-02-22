@@ -22,13 +22,13 @@ type EditForm = {
   medical_notes: string;
 };
 
-export default function MyChildrenPage() {
+export default function MyStudentsPage() {
   const [editTarget, setEditTarget] = useState<EditForm | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [addForm, setAddForm] = useState({ first_name: '', last_name: '', date_of_birth: '', gender: '', medical_notes: '' });
 
   const utils = trpc.useUtils();
-  const children = trpc.portal.listStudents.useQuery();
+  const students = trpc.portal.listStudents.useQuery();
 
   const updateMutation = trpc.portal.updateStudent.useMutation({
     onSuccess: () => {
@@ -87,7 +87,7 @@ export default function MyChildrenPage() {
         </button>
       </div>
 
-      {children.isLoading && (
+      {students.isLoading && (
         <div className="space-y-4">
           {[1, 2].map((i) => (
             <div key={i} className="glass-card rounded-2xl p-6">
@@ -99,7 +99,7 @@ export default function MyChildrenPage() {
         </div>
       )}
 
-      {children.data?.length === 0 && !children.isLoading && (
+      {students.data?.length === 0 && !students.isLoading && (
         <div className="empty-state">
           <Users size={24} className="mb-3 text-indigo-400" />
           <p className="text-sm font-medium text-gray-600">No students yet</p>
@@ -108,23 +108,23 @@ export default function MyChildrenPage() {
       )}
 
       <div className="space-y-4">
-        {children.data?.map((child, i) => {
-          const enrollments = (child.enrollments ?? []) as {
+        {students.data?.map((student, i) => {
+          const enrollments = (student.enrollments ?? []) as {
             id: string; status: string;
             classes: { name: string; class_types: { name: string; color: string } | null } | null;
           }[];
 
           return (
-            <div key={child.id} className={`glass-card rounded-2xl p-6 animate-fade-in-up stagger-${Math.min(i + 1, 4)}`}>
+            <div key={student.id} className={`glass-card rounded-2xl p-6 animate-fade-in-up stagger-${Math.min(i + 1, 4)}`}>
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">
-                    {child.first_name} {child.last_name}
+                    {student.first_name} {student.last_name}
                   </h3>
                   <div className="mt-1 flex items-center gap-3 text-sm text-gray-500">
-                    {child.date_of_birth && <span>DOB: {child.date_of_birth}</span>}
-                    {child.gender && <span>{child.gender}</span>}
-                    {!child.active && (
+                    {student.date_of_birth && <span>DOB: {student.date_of_birth}</span>}
+                    {student.gender && <span>{student.gender}</span>}
+                    {!student.active && (
                       <span className="rounded-full bg-gray-500/15 px-2 py-0.5 text-[11px] font-medium text-gray-500 border border-gray-500/20">Inactive</span>
                     )}
                   </div>
@@ -132,12 +132,12 @@ export default function MyChildrenPage() {
                 <button
                   onClick={() =>
                     setEditTarget({
-                      id: child.id,
-                      first_name: child.first_name,
-                      last_name: child.last_name,
-                      date_of_birth: child.date_of_birth ?? '',
-                      gender: child.gender ?? '',
-                      medical_notes: child.medical_notes ?? '',
+                      id: student.id,
+                      first_name: student.first_name,
+                      last_name: student.last_name,
+                      date_of_birth: student.date_of_birth ?? '',
+                      gender: student.gender ?? '',
+                      medical_notes: student.medical_notes ?? '',
                     })
                   }
                   className="icon-btn"
@@ -147,9 +147,9 @@ export default function MyChildrenPage() {
                 </button>
               </div>
 
-              {child.medical_notes && (
+              {student.medical_notes && (
                 <p className="mt-3 text-sm text-gray-600">
-                  <span className="font-medium">Medical notes:</span> {child.medical_notes}
+                  <span className="font-medium">Medical notes:</span> {student.medical_notes}
                 </p>
               )}
 

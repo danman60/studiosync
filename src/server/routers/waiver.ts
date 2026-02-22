@@ -117,7 +117,7 @@ export const waiverRouter = router({
       const supabase = createServiceClient();
       let query = supabase
         .from('waiver_signatures')
-        .select('*, waivers(title, version), families(parent_first_name, parent_last_name, email), children(first_name, last_name)')
+        .select('*, waivers(title, version), families(parent_first_name, parent_last_name, email), students(first_name, last_name)')
         .eq('studio_id', ctx.studioId);
 
       if (input?.waiverId) {
@@ -245,7 +245,7 @@ export const waiverRouter = router({
       z.object({
         waiverId: z.string().uuid(),
         parentName: z.string().min(1),
-        childId: z.string().uuid().optional(),
+        studentId: z.string().uuid().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -281,7 +281,7 @@ export const waiverRouter = router({
           studio_id: ctx.studioId,
           waiver_id: waiver.id,
           family_id: ctx.familyId,
-          child_id: input.childId ?? null,
+          student_id: input.studentId ?? null,
           parent_name: input.parentName,
           parent_email: family?.email ?? '',
           waiver_version: waiver.version,

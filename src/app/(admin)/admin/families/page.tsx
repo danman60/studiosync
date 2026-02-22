@@ -89,8 +89,8 @@ export default function FamiliesPage() {
                 <tr><td colSpan={5} className="table-cell text-center py-10 text-gray-400">No families yet.</td></tr>
               )}
               {families.data?.map((f) => {
-                const children = (f.children ?? []) as { id: string; first_name: string; last_name: string; active: boolean }[];
-                const activeChildren = children.filter((c) => c.active);
+                const students = (f.students ?? []) as { id: string; first_name: string; last_name: string; active: boolean }[];
+                const activeStudents = students.filter((c) => c.active);
                 return (
                   <tr key={f.id} className="table-row-hover">
                     <td className="table-cell font-medium text-gray-900">
@@ -99,8 +99,8 @@ export default function FamiliesPage() {
                     <td className="table-cell text-gray-600">{f.email}</td>
                     <td className="table-cell text-gray-600">{f.phone ?? '—'}</td>
                     <td className="table-cell text-gray-600">
-                      {activeChildren.length > 0
-                        ? activeChildren.map((c) => `${c.first_name} ${c.last_name}`).join(', ')
+                      {activeStudents.length > 0
+                        ? activeStudents.map((c) => `${c.first_name} ${c.last_name}`).join(', ')
                         : '—'}
                     </td>
                     <td className="table-cell text-right">
@@ -213,7 +213,7 @@ export default function FamiliesPage() {
         )}
         {familyDetail.data && (() => {
           const f = familyDetail.data;
-          const children = (f.children ?? []) as {
+          const students = (f.students ?? []) as {
             id: string; first_name: string; last_name: string; date_of_birth: string | null; active: boolean;
             enrollments: { id: string; status: string; classes: { name: string; class_types: { name: string; color: string } | null } | null }[];
           }[];
@@ -228,17 +228,17 @@ export default function FamiliesPage() {
               <h3 className="section-heading text-sm">
                 <Users size={16} /> Students
               </h3>
-              {children.length === 0 && <p className="text-sm text-gray-400">No students registered.</p>}
-              {children.map((child) => (
-                <div key={child.id} className="glass-card rounded-xl p-4">
+              {students.length === 0 && <p className="text-sm text-gray-400">No students registered.</p>}
+              {students.map((student) => (
+                <div key={student.id} className="glass-card rounded-xl p-4">
                   <p className="font-medium text-gray-900">
-                    {child.first_name} {child.last_name}
-                    {child.date_of_birth && <span className="ml-2 text-sm font-normal text-gray-500">DOB: {child.date_of_birth}</span>}
-                    {!child.active && <span className="ml-2 rounded-full bg-gray-500/15 px-2 py-0.5 text-[11px] text-gray-500 border border-gray-500/20">Inactive</span>}
+                    {student.first_name} {student.last_name}
+                    {student.date_of_birth && <span className="ml-2 text-sm font-normal text-gray-500">DOB: {student.date_of_birth}</span>}
+                    {!student.active && <span className="ml-2 rounded-full bg-gray-500/15 px-2 py-0.5 text-[11px] text-gray-500 border border-gray-500/20">Inactive</span>}
                   </p>
-                  {child.enrollments?.length > 0 && (
+                  {student.enrollments?.length > 0 && (
                     <div className="mt-2.5 space-y-1.5">
-                      {child.enrollments.map((en) => (
+                      {student.enrollments.map((en) => (
                         <div key={en.id} className="flex items-center gap-2 text-sm text-gray-600">
                           {en.classes?.class_types && (
                             <span className="rounded-full px-2 py-0.5 text-[11px] font-medium text-white" style={{ backgroundColor: en.classes.class_types.color }}>

@@ -23,34 +23,34 @@ export default function ProgressPage() {
   });
   const upsertMark = trpc.instructor.upsertProgressMark.useMutation();
 
-  const marksByChild = useMemo(() => {
+  const marksByStudent = useMemo(() => {
     const map: Record<string, { mark?: string | null; score?: number | null; comments?: string | null }> = {};
     for (const m of marks ?? []) {
       if (m.category === category) {
-        map[m.child_id] = { mark: m.mark, score: m.score, comments: m.comments };
+        map[m.student_id] = { mark: m.mark, score: m.score, comments: m.comments };
       }
     }
     return map;
   }, [marks, category]);
 
-  function getEdit(childId: string) {
-    return edits[childId] ?? marksByChild[childId] ?? {};
+  function getEdit(studentId: string) {
+    return edits[studentId] ?? marksByStudent[studentId] ?? {};
   }
 
-  function setEdit(childId: string, field: string, value: string | number | undefined) {
+  function setEdit(studentId: string, field: string, value: string | number | undefined) {
     setEdits((prev) => ({
       ...prev,
-      [childId]: { ...getEdit(childId), [field]: value },
+      [studentId]: { ...getEdit(studentId), [field]: value },
     }));
   }
 
   async function saveAll() {
     setSaving(true);
     try {
-      const promises = Object.entries(edits).map(([childId, data]) =>
+      const promises = Object.entries(edits).map(([studentId, data]) =>
         upsertMark.mutateAsync({
           classId,
-          childId,
+          studentId,
           period,
           category,
           mark: data.mark,
@@ -142,19 +142,19 @@ export default function ProgressPage() {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {roster.map((enrollment) => {
-                const child = enrollment.children as unknown as { id: string; first_name: string; last_name: string } | null;
-                if (!child) return null;
-                const data = getEdit(child.id);
+                const student = enrollment.students as unknown as { id: string; first_name: string; last_name: string } | null;
+                if (!student) return null;
+                const data = getEdit(student.id);
 
                 return (
-                  <tr key={child.id} className="table-row-hover">
+                  <tr key={student.id} className="table-row-hover">
                     <td className="table-cell font-medium text-gray-900">
-                      {child.first_name} {child.last_name}
+                      {student.first_name} {student.last_name}
                     </td>
                     <td className="table-cell">
                       <select
                         value={data.mark ?? ''}
-                        onChange={(e) => setEdit(child.id, 'mark', e.target.value || undefined)}
+                        onChange={(e) => setEdit(student.id, 'mark', e.target.value || undefined)}
                         className="h-9 w-full rounded-lg border border-gray-200 bg-white px-2 text-sm input-glow"
                       >
                         <option value="">—</option>
@@ -169,7 +169,7 @@ export default function ProgressPage() {
                         min={0}
                         max={100}
                         value={data.score ?? ''}
-                        onChange={(e) => setEdit(child.id, 'score', e.target.value ? Number(e.target.value) : undefined)}
+                        onChange={(e) => setEdit(student.id, 'score', e.target.value ? Number(e.target.value) : undefined)}
                         placeholder="0-100"
                         className="h-9 w-full rounded-lg border border-gray-200 bg-white px-2 text-sm input-glow"
                       />
@@ -178,7 +178,7 @@ export default function ProgressPage() {
                       <input
                         type="text"
                         value={data.comments ?? ''}
-                        onChange={(e) => setEdit(child.id, 'comments', e.target.value || undefined)}
+                        onChange={(e) => setEdit(student.id, 'comments', e.target.value || undefined)}
                         placeholder="Optional notes..."
                         className="h-9 w-full rounded-lg border border-gray-200 bg-white px-2 text-sm input-glow"
                       />

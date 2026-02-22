@@ -151,7 +151,7 @@ function TemplateFormModal({ editId, onClose }: { editId: string | null; onClose
     merge_fields: existing?.merge_fields ?? [] as string[],
   });
 
-  const MERGE_OPTIONS = ['{first_name}', '{last_name}', '{family_name}', '{child_name}', '{class_name}', '{studio_name}', '{amount}', '{due_date}', '{event_name}', '{event_date}'];
+  const MERGE_OPTIONS = ['{first_name}', '{last_name}', '{family_name}', '{student_name}', '{class_name}', '{studio_name}', '{amount}', '{due_date}', '{event_name}', '{event_date}'];
 
   const createMut = trpc.messageTemplate.create.useMutation({
     onSuccess: () => { utils.messageTemplate.list.invalidate(); onClose(); },

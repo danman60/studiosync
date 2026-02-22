@@ -79,7 +79,7 @@ export function ParentInfoStep({ form, onExistingFamily }: Props) {
           <a href="/login" className="font-medium underline">
             sign in
           </a>{' '}
-          to register additional children.
+          to register additional students.
         </div>
       )}
 

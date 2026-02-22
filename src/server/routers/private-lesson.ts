@@ -20,7 +20,7 @@ export const privateLessonRouter = router({
       const supabase = createServiceClient();
       let query = supabase
         .from('private_lessons')
-        .select('*, staff(display_name), children(first_name, last_name), families(parent_first_name, parent_last_name, email)')
+        .select('*, staff(display_name), students(first_name, last_name), families(parent_first_name, parent_last_name, email)')
         .eq('studio_id', ctx.studioId)
         .order('lesson_date', { ascending: true })
         .order('start_time', { ascending: true })
@@ -40,7 +40,7 @@ export const privateLessonRouter = router({
   create: adminProcedure
     .input(z.object({
       instructor_id: z.string().uuid(),
-      child_id: z.string().uuid(),
+      student_id: z.string().uuid(),
       family_id: z.string().uuid(),
       title: z.string().max(200).optional(),
       lesson_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -90,11 +90,11 @@ export const privateLessonRouter = router({
       // Link recurring lessons to parent
       if (data && data.length > 1) {
         const parentId = data[0].id;
-        const childIds = data.slice(1).map(d => d.id);
+        const studentIds = data.slice(1).map(d => d.id);
         await supabase
           .from('private_lessons')
           .update({ parent_recurrence_id: parentId })
-          .in('id', childIds);
+          .in('id', studentIds);
       }
 
       return data;
@@ -175,7 +175,7 @@ export const privateLessonRouter = router({
       const supabase = createServiceClient();
       let query = supabase
         .from('private_lessons')
-        .select('*, children(first_name, last_name), families(parent_first_name, parent_last_name)')
+        .select('*, students(first_name, last_name), families(parent_first_name, parent_last_name)')
         .eq('studio_id', ctx.studioId)
         .eq('instructor_id', ctx.staffId)
         .order('lesson_date', { ascending: true })
@@ -249,7 +249,7 @@ export const privateLessonRouter = router({
     const supabase = createServiceClient();
     const { data, error } = await supabase
       .from('private_lessons')
-      .select('*, staff(display_name), children(first_name, last_name)')
+      .select('*, staff(display_name), students(first_name, last_name)')
       .eq('studio_id', ctx.studioId)
       .eq('family_id', ctx.familyId)
       .in('status', ['scheduled', 'completed'])

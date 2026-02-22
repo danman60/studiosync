@@ -12,7 +12,7 @@ interface Props {
 
 const inputClass = 'mt-1 block w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
 
-export function ChildInfoStep({ form, minAge, maxAge, seasonStartDate }: Props) {
+export function StudentInfoStep({ form, minAge, maxAge, seasonStartDate }: Props) {
   const {
     register,
     formState: { errors },

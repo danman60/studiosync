@@ -166,7 +166,7 @@ export default function AdminAttendanceReportPage() {
                   </thead>
                   <tbody className="divide-y divide-gray-50">
                     {data.absenteeReport.map((student) => (
-                      <tr key={student.childId} className="table-row-hover">
+                      <tr key={student.studentId} className="table-row-hover">
                         <td className="table-cell font-medium text-gray-900">{student.name}</td>
                         <td className="table-cell text-center text-red-600 font-medium">{student.absent}</td>
                         <td className="table-cell text-center text-gray-600">{student.total}</td>

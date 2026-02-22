@@ -82,14 +82,14 @@ export default function AdminDashboardPage() {
                 </tr>
               )}
               {stats.data?.recentEnrollments.map((e) => {
-                const rawChild = e.children as unknown;
-                const child = (Array.isArray(rawChild) ? rawChild[0] : rawChild) as { first_name: string; last_name: string } | null;
+                const rawStudent = e.students as unknown;
+                const student = (Array.isArray(rawStudent) ? rawStudent[0] : rawStudent) as { first_name: string; last_name: string } | null;
                 const rawCls = e.classes as unknown;
                 const cls = (Array.isArray(rawCls) ? rawCls[0] : rawCls) as { name: string } | null;
                 return (
                   <tr key={e.id} className="table-row-hover">
                     <td className="table-cell font-medium text-gray-900">
-                      {child ? `${child.first_name} ${child.last_name}` : '—'}
+                      {student ? `${student.first_name} ${student.last_name}` : '—'}
                     </td>
                     <td className="table-cell text-gray-600">{cls?.name ?? '—'}</td>
                     <td className="table-cell">

@@ -96,7 +96,7 @@ export interface Database {
         };
         Update: Partial<Database['studiosync']['Tables']['families']['Insert']>;
       };
-      children: {
+      students: {
         Row: {
           id: string;
           family_id: string;
@@ -111,13 +111,13 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database['studiosync']['Tables']['children']['Row'], 'id' | 'created_at' | 'updated_at' | 'active'> & {
+        Insert: Omit<Database['studiosync']['Tables']['students']['Row'], 'id' | 'created_at' | 'updated_at' | 'active'> & {
           id?: string;
           created_at?: string;
           updated_at?: string;
           active?: boolean;
         };
-        Update: Partial<Database['studiosync']['Tables']['children']['Insert']>;
+        Update: Partial<Database['studiosync']['Tables']['students']['Insert']>;
       };
       seasons: {
         Row: {
@@ -230,7 +230,7 @@ export interface Database {
           id: string;
           studio_id: string;
           class_id: string;
-          child_id: string;
+          student_id: string;
           family_id: string;
           status: 'pending' | 'active' | 'waitlisted' | 'dropped' | 'cancelled';
           waitlist_position: number | null;
@@ -332,7 +332,7 @@ export interface Database {
           id: string;
           studio_id: string;
           class_session_id: string;
-          child_id: string;
+          student_id: string;
           status: 'present' | 'absent' | 'late' | 'excused';
           marked_by: string | null;
           notes: string | null;
@@ -437,7 +437,7 @@ export interface Database {
           id: string;
           studio_id: string;
           class_id: string;
-          child_id: string;
+          student_id: string;
           period: string;
           category: string;
           score: number | null;
@@ -564,7 +564,7 @@ export interface Database {
           studio_id: string;
           waiver_id: string;
           family_id: string | null;
-          child_id: string | null;
+          student_id: string | null;
           parent_name: string;
           parent_email: string;
           ip_address: string | null;
@@ -713,7 +713,7 @@ export interface Database {
           id: string;
           studio_id: string;
           instructor_id: string;
-          child_id: string;
+          student_id: string;
           family_id: string;
           title: string;
           lesson_date: string;
@@ -794,8 +794,9 @@ export interface Database {
 export type Studio = Database['studiosync']['Tables']['studios']['Row'];
 export type Staff = Database['studiosync']['Tables']['staff']['Row'];
 export type Family = Database['studiosync']['Tables']['families']['Row'];
-export type Child = Database['studiosync']['Tables']['children']['Row'];
-export type Student = Child;
+export type Student = Database['studiosync']['Tables']['students']['Row'];
+/** @deprecated Use Student instead */
+export type Child = Student;
 export type Season = Database['studiosync']['Tables']['seasons']['Row'];
 export type ClassType = Database['studiosync']['Tables']['class_types']['Row'];
 export type Level = Database['studiosync']['Tables']['levels']['Row'];

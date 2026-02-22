@@ -42,7 +42,7 @@ export const adminRouter = router({
     // Recent enrollments
     const { data: recentEnrollments } = await supabase
       .from('enrollments')
-      .select('id, status, created_at, children(first_name, last_name), classes(name)')
+      .select('id, status, created_at, students(first_name, last_name), classes(name)')
       .eq('studio_id', sid)
       .order('created_at', { ascending: false })
       .limit(5);
@@ -438,7 +438,7 @@ export const adminRouter = router({
       const supabase = createServiceClient();
       let query = supabase
         .from('enrollments')
-        .select('*, children(first_name, last_name), classes(name, class_types(name, color)), families(parent_first_name, parent_last_name, email)')
+        .select('*, students(first_name, last_name), classes(name, class_types(name, color)), families(parent_first_name, parent_last_name, email)')
         .eq('studio_id', ctx.studioId);
 
       if (input?.classId) query = query.eq('class_id', input.classId);
@@ -474,7 +474,7 @@ export const adminRouter = router({
         .update(updateData)
         .eq('id', input.id)
         .eq('studio_id', ctx.studioId)
-        .select('*, children(first_name, last_name), classes(name)')
+        .select('*, students(first_name, last_name), classes(name)')
         .single();
 
       if (error) throw error;
@@ -487,7 +487,7 @@ export const adminRouter = router({
     const supabase = createServiceClient();
     const { data, error } = await supabase
       .from('families')
-      .select('*, children(id, first_name, last_name, active)')
+      .select('*, students(id, first_name, last_name, active)')
       .eq('studio_id', ctx.studioId)
       .order('parent_last_name')
       .order('parent_first_name');
@@ -502,7 +502,7 @@ export const adminRouter = router({
       const supabase = createServiceClient();
       const { data, error } = await supabase
         .from('families')
-        .select('*, children(*, enrollments(*, classes(name, class_types(name, color))))')
+        .select('*, students(*, enrollments(*, classes(name, class_types(name, color))))')
         .eq('id', input.id)
         .eq('studio_id', ctx.studioId)
         .single();
@@ -680,7 +680,7 @@ export const adminRouter = router({
       const sessionIds = sessions.map((s) => s.id);
       const { data: records } = await supabase
         .from('attendance')
-        .select('*, children(first_name, last_name), class_sessions(class_id, session_date, classes(name))')
+        .select('*, students(first_name, last_name), class_sessions(class_id, session_date, classes(name))')
         .eq('studio_id', ctx.studioId)
         .in('class_session_id', sessionIds);
 
@@ -703,11 +703,11 @@ export const adminRouter = router({
       // Absentee report — students with >30% absences
       const studentTotals: Record<string, { name: string; absent: number; total: number }> = {};
       for (const r of records ?? []) {
-        const child = r.children as unknown as { first_name: string; last_name: string } | null;
-        if (!child) continue;
-        const key = r.child_id;
+        const student = r.students as unknown as { first_name: string; last_name: string } | null;
+        if (!student) continue;
+        const key = r.student_id;
         if (!studentTotals[key]) {
-          studentTotals[key] = { name: `${child.first_name} ${child.last_name}`, absent: 0, total: 0 };
+          studentTotals[key] = { name: `${student.first_name} ${student.last_name}`, absent: 0, total: 0 };
         }
         studentTotals[key]!.total++;
         if (r.status === 'absent') studentTotals[key]!.absent++;
@@ -715,7 +715,7 @@ export const adminRouter = router({
 
       const absenteeReport = Object.entries(studentTotals)
         .filter(([, v]) => v.total > 0 && v.absent / v.total > 0.3)
-        .map(([id, v]) => ({ childId: id, ...v, rate: Math.round((v.absent / v.total) * 100) }))
+        .map(([id, v]) => ({ studentId: id, ...v, rate: Math.round((v.absent / v.total) * 100) }))
         .sort((a, b) => b.rate - a.rate);
 
       return {
@@ -732,7 +732,7 @@ export const adminRouter = router({
     .input(z.object({
       classId: z.string().uuid(),
       entries: z.array(z.object({
-        childId: z.string().uuid(),
+        studentId: z.string().uuid(),
         familyId: z.string().uuid(),
       })),
     }))
@@ -750,17 +750,17 @@ export const adminRouter = router({
       if (!cls) throw new TRPCError({ code: 'NOT_FOUND', message: 'Class not found' });
 
       // Check for existing enrollments
-      const childIds = input.entries.map((e) => e.childId);
+      const studentIds = input.entries.map((e) => e.studentId);
       const { data: existing } = await supabase
         .from('enrollments')
-        .select('child_id')
+        .select('student_id')
         .eq('class_id', input.classId)
         .eq('studio_id', ctx.studioId)
         .in('status', ['active', 'pending', 'waitlisted'])
-        .in('child_id', childIds);
+        .in('student_id', studentIds);
 
-      const existingIds = new Set((existing ?? []).map((e) => e.child_id));
-      const newEntries = input.entries.filter((e) => !existingIds.has(e.childId));
+      const existingIds = new Set((existing ?? []).map((e) => e.student_id));
+      const newEntries = input.entries.filter((e) => !existingIds.has(e.studentId));
 
       if (newEntries.length === 0) {
         return { enrolled: 0, skipped: input.entries.length };
@@ -769,7 +769,7 @@ export const adminRouter = router({
       const rows = newEntries.map((e) => ({
         studio_id: ctx.studioId,
         class_id: input.classId,
-        child_id: e.childId,
+        student_id: e.studentId,
         family_id: e.familyId,
         status: 'active' as const,
       }));
@@ -927,14 +927,14 @@ export const adminRouter = router({
       // Get enrolled student counts per class
       const { data: enrollments } = await supabase
         .from('enrollments')
-        .select('class_id, child_id')
+        .select('class_id, student_id')
         .eq('studio_id', ctx.studioId)
         .in('status', ['active', 'pending']);
 
       // Get marks for this period grouped by class
       const { data: marks } = await supabase
         .from('progress_marks')
-        .select('class_id, child_id')
+        .select('class_id, student_id')
         .eq('studio_id', ctx.studioId)
         .eq('period', period);
 
@@ -942,13 +942,13 @@ export const adminRouter = router({
       const enrollmentsByClass: Record<string, Set<string>> = {};
       for (const e of enrollments ?? []) {
         if (!enrollmentsByClass[e.class_id]) enrollmentsByClass[e.class_id] = new Set();
-        enrollmentsByClass[e.class_id].add(e.child_id);
+        enrollmentsByClass[e.class_id].add(e.student_id);
       }
 
       const markedByClass: Record<string, Set<string>> = {};
       for (const m of marks ?? []) {
         if (!markedByClass[m.class_id]) markedByClass[m.class_id] = new Set();
-        markedByClass[m.class_id].add(m.child_id);
+        markedByClass[m.class_id].add(m.student_id);
       }
 
       return classes.map((cls) => {

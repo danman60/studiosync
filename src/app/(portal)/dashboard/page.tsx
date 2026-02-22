@@ -79,7 +79,7 @@ export default function ParentDashboardPage() {
             <Users size={20} />
           </div>
           <div>
-            <p className="stat-number">{d.children.length}</p>
+            <p className="stat-number">{d.students.length}</p>
             <p className="text-sm text-gray-500">Students</p>
           </div>
         </div>
@@ -115,7 +115,7 @@ export default function ParentDashboardPage() {
       ) : (
         <div className="mt-3 space-y-3">
           {d.enrollments.map((en) => {
-            const child = en.children as unknown as { first_name: string; last_name: string } | null;
+            const student = en.students as unknown as { first_name: string; last_name: string } | null;
             const cls = en.classes as unknown as {
               name: string; day_of_week: number; start_time: string; end_time: string;
               room: string | null; class_types: { name: string; color: string } | null;
@@ -145,7 +145,7 @@ export default function ParentDashboardPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-gray-600">
-                    {child ? `${child.first_name} ${child.last_name}` : '—'}
+                    {student ? `${student.first_name} ${student.last_name}` : '—'}
                   </span>
                   <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_BADGE[en.status] ?? 'bg-gray-100 text-gray-600'}`}>
                     {en.status}

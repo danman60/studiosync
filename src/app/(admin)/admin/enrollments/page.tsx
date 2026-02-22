@@ -14,7 +14,7 @@ const STATUS_BADGE: Record<string, string> = {
   cancelled: 'bg-red-500/15 text-red-600 border border-red-500/25',
 };
 
-type StatusAction = { id: string; childName: string; className: string; currentStatus: string };
+type StatusAction = { id: string; studentName: string; className: string; currentStatus: string };
 
 export default function EnrollmentsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('');
@@ -46,11 +46,11 @@ export default function EnrollmentsPage() {
     if (rows.length === 0) return;
     const header = ['Student', 'Parent', 'Email', 'Class', 'Status', 'Date'];
     const csvRows = rows.map((en) => {
-      const child = en.children as { first_name: string; last_name: string } | null;
+      const student = en.students as { first_name: string; last_name: string } | null;
       const cls = en.classes as { name: string } | null;
       const family = en.families as { parent_first_name: string; parent_last_name: string; email: string } | null;
       return [
-        child ? `${child.first_name} ${child.last_name}` : '',
+        student ? `${student.first_name} ${student.last_name}` : '',
         family ? `${family.parent_first_name} ${family.parent_last_name}` : '',
         family?.email ?? '',
         cls?.name ?? '',
@@ -141,15 +141,15 @@ export default function EnrollmentsPage() {
                 <tr><td colSpan={6} className="table-cell text-center py-10 text-gray-400">No enrollments found.</td></tr>
               )}
               {enrollments.data?.map((en) => {
-                const child = en.children as { first_name: string; last_name: string } | null;
+                const student = en.students as { first_name: string; last_name: string } | null;
                 const cls = en.classes as { name: string; class_types: { name: string; color: string } | null } | null;
                 const family = en.families as { parent_first_name: string; parent_last_name: string; email: string } | null;
-                const childName = child ? `${child.first_name} ${child.last_name}` : '—';
+                const studentName = student ? `${student.first_name} ${student.last_name}` : '—';
                 const className = cls?.name ?? '—';
 
                 return (
                   <tr key={en.id} className="table-row-hover">
-                    <td className="table-cell font-medium text-gray-900">{childName}</td>
+                    <td className="table-cell font-medium text-gray-900">{studentName}</td>
                     <td className="table-cell text-gray-600">
                       {family ? `${family.parent_first_name} ${family.parent_last_name}` : '—'}
                     </td>
@@ -184,7 +184,7 @@ export default function EnrollmentsPage() {
                         {['active', 'pending', 'waitlisted'].includes(en.status) && (
                           <button
                             onClick={() => {
-                              setActionTarget({ id: en.id, childName, className, currentStatus: en.status });
+                              setActionTarget({ id: en.id, studentName, className, currentStatus: en.status });
                               setNewStatus(en.status === 'pending' || en.status === 'waitlisted' ? 'active' : 'dropped');
                             }}
                             className="h-9 rounded-lg px-3 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-50"
@@ -213,7 +213,7 @@ export default function EnrollmentsPage() {
         {actionTarget && (
           <form onSubmit={handleStatusUpdate} className="space-y-4">
             <div className="rounded-xl bg-gradient-to-br from-indigo-50/80 to-purple-50/50 p-4 text-sm text-gray-700">
-              <p><span className="font-medium">Student:</span> {actionTarget.childName}</p>
+              <p><span className="font-medium">Student:</span> {actionTarget.studentName}</p>
               <p><span className="font-medium">Class:</span> {actionTarget.className}</p>
               <p><span className="font-medium">Current:</span> {actionTarget.currentStatus}</p>
             </div>

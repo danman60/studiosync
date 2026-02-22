@@ -52,7 +52,7 @@ export const instructorRouter = router({
 
       const { data, error } = await supabase
         .from('enrollments')
-        .select('id, status, child_id, children(id, first_name, last_name, date_of_birth, medical_notes)')
+        .select('id, status, student_id, students(id, first_name, last_name, date_of_birth, medical_notes)')
         .eq('class_id', input.classId)
         .eq('studio_id', ctx.studioId)
         .in('status', ['active', 'pending']);
@@ -132,7 +132,7 @@ export const instructorRouter = router({
     .input(z.object({
       sessionId: z.string().uuid(),
       records: z.array(z.object({
-        childId: z.string().uuid(),
+        studentId: z.string().uuid(),
         status: z.enum(['present', 'absent', 'late', 'excused']),
         notes: z.string().max(500).optional(),
       })),
@@ -157,18 +157,18 @@ export const instructorRouter = router({
         throw new TRPCError({ code: 'FORBIDDEN', message: 'Not your class' });
       }
 
-      // Verify all children are enrolled in this class
-      const childIds = input.records.map((r) => r.childId);
+      // Verify all students are enrolled in this class
+      const studentIds = input.records.map((r) => r.studentId);
       const { data: enrolled } = await supabase
         .from('enrollments')
-        .select('child_id')
+        .select('student_id')
         .eq('class_id', session.class_id)
         .eq('studio_id', ctx.studioId)
         .in('status', ['active', 'pending'])
-        .in('child_id', childIds);
+        .in('student_id', studentIds);
 
-      const enrolledIds = new Set((enrolled ?? []).map((e) => e.child_id));
-      const unenrolled = childIds.filter((id) => !enrolledIds.has(id));
+      const enrolledIds = new Set((enrolled ?? []).map((e) => e.student_id));
+      const unenrolled = studentIds.filter((id) => !enrolledIds.has(id));
       if (unenrolled.length > 0) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
@@ -180,7 +180,7 @@ export const instructorRouter = router({
       const rows = input.records.map((r) => ({
         studio_id: ctx.studioId,
         class_session_id: input.sessionId,
-        child_id: r.childId,
+        student_id: r.studentId,
         status: r.status,
         marked_by: ctx.staffId,
         notes: r.notes ?? null,
@@ -188,7 +188,7 @@ export const instructorRouter = router({
 
       const { data, error } = await supabase
         .from('attendance')
-        .upsert(rows, { onConflict: 'class_session_id,child_id' })
+        .upsert(rows, { onConflict: 'class_session_id,student_id' })
         .select();
 
       if (error) throw error;
@@ -230,7 +230,7 @@ export const instructorRouter = router({
 
       const { data, error } = await supabase
         .from('attendance')
-        .select('*, children(first_name, last_name)')
+        .select('*, students(first_name, last_name)')
         .eq('class_session_id', input.sessionId)
         .eq('studio_id', ctx.studioId);
 
@@ -304,7 +304,7 @@ export const instructorRouter = router({
 
   studentInfo: instructorProcedure
     .input(z.object({
-      childId: z.string().uuid(),
+      studentId: z.string().uuid(),
       classId: z.string().uuid(),
     }))
     .query(async ({ ctx, input }) => {
@@ -328,7 +328,7 @@ export const instructorRouter = router({
       const { data: enrollment } = await supabase
         .from('enrollments')
         .select('id')
-        .eq('child_id', input.childId)
+        .eq('student_id', input.studentId)
         .eq('class_id', input.classId)
         .eq('studio_id', ctx.studioId)
         .in('status', ['active', 'pending'])
@@ -339,18 +339,18 @@ export const instructorRouter = router({
       }
 
       // Return limited info only
-      const { data: child, error } = await supabase
-        .from('children')
+      const { data: student, error } = await supabase
+        .from('students')
         .select('id, first_name, last_name, date_of_birth, medical_notes')
-        .eq('id', input.childId)
+        .eq('id', input.studentId)
         .eq('studio_id', ctx.studioId)
         .single();
 
-      if (error || !child) {
+      if (error || !student) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Student not found' });
       }
 
-      return child;
+      return student;
     }),
 
   // ── Update Session Notes ─────────────────────────────
@@ -420,7 +420,7 @@ export const instructorRouter = router({
 
       let query = supabase
         .from('progress_marks')
-        .select('*, children(first_name, last_name), staff(display_name)')
+        .select('*, students(first_name, last_name), staff(display_name)')
         .eq('class_id', input.classId)
         .eq('studio_id', ctx.studioId)
         .order('category')
@@ -439,7 +439,7 @@ export const instructorRouter = router({
   upsertProgressMark: instructorProcedure
     .input(z.object({
       classId: z.string().uuid(),
-      childId: z.string().uuid(),
+      studentId: z.string().uuid(),
       period: z.string().min(1).max(100).default('current'),
       category: z.string().min(1).max(100).default('general'),
       score: z.number().min(0).max(100).optional(),
@@ -467,7 +467,7 @@ export const instructorRouter = router({
       const { data: enrollment } = await supabase
         .from('enrollments')
         .select('id')
-        .eq('child_id', input.childId)
+        .eq('student_id', input.studentId)
         .eq('class_id', input.classId)
         .eq('studio_id', ctx.studioId)
         .in('status', ['active', 'pending'])
@@ -482,14 +482,14 @@ export const instructorRouter = router({
         .upsert({
           studio_id: ctx.studioId,
           class_id: input.classId,
-          child_id: input.childId,
+          student_id: input.studentId,
           period: input.period,
           category: input.category,
           score: input.score ?? null,
           mark: input.mark ?? null,
           comments: input.comments ?? null,
           marked_by: ctx.staffId,
-        }, { onConflict: 'class_id,child_id,period,category' })
+        }, { onConflict: 'class_id,student_id,period,category' })
         .select()
         .single();
 

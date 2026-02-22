@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { trpc } from '@/lib/trpc';
 import { DAYS_OF_WEEK, formatTime } from '@/lib/utils';
-import { ChildInfoStep } from './ChildInfoStep';
+import { StudentInfoStep } from './StudentInfoStep';
 import { ParentInfoStep } from './ParentInfoStep';
 import { ReviewStep, type PromoCodeResult } from './ReviewStep';
 import { ConfirmationStep } from './ConfirmationStep';
@@ -56,7 +56,7 @@ export function RegistrationWizard({ classId }: Props) {
   const [result, setResult] = useState<{
     status: 'pending' | 'waitlisted';
     waitlistPosition: number | null;
-    childName: string;
+    studentName: string;
     className: string;
   } | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -187,7 +187,7 @@ export function RegistrationWizard({ classId }: Props) {
       setResult({
         status: res.status,
         waitlistPosition: res.waitlistPosition,
-        childName: res.childName,
+        studentName: res.studentName,
         className: res.className,
       });
       setStep(CONFIRMATION_STEP);
@@ -324,7 +324,7 @@ export function RegistrationWizard({ classId }: Props) {
           )}
 
           {step === 0 && (
-            <ChildInfoStep
+            <StudentInfoStep
               form={form}
               minAge={cls.min_age}
               maxAge={cls.max_age}
@@ -373,7 +373,7 @@ export function RegistrationWizard({ classId }: Props) {
             <ConfirmationStep
               status={result.status}
               waitlistPosition={result.waitlistPosition}
-              childName={result.childName}
+              studentName={result.studentName}
               className={result.className}
             />
           )}

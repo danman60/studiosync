@@ -125,13 +125,13 @@ export default function AdminPrivateLessonsPage() {
                 </tr>
               )}
               {lessons.data?.map((l) => {
-                const child = l.children as unknown as { first_name: string; last_name: string } | null;
+                const student = l.students as unknown as { first_name: string; last_name: string } | null;
                 const instructor = l.staff as unknown as { display_name: string } | null;
                 return (
                   <tr key={l.id} className="table-row-hover">
                     <td className="table-cell font-medium text-gray-900">{l.lesson_date}</td>
                     <td className="table-cell text-gray-600">{l.start_time.slice(0, 5)} - {l.end_time.slice(0, 5)}</td>
-                    <td className="table-cell text-gray-600">{child ? `${child.first_name} ${child.last_name}` : '—'}</td>
+                    <td className="table-cell text-gray-600">{student ? `${student.first_name} ${student.last_name}` : '—'}</td>
                     <td className="table-cell text-gray-600">{instructor?.display_name ?? '—'}</td>
                     <td className="table-cell text-gray-600">{formatCents(l.price)}</td>
                     <td className="table-cell">
@@ -186,13 +186,13 @@ function CreateLessonModal({
 }: {
   onClose: () => void;
   staff: Array<{ id: string; display_name: string; role: string }>;
-  families: Array<{ id: string; parent_first_name: string; parent_last_name: string; children?: Array<{ id: string; first_name: string; last_name: string }> }>;
+  families: Array<{ id: string; parent_first_name: string; parent_last_name: string; students?: Array<{ id: string; first_name: string; last_name: string }> }>;
 }) {
   const utils = trpc.useUtils();
   const [form, setForm] = useState({
     instructor_id: '',
     family_id: '',
-    child_id: '',
+    student_id: '',
     lesson_date: '',
     start_time: '09:00',
     end_time: '09:30',
@@ -216,14 +216,14 @@ function CreateLessonModal({
 
   const instructors = staff.filter((s) => s.role === 'instructor' || s.role === 'owner' || s.role === 'admin');
   const selectedFamily = families.find((f) => f.id === form.family_id);
-  const children = (selectedFamily?.children ?? []) as Array<{ id: string; first_name: string; last_name: string }>;
+  const students = (selectedFamily?.students ?? []) as Array<{ id: string; first_name: string; last_name: string }>;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     createMut.mutate({
       instructor_id: form.instructor_id,
       family_id: form.family_id,
-      child_id: form.child_id,
+      student_id: form.student_id,
       lesson_date: form.lesson_date,
       start_time: form.start_time,
       end_time: form.end_time,
@@ -251,19 +251,19 @@ function CreateLessonModal({
           </div>
           <div>
             <label className="mb-1 block text-xs font-medium text-gray-600">Family</label>
-            <select value={form.family_id} onChange={(e) => setForm({ ...form, family_id: e.target.value, child_id: '' })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" required>
+            <select value={form.family_id} onChange={(e) => setForm({ ...form, family_id: e.target.value, student_id: '' })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" required>
               <option value="">Select...</option>
               {families.map((f) => <option key={f.id} value={f.id}>{f.parent_first_name} {f.parent_last_name}</option>)}
             </select>
           </div>
         </div>
 
-        {children.length > 0 && (
+        {students.length > 0 && (
           <div>
             <label className="mb-1 block text-xs font-medium text-gray-600">Student</label>
-            <select value={form.child_id} onChange={(e) => setForm({ ...form, child_id: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" required>
+            <select value={form.student_id} onChange={(e) => setForm({ ...form, student_id: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" required>
               <option value="">Select student...</option>
-              {children.map((c) => <option key={c.id} value={c.id}>{c.first_name} {c.last_name}</option>)}
+              {students.map((c) => <option key={c.id} value={c.id}>{c.first_name} {c.last_name}</option>)}
             </select>
           </div>
         )}
