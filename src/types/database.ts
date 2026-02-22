@@ -366,10 +366,12 @@ export interface Database {
           stripe_payment_intent_id: string | null;
           sent_at: string | null;
           paid_at: string | null;
+          late_fee_amount: number;
+          late_fee_applied_at: string | null;
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database['studiosync']['Tables']['invoices']['Row'], 'id' | 'created_at' | 'updated_at' | 'status' | 'subtotal' | 'tax_amount' | 'total' | 'amount_paid' | 'tax_rate'> & {
+        Insert: Omit<Database['studiosync']['Tables']['invoices']['Row'], 'id' | 'created_at' | 'updated_at' | 'status' | 'subtotal' | 'tax_amount' | 'total' | 'amount_paid' | 'tax_rate' | 'late_fee_amount'> & {
           id?: string;
           created_at?: string;
           updated_at?: string;

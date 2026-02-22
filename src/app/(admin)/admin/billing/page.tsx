@@ -423,9 +423,18 @@ function InvoiceList({
   onView: (id: string) => void;
 }) {
   const stats = trpc.invoice.stats.useQuery();
+  const utils = trpc.useUtils();
   const invoices = trpc.invoice.list.useQuery(
     statusFilter ? { status: statusFilter as 'draft' | 'sent' | 'paid' | 'partial' | 'overdue' | 'void' | 'cancelled' } : undefined
   );
+
+  const processOverdue = trpc.invoice.processOverdue.useMutation({
+    onSuccess: (data) => {
+      utils.invoice.list.invalidate();
+      utils.invoice.stats.invalidate();
+      alert(`Done: ${data.markedOverdue} marked overdue, ${data.feesApplied} late fees applied.`);
+    },
+  });
 
   function exportCSV() {
     const rows = invoices.data ?? [];
@@ -455,8 +464,19 @@ function InvoiceList({
 
   return (
     <>
-      {/* Export */}
-      <div className="mb-4 flex justify-end">
+      {/* Actions */}
+      <div className="mb-4 flex items-center justify-end gap-2">
+        <button
+          onClick={() => {
+            if (confirm('Process overdue invoices and apply late fees now?')) {
+              processOverdue.mutate();
+            }
+          }}
+          disabled={processOverdue.isPending}
+          className="btn-outline inline-flex h-9 items-center gap-2 rounded-xl px-4 text-xs font-medium disabled:opacity-50"
+        >
+          <AlertCircle size={14} /> {processOverdue.isPending ? 'Processing...' : 'Process Overdue'}
+        </button>
         <button
           onClick={exportCSV}
           disabled={!invoices.data?.length}
@@ -465,6 +485,9 @@ function InvoiceList({
           <Download size={14} /> Export CSV
         </button>
       </div>
+      {processOverdue.isError && (
+        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{processOverdue.error.message}</p>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
@@ -793,6 +816,9 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
             <p className="mt-2 stat-number">{formatCents(inv.total)}</p>
             {inv.amount_paid > 0 && (
               <p className="text-sm text-emerald-600">Paid: {formatCents(inv.amount_paid)}</p>
+            )}
+            {inv.late_fee_amount > 0 && (
+              <p className="text-xs text-amber-600">Late fee: {formatCents(inv.late_fee_amount)}</p>
             )}
           </div>
         </div>

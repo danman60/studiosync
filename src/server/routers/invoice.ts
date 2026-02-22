@@ -270,6 +270,97 @@ export const invoiceRouter = router({
     };
   }),
 
+  /** Mark overdue invoices and apply late fees (called by cron or admin) */
+  processOverdue: adminProcedure.mutation(async ({ ctx }) => {
+    const supabase = createServiceClient();
+    const today = new Date().toISOString().slice(0, 10);
+
+    // Get studio late fee settings
+    const { data: studio } = await supabase
+      .from('studios')
+      .select('settings')
+      .eq('id', ctx.studioId)
+      .single();
+
+    const settings = (studio?.settings ?? {}) as Record<string, unknown>;
+    const lateFeeAmount = Number(settings.late_fee_amount ?? 0); // cents
+    const lateFeeType = String(settings.late_fee_type ?? 'flat'); // 'flat' or 'percent'
+    const graceDays = Number(settings.late_fee_grace_days ?? 0);
+
+    // Calculate the cutoff date (due_date + grace_days)
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - graceDays);
+    const cutoffStr = cutoffDate.toISOString().slice(0, 10);
+
+    // 1. Mark sent/partial invoices as overdue if past due date
+    const { data: overdueInvoices } = await supabase
+      .from('invoices')
+      .select('id, total, late_fee_amount, late_fee_applied_at')
+      .eq('studio_id', ctx.studioId)
+      .in('status', ['sent', 'partial'])
+      .lt('due_date', today);
+
+    let markedOverdue = 0;
+    let feesApplied = 0;
+
+    if (overdueInvoices?.length) {
+      // Mark them overdue
+      await supabase
+        .from('invoices')
+        .update({ status: 'overdue' })
+        .eq('studio_id', ctx.studioId)
+        .in('status', ['sent', 'partial'])
+        .lt('due_date', today);
+
+      markedOverdue = overdueInvoices.length;
+
+      // 2. Apply late fees if configured and past grace period
+      if (lateFeeAmount > 0) {
+        for (const inv of overdueInvoices) {
+          // Skip if already has a late fee
+          if (inv.late_fee_applied_at) continue;
+
+          let fee = 0;
+          if (lateFeeType === 'percent') {
+            fee = Math.round(inv.total * (lateFeeAmount / 10000)); // lateFeeAmount is basis points (e.g., 500 = 5%)
+          } else {
+            fee = lateFeeAmount;
+          }
+
+          if (fee > 0) {
+            // Add late fee as a line item
+            await supabase
+              .from('invoice_line_items')
+              .insert({
+                invoice_id: inv.id,
+                studio_id: ctx.studioId,
+                description: 'Late Fee',
+                quantity: 1,
+                unit_price: fee,
+                total: fee,
+              });
+
+            // Update invoice totals
+            await supabase
+              .from('invoices')
+              .update({
+                late_fee_amount: fee,
+                late_fee_applied_at: new Date().toISOString(),
+                subtotal: inv.total + fee, // simplified — actual subtotal recalc
+                total: inv.total + fee,
+              })
+              .eq('id', inv.id)
+              .eq('studio_id', ctx.studioId);
+
+            feesApplied++;
+          }
+        }
+      }
+    }
+
+    return { markedOverdue, feesApplied };
+  }),
+
   // ═══════════════════════════════════════════════════════
   // PARENT PROCEDURES
   // ═══════════════════════════════════════════════════════

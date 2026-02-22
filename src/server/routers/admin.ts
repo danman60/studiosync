@@ -611,6 +611,45 @@ export const adminRouter = router({
       return data;
     }),
 
+  /** Get studio settings (JSONB) */
+  getSettings: adminProcedure.query(async ({ ctx }) => {
+    const supabase = createServiceClient();
+    const { data } = await supabase
+      .from('studios')
+      .select('settings')
+      .eq('id', ctx.studioId)
+      .single();
+
+    return (data?.settings ?? {}) as Record<string, unknown>;
+  }),
+
+  /** Update studio settings (merges into JSONB) */
+  updateSettings: adminProcedure
+    .input(z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])))
+    .mutation(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+
+      // Get current settings
+      const { data: studio } = await supabase
+        .from('studios')
+        .select('settings')
+        .eq('id', ctx.studioId)
+        .single();
+
+      const current = (studio?.settings ?? {}) as Record<string, unknown>;
+      const merged = { ...current, ...input };
+
+      const { data, error } = await supabase
+        .from('studios')
+        .update({ settings: merged })
+        .eq('id', ctx.studioId)
+        .select('settings')
+        .single();
+
+      if (error) throw error;
+      return data?.settings as Record<string, unknown>;
+    }),
+
   // ── Attendance Reports ─────────────────────────────────
 
   attendanceReport: adminProcedure
