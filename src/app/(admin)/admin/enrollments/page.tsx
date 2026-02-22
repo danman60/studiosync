@@ -15,16 +15,6 @@ const STATUS_BADGE: Record<string, string> = {
 
 type StatusAction = { id: string; childName: string; className: string; currentStatus: string };
 
-function ShimmerRow() {
-  return (
-    <tr>
-      {[...Array(6)].map((_, i) => (
-        <td key={i} className="px-5 py-4"><div className="skeleton h-4 w-24" /></td>
-      ))}
-    </tr>
-  );
-}
-
 export default function EnrollmentsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [actionTarget, setActionTarget] = useState<StatusAction | null>(null);
@@ -80,73 +70,75 @@ export default function EnrollmentsPage() {
         </div>
       </div>
 
-      <div className="glass-card overflow-x-auto rounded-2xl">
-        <table className="min-w-full divide-y divide-gray-100">
-          <thead>
-            <tr className="bg-gray-50/60">
-              {['Student', 'Parent', 'Class', 'Status', 'Date', ''].map((h) => (
-                <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {enrollments.isLoading && (
-              <>
-                <ShimmerRow />
-                <ShimmerRow />
-                <ShimmerRow />
-              </>
-            )}
-            {enrollments.data?.length === 0 && (
-              <tr><td colSpan={6} className="px-5 py-10 text-center text-sm text-gray-400">No enrollments found.</td></tr>
-            )}
-            {enrollments.data?.map((en) => {
-              const child = en.children as { first_name: string; last_name: string } | null;
-              const cls = en.classes as { name: string; class_types: { name: string; color: string } | null } | null;
-              const family = en.families as { parent_first_name: string; parent_last_name: string; email: string } | null;
-              const childName = child ? `${child.first_name} ${child.last_name}` : '—';
-              const className = cls?.name ?? '—';
-
-              return (
-                <tr key={en.id} className="transition-colors hover:bg-indigo-50/40">
-                  <td className="px-5 py-3.5 text-sm font-medium text-gray-900">{childName}</td>
-                  <td className="px-5 py-3.5 text-sm text-gray-600">
-                    {family ? `${family.parent_first_name} ${family.parent_last_name}` : '—'}
-                  </td>
-                  <td className="px-5 py-3.5 text-sm text-gray-600">
-                    {cls?.class_types && (
-                      <span className="mr-1.5 inline-block rounded-full px-2 py-0.5 text-xs font-medium text-white" style={{ backgroundColor: cls.class_types.color }}>
-                        {cls.class_types.name}
-                      </span>
-                    )}
-                    {className}
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[en.status] ?? 'bg-gray-100 text-gray-600'}`}>
-                      {en.status}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3.5 text-sm text-gray-500">
-                    {new Date(en.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="px-5 py-3.5 text-right">
-                    {['active', 'pending', 'waitlisted'].includes(en.status) && (
-                      <button
-                        onClick={() => {
-                          setActionTarget({ id: en.id, childName, className, currentStatus: en.status });
-                          setNewStatus(en.status === 'pending' || en.status === 'waitlisted' ? 'active' : 'dropped');
-                        }}
-                        className="h-8 rounded-lg px-3 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-50"
-                      >
-                        Update
-                      </button>
-                    )}
-                  </td>
+      <div className="glass-card-static overflow-hidden rounded-2xl">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-100">
+            <thead>
+              <tr className="bg-gray-50/60">
+                {['Student', 'Parent', 'Class', 'Status', 'Date', ''].map((h) => (
+                  <th key={h} className="table-header">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {enrollments.isLoading && [1, 2, 3].map((i) => (
+                <tr key={i}>
+                  {[1, 2, 3, 4, 5, 6].map((j) => (
+                    <td key={j} className="table-cell"><div className="skeleton h-4 w-24" /></td>
+                  ))}
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              ))}
+              {enrollments.data?.length === 0 && (
+                <tr><td colSpan={6} className="table-cell text-center py-10 text-gray-400">No enrollments found.</td></tr>
+              )}
+              {enrollments.data?.map((en) => {
+                const child = en.children as { first_name: string; last_name: string } | null;
+                const cls = en.classes as { name: string; class_types: { name: string; color: string } | null } | null;
+                const family = en.families as { parent_first_name: string; parent_last_name: string; email: string } | null;
+                const childName = child ? `${child.first_name} ${child.last_name}` : '—';
+                const className = cls?.name ?? '—';
+
+                return (
+                  <tr key={en.id} className="table-row-hover">
+                    <td className="table-cell font-medium text-gray-900">{childName}</td>
+                    <td className="table-cell text-gray-600">
+                      {family ? `${family.parent_first_name} ${family.parent_last_name}` : '—'}
+                    </td>
+                    <td className="table-cell text-gray-600">
+                      {cls?.class_types && (
+                        <span className="mr-1.5 inline-block rounded-full px-2 py-0.5 text-[11px] font-medium text-white" style={{ backgroundColor: cls.class_types.color }}>
+                          {cls.class_types.name}
+                        </span>
+                      )}
+                      {className}
+                    </td>
+                    <td className="table-cell">
+                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_BADGE[en.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                        {en.status}
+                      </span>
+                    </td>
+                    <td className="table-cell text-gray-500">
+                      {new Date(en.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="table-cell text-right">
+                      {['active', 'pending', 'waitlisted'].includes(en.status) && (
+                        <button
+                          onClick={() => {
+                            setActionTarget({ id: en.id, childName, className, currentStatus: en.status });
+                            setNewStatus(en.status === 'pending' || en.status === 'waitlisted' ? 'active' : 'dropped');
+                          }}
+                          className="h-9 rounded-lg px-3 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-50"
+                        >
+                          Update
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Status Update Modal */}
@@ -184,7 +176,7 @@ export default function EnrollmentsPage() {
 
             <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
               <button type="button" onClick={() => setActionTarget(null)}
-                className="h-11 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">Cancel</button>
+                className="btn-outline h-11 rounded-xl px-5 text-sm font-medium">Cancel</button>
               <button type="submit" disabled={updateMutation.isPending}
                 className="btn-gradient h-11 rounded-xl px-5 text-sm font-medium">
                 {updateMutation.isPending ? 'Updating...' : 'Update'}

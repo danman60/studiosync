@@ -67,7 +67,7 @@ export default function SettingsPage() {
     });
   };
 
-  const inputClass = 'h-10 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20';
+  const inputClass = 'h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-900 transition-shadow input-glow';
 
   return (
     <div>
@@ -78,11 +78,10 @@ export default function SettingsPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
         {/* Studio Info */}
-        <div className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Settings size={16} className="text-indigo-500" />
-            <h2 className="text-lg font-semibold text-gray-900">Studio Information</h2>
-          </div>
+        <div className="glass-card-static rounded-2xl p-6 animate-fade-in-up stagger-1">
+          <h2 className="section-heading text-sm mb-4">
+            <Settings size={16} className="text-indigo-500" /> Studio Information
+          </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs font-medium text-gray-600">Studio Name</label>
@@ -90,7 +89,7 @@ export default function SettingsPage() {
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium text-gray-600">Slug</label>
-              <input readOnly value={studio?.slug ?? ''} className="h-10 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-3 text-sm text-gray-500" />
+              <input readOnly value={studio?.slug ?? ''} className="h-11 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-3 text-sm text-gray-500" />
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium text-gray-600">Email</label>
@@ -126,11 +125,10 @@ export default function SettingsPage() {
         </div>
 
         {/* Branding */}
-        <div className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Palette size={16} className="text-purple-500" />
-            <h2 className="text-lg font-semibold text-gray-900">Branding</h2>
-          </div>
+        <div className="glass-card-static rounded-2xl p-6 animate-fade-in-up stagger-2">
+          <h2 className="section-heading text-sm mb-4">
+            <Palette size={16} className="text-purple-500" /> Branding
+          </h2>
           <div className="flex items-center gap-8">
             <div>
               <label className="mb-1 block text-xs font-medium text-gray-600">Primary Color</label>
@@ -160,11 +158,10 @@ export default function SettingsPage() {
         </div>
 
         {/* Stripe Status (read-only) */}
-        <div className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <CreditCard size={16} className="text-emerald-500" />
-            <h2 className="text-lg font-semibold text-gray-900">Payment Integration</h2>
-          </div>
+        <div className="glass-card-static rounded-2xl p-6 animate-fade-in-up stagger-3">
+          <h2 className="section-heading text-sm mb-4">
+            <CreditCard size={16} className="text-emerald-500" /> Payment Integration
+          </h2>
           <div className="flex items-center gap-3">
             <div className={`h-3 w-3 rounded-full ${studio?.stripe_onboarding_complete ? 'bg-emerald-500' : 'bg-gray-300'}`} />
             <span className="text-sm text-gray-700">
@@ -181,7 +178,7 @@ export default function SettingsPage() {
           <button
             type="submit"
             disabled={updateMut.isPending}
-            className="btn-gradient inline-flex h-10 items-center gap-2 rounded-xl px-6 text-sm font-medium disabled:opacity-50"
+            className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-6 text-sm font-medium disabled:opacity-50"
           >
             <Save size={16} />
             {updateMut.isPending ? 'Saving...' : 'Save Settings'}

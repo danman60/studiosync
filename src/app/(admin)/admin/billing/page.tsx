@@ -43,7 +43,7 @@ export default function BillingPage() {
         {view === 'list' && (
           <button
             onClick={() => setView('create')}
-            className="btn-gradient inline-flex h-10 items-center gap-2 rounded-xl px-5 text-sm font-medium"
+            className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-medium"
           >
             <Plus size={16} /> New Invoice
           </button>
@@ -87,35 +87,35 @@ function InvoiceList({
     <>
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
-        <div className="glass-card rounded-2xl bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 p-6">
+        <div className="glass-card rounded-2xl bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 p-6 animate-fade-in-up stagger-1">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
               <FileText size={20} />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{stats.data?.totalInvoices ?? '—'}</p>
+              <p className="stat-number">{stats.data?.totalInvoices ?? '—'}</p>
               <p className="text-xs text-gray-500">Total Invoices</p>
             </div>
           </div>
         </div>
-        <div className="glass-card rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-600/5 p-6">
+        <div className="glass-card rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-600/5 p-6 animate-fade-in-up stagger-2">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
               <DollarSign size={20} />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{stats.data ? formatCents(stats.data.outstanding) : '—'}</p>
+              <p className="stat-number">{stats.data ? formatCents(stats.data.outstanding) : '—'}</p>
               <p className="text-xs text-gray-500">Outstanding</p>
             </div>
           </div>
         </div>
-        <div className="glass-card rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 p-6">
+        <div className="glass-card rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 p-6 animate-fade-in-up stagger-3">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
               <CreditCard size={20} />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{stats.data ? formatCents(stats.data.collected) : '—'}</p>
+              <p className="stat-number">{stats.data ? formatCents(stats.data.collected) : '—'}</p>
               <p className="text-xs text-gray-500">Collected</p>
             </div>
           </div>
@@ -128,11 +128,7 @@ function InvoiceList({
           <button
             key={s}
             onClick={() => onStatusFilter(s)}
-            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-              statusFilter === s
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+            className={`filter-chip ${statusFilter === s ? 'filter-chip-active' : ''}`}
           >
             {s === '' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
           </button>
@@ -140,60 +136,62 @@ function InvoiceList({
       </div>
 
       {/* Table */}
-      <div className="glass-card overflow-x-auto rounded-2xl">
-        <table className="min-w-full divide-y divide-gray-100">
-          <thead>
-            <tr className="bg-gray-50/60">
-              {['Invoice #', 'Family', 'Status', 'Due Date', 'Total', 'Paid', ''].map((h) => (
-                <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {invoices.isLoading && [1, 2, 3].map((i) => (
-              <tr key={i}>
-                {[1, 2, 3, 4, 5, 6, 7].map((j) => (
-                  <td key={j} className="px-5 py-4"><div className="skeleton h-4 w-20" /></td>
+      <div className="glass-card-static overflow-hidden rounded-2xl">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-100">
+            <thead>
+              <tr className="bg-gray-50/60">
+                {['Invoice #', 'Family', 'Status', 'Due Date', 'Total', 'Paid', ''].map((h) => (
+                  <th key={h} className="table-header">{h}</th>
                 ))}
               </tr>
-            ))}
-            {invoices.data?.length === 0 && (
-              <tr>
-                <td colSpan={7} className="px-5 py-14 text-center">
-                  <FileText size={32} className="mx-auto text-gray-300" />
-                  <p className="mt-3 text-sm text-gray-400">No invoices yet</p>
-                </td>
-              </tr>
-            )}
-            {invoices.data?.map((inv) => {
-              const fam = inv.families as unknown as { parent_first_name: string; parent_last_name: string } | null;
-              return (
-                <tr key={inv.id} className="transition-colors hover:bg-indigo-50/40">
-                  <td className="px-5 py-3.5 text-sm font-medium text-indigo-600">{inv.invoice_number}</td>
-                  <td className="px-5 py-3.5 text-sm text-gray-600">
-                    {fam ? `${fam.parent_first_name} ${fam.parent_last_name}` : '—'}
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[inv.status] ?? ''}`}>
-                      {inv.status}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3.5 text-sm text-gray-600">{inv.due_date}</td>
-                  <td className="px-5 py-3.5 text-sm font-medium text-gray-900">{formatCents(inv.total)}</td>
-                  <td className="px-5 py-3.5 text-sm text-gray-600">{formatCents(inv.amount_paid)}</td>
-                  <td className="px-5 py-3.5">
-                    <button
-                      onClick={() => onView(inv.id)}
-                      className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800"
-                    >
-                      <Eye size={14} /> View
-                    </button>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {invoices.isLoading && [1, 2, 3].map((i) => (
+                <tr key={i}>
+                  {[1, 2, 3, 4, 5, 6, 7].map((j) => (
+                    <td key={j} className="table-cell"><div className="skeleton h-4 w-20" /></td>
+                  ))}
+                </tr>
+              ))}
+              {invoices.data?.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="table-cell text-center py-14">
+                    <FileText size={32} className="mx-auto text-gray-300" />
+                    <p className="mt-3 text-sm text-gray-400">No invoices yet</p>
                   </td>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              )}
+              {invoices.data?.map((inv) => {
+                const fam = inv.families as unknown as { parent_first_name: string; parent_last_name: string } | null;
+                return (
+                  <tr key={inv.id} className="table-row-hover">
+                    <td className="table-cell font-medium text-indigo-600">{inv.invoice_number}</td>
+                    <td className="table-cell text-gray-600">
+                      {fam ? `${fam.parent_first_name} ${fam.parent_last_name}` : '—'}
+                    </td>
+                    <td className="table-cell">
+                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_BADGE[inv.status] ?? ''}`}>
+                        {inv.status}
+                      </span>
+                    </td>
+                    <td className="table-cell text-gray-600">{inv.due_date}</td>
+                    <td className="table-cell font-medium text-gray-900">{formatCents(inv.total)}</td>
+                    <td className="table-cell text-gray-600">{formatCents(inv.amount_paid)}</td>
+                    <td className="table-cell text-right">
+                      <button
+                        onClick={() => onView(inv.id)}
+                        className="inline-flex h-9 items-center gap-1 rounded-lg px-3 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-50"
+                      >
+                        <Eye size={14} /> View
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );
@@ -216,6 +214,8 @@ function CreateInvoice({
   const [taxRate, setTaxRate] = useState('0');
   const [notes, setNotes] = useState('');
 
+  const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
+
   const create = trpc.invoice.create.useMutation({
     onSuccess: (data) => {
       utils.invoice.list.invalidate();
@@ -237,20 +237,20 @@ function CreateInvoice({
 
   return (
     <div>
-      <button onClick={onBack} className="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700">
+      <button onClick={onBack} className="mb-4 inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700">
         <ChevronLeft size={16} /> Back to Invoices
       </button>
 
-      <div className="glass-card max-w-lg rounded-2xl p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Create Invoice</h2>
+      <div className="glass-card-static max-w-lg rounded-2xl p-6">
+        <h2 className="section-heading text-base mb-4"><FileText size={16} /> Create Invoice</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Family</label>
+            <label className="block text-sm font-medium text-gray-700">Family *</label>
             <select
               value={familyId}
               onChange={(e) => setFamilyId(e.target.value)}
               required
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900"
+              className={inputClass}
             >
               <option value="">Select a family...</option>
               {(families.data ?? []).map((f) => (
@@ -261,17 +261,17 @@ function CreateInvoice({
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+            <label className="block text-sm font-medium text-gray-700">Due Date *</label>
             <input
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
               required
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900"
+              className={inputClass}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tax Rate (%)</label>
+            <label className="block text-sm font-medium text-gray-700">Tax Rate (%)</label>
             <input
               type="number"
               step="0.01"
@@ -279,26 +279,26 @@ function CreateInvoice({
               max="100"
               value={taxRate}
               onChange={(e) => setTaxRate(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900"
+              className={inputClass}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Notes (optional)</label>
+            <label className="block text-sm font-medium text-gray-700">Notes (optional)</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900"
+              className={inputClass}
             />
           </div>
           <button
             type="submit"
             disabled={create.isPending || !familyId || !dueDate}
-            className="btn-gradient inline-flex h-10 items-center gap-2 rounded-xl px-6 text-sm font-medium disabled:opacity-50"
+            className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-6 text-sm font-medium disabled:opacity-50"
           >
             {create.isPending ? 'Creating...' : 'Create Invoice'}
           </button>
-          {create.isError && <p className="text-sm text-red-600">{create.error.message}</p>}
+          {create.isError && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{create.error.message}</p>}
         </form>
       </div>
     </div>
@@ -384,7 +384,7 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
 
   return (
     <div>
-      <button onClick={onBack} className="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700">
+      <button onClick={onBack} className="mb-4 inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700">
         <ChevronLeft size={16} /> Back to Invoices
       </button>
 
@@ -402,10 +402,10 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
             </div>
           </div>
           <div className="text-right">
-            <span className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${STATUS_BADGE[inv.status] ?? ''}`}>
+            <span className={`inline-block rounded-full px-3 py-1 text-[11px] font-medium ${STATUS_BADGE[inv.status] ?? ''}`}>
               {inv.status}
             </span>
-            <p className="mt-2 text-2xl font-bold text-gray-900">{formatCents(inv.total)}</p>
+            <p className="mt-2 stat-number">{formatCents(inv.total)}</p>
             {inv.amount_paid > 0 && (
               <p className="text-sm text-emerald-600">Paid: {formatCents(inv.amount_paid)}</p>
             )}
@@ -418,7 +418,7 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
             <button
               onClick={() => sendInv.mutate({ id })}
               disabled={sendInv.isPending || inv.total === 0}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+              className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-blue-600 px-4 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50"
             >
               <Send size={14} /> {sendInv.isPending ? 'Sending...' : 'Send Invoice'}
             </button>
@@ -427,7 +427,7 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
             <button
               onClick={() => markPaid.mutate({ id })}
               disabled={markPaid.isPending}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+              className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-emerald-600 px-4 text-xs font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
             >
               <CheckCircle size={14} /> {markPaid.isPending ? 'Marking...' : 'Mark Paid'}
             </button>
@@ -436,46 +436,46 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
             <button
               onClick={() => voidInv.mutate({ id })}
               disabled={voidInv.isPending}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-gray-200 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-300 disabled:opacity-50"
+              className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-gray-200 px-4 text-xs font-medium text-gray-700 hover:bg-gray-300 disabled:opacity-50"
             >
               <XCircle size={14} /> {voidInv.isPending ? 'Voiding...' : 'Void'}
             </button>
           )}
         </div>
         {(sendInv.isError || markPaid.isError || voidInv.isError) && (
-          <p className="mt-2 text-sm text-red-600">
+          <p className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
             {sendInv.error?.message ?? markPaid.error?.message ?? voidInv.error?.message}
           </p>
         )}
       </div>
 
       {/* Line Items */}
-      <div className="glass-card rounded-2xl overflow-hidden mb-6">
+      <div className="glass-card-static overflow-hidden rounded-2xl mb-6">
         <table className="min-w-full divide-y divide-gray-100">
           <thead>
             <tr className="bg-gray-50/60">
               {['Description', 'Qty', 'Unit Price', 'Total', ''].map((h) => (
-                <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">{h}</th>
+                <th key={h} className="table-header">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
             {items.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-5 py-8 text-center text-sm text-gray-400">No line items yet</td>
+                <td colSpan={5} className="table-cell text-center py-8 text-gray-400">No line items yet</td>
               </tr>
             )}
             {items.map((item) => (
-              <tr key={item.id}>
-                <td className="px-5 py-3 text-sm text-gray-900">{item.description}</td>
-                <td className="px-5 py-3 text-sm text-gray-600">{item.quantity}</td>
-                <td className="px-5 py-3 text-sm text-gray-600">{formatCents(item.unit_price)}</td>
-                <td className="px-5 py-3 text-sm font-medium text-gray-900">{formatCents(item.total)}</td>
-                <td className="px-5 py-3">
+              <tr key={item.id} className="table-row-hover">
+                <td className="table-cell text-gray-900">{item.description}</td>
+                <td className="table-cell text-gray-600">{item.quantity}</td>
+                <td className="table-cell text-gray-600">{formatCents(item.unit_price)}</td>
+                <td className="table-cell font-medium text-gray-900">{formatCents(item.total)}</td>
+                <td className="table-cell">
                   {canEdit && (
                     <button
                       onClick={() => removeItem.mutate({ id: item.id })}
-                      className="text-xs text-red-500 hover:text-red-700"
+                      className="text-xs font-medium text-red-500 hover:text-red-700"
                     >
                       Remove
                     </button>
@@ -485,20 +485,20 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
             ))}
             {/* Totals */}
             <tr className="bg-gray-50/40">
-              <td colSpan={3} className="px-5 py-2 text-right text-xs font-medium text-gray-500">Subtotal</td>
-              <td className="px-5 py-2 text-sm font-medium text-gray-900">{formatCents(inv.subtotal)}</td>
+              <td colSpan={3} className="table-cell text-right text-xs font-medium text-gray-500">Subtotal</td>
+              <td className="table-cell font-medium text-gray-900">{formatCents(inv.subtotal)}</td>
               <td />
             </tr>
             {inv.tax_rate > 0 && (
               <tr className="bg-gray-50/40">
-                <td colSpan={3} className="px-5 py-2 text-right text-xs font-medium text-gray-500">Tax ({(inv.tax_rate * 100).toFixed(2)}%)</td>
-                <td className="px-5 py-2 text-sm font-medium text-gray-900">{formatCents(inv.tax_amount)}</td>
+                <td colSpan={3} className="table-cell text-right text-xs font-medium text-gray-500">Tax ({(inv.tax_rate * 100).toFixed(2)}%)</td>
+                <td className="table-cell font-medium text-gray-900">{formatCents(inv.tax_amount)}</td>
                 <td />
               </tr>
             )}
             <tr className="bg-gray-50/60">
-              <td colSpan={3} className="px-5 py-3 text-right text-sm font-semibold text-gray-900">Total</td>
-              <td className="px-5 py-3 text-sm font-bold text-gray-900">{formatCents(inv.total)}</td>
+              <td colSpan={3} className="table-cell text-right text-sm font-semibold text-gray-900">Total</td>
+              <td className="table-cell font-bold text-gray-900">{formatCents(inv.total)}</td>
               <td />
             </tr>
           </tbody>
@@ -507,8 +507,8 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
 
       {/* Add Line Item */}
       {canEdit && (
-        <div className="glass-card rounded-2xl p-5">
-          <h3 className="text-sm font-semibold text-gray-900 mb-3">Add Line Item</h3>
+        <div className="glass-card-static rounded-2xl p-5">
+          <h3 className="section-heading text-sm mb-3"><Plus size={14} /> Add Line Item</h3>
           <form onSubmit={handleAddItem} className="flex flex-wrap items-end gap-3">
             <div className="flex-1 min-w-[200px]">
               <label className="block text-xs text-gray-500 mb-1">Description</label>
@@ -516,7 +516,7 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
                 value={newItem.description}
                 onChange={(e) => setNewItem((p) => ({ ...p, description: e.target.value }))}
                 required
-                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm"
+                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm transition-shadow input-glow"
                 placeholder="e.g. Monthly tuition - Ballet"
               />
             </div>
@@ -527,7 +527,7 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
                 min="1"
                 value={newItem.quantity}
                 onChange={(e) => setNewItem((p) => ({ ...p, quantity: e.target.value }))}
-                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm"
+                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm transition-shadow input-glow"
               />
             </div>
             <div className="w-32">
@@ -540,25 +540,25 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
                 onChange={(e) => setNewItem((p) => ({ ...p, unit_price: e.target.value }))}
                 required
                 placeholder="0.00"
-                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm"
+                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm transition-shadow input-glow"
               />
             </div>
             <button
               type="submit"
               disabled={addItem.isPending}
-              className="inline-flex h-9 items-center gap-1 rounded-lg bg-indigo-600 px-4 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+              className="inline-flex h-10 items-center gap-1 rounded-xl bg-indigo-600 px-4 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
             >
               <Plus size={14} /> {addItem.isPending ? 'Adding...' : 'Add'}
             </button>
           </form>
-          {addItem.isError && <p className="mt-2 text-sm text-red-600">{addItem.error.message}</p>}
+          {addItem.isError && <p className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{addItem.error.message}</p>}
         </div>
       )}
 
       {/* Notes */}
       {inv.notes && (
-        <div className="mt-4 glass-card rounded-2xl p-5">
-          <h3 className="text-sm font-semibold text-gray-900 mb-2">Notes</h3>
+        <div className="mt-4 glass-card-static rounded-2xl p-5">
+          <h3 className="section-heading text-sm mb-2"><FileText size={14} /> Notes</h3>
           <p className="text-sm text-gray-600 whitespace-pre-wrap">{inv.notes}</p>
         </div>
       )}

@@ -23,16 +23,6 @@ const emptyForm: SeasonForm = {
   is_current: false,
 };
 
-function ShimmerRow() {
-  return (
-    <tr>
-      {[...Array(6)].map((_, i) => (
-        <td key={i} className="px-5 py-4"><div className="skeleton h-4 w-20" /></td>
-      ))}
-    </tr>
-  );
-}
-
 export default function SeasonsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -111,63 +101,66 @@ export default function SeasonsPage() {
         </button>
       </div>
 
-      <div className="glass-card overflow-x-auto rounded-2xl">
-        <table className="min-w-full divide-y divide-gray-100">
-          <thead>
-            <tr className="bg-gray-50/60">
-              {['Name', 'Start', 'End', 'Registration Window', 'Status', ''].map((h) => (
-                <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {seasons.isLoading && (
-              <>
-                <ShimmerRow />
-                <ShimmerRow />
-              </>
-            )}
-            {seasons.data?.length === 0 && (
-              <tr><td colSpan={6} className="px-5 py-10 text-center text-sm text-gray-400">No seasons yet.</td></tr>
-            )}
-            {seasons.data?.map((s) => (
-              <tr key={s.id} className="transition-colors hover:bg-indigo-50/40">
-                <td className="px-5 py-3.5 text-sm font-medium text-gray-900">
-                  <span className="flex items-center gap-1.5">
-                    {s.name}
-                    {s.is_current && <Star size={14} className="fill-amber-400 text-amber-400" />}
-                  </span>
-                </td>
-                <td className="px-5 py-3.5 text-sm text-gray-600">{s.start_date}</td>
-                <td className="px-5 py-3.5 text-sm text-gray-600">{s.end_date}</td>
-                <td className="px-5 py-3.5 text-sm text-gray-600">
-                  {s.registration_opens_at
-                    ? `${new Date(s.registration_opens_at).toLocaleDateString()} — ${s.registration_closes_at ? new Date(s.registration_closes_at).toLocaleDateString() : 'Open'}`
-                    : '—'}
-                </td>
-                <td className="px-5 py-3.5">
-                  {s.is_current ? (
-                    <span className="inline-block rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-medium text-emerald-600 border border-emerald-500/25">Current</span>
-                  ) : (
-                    <span className="inline-block rounded-full bg-gray-500/15 px-2.5 py-0.5 text-xs font-medium text-gray-500 border border-gray-500/20">Inactive</span>
-                  )}
-                </td>
-                <td className="px-5 py-3.5 text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <button onClick={() => openEdit(s)}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-indigo-50 hover:text-indigo-600" title="Edit">
-                      <Pencil size={15} />
-                    </button>
-                    <button onClick={() => setDeleteId(s.id)}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600" title="Delete">
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-                </td>
+      <div className="glass-card-static overflow-hidden rounded-2xl">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-100">
+            <thead>
+              <tr className="bg-gray-50/60">
+                {['Name', 'Start', 'End', 'Registration Window', 'Status', ''].map((h) => (
+                  <th key={h} className="table-header">{h}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {seasons.isLoading && [1, 2].map((i) => (
+                <tr key={i}>
+                  {[1, 2, 3, 4, 5, 6].map((j) => (
+                    <td key={j} className="table-cell"><div className="skeleton h-4 w-20" /></td>
+                  ))}
+                </tr>
+              ))}
+              {seasons.data?.length === 0 && (
+                <tr><td colSpan={6} className="table-cell text-center py-10 text-gray-400">No seasons yet.</td></tr>
+              )}
+              {seasons.data?.map((s) => (
+                <tr key={s.id} className="table-row-hover">
+                  <td className="table-cell font-medium text-gray-900">
+                    <span className="flex items-center gap-1.5">
+                      {s.name}
+                      {s.is_current && <Star size={14} className="fill-amber-400 text-amber-400" />}
+                    </span>
+                  </td>
+                  <td className="table-cell text-gray-600">{s.start_date}</td>
+                  <td className="table-cell text-gray-600">{s.end_date}</td>
+                  <td className="table-cell text-gray-600">
+                    {s.registration_opens_at
+                      ? `${new Date(s.registration_opens_at).toLocaleDateString()} — ${s.registration_closes_at ? new Date(s.registration_closes_at).toLocaleDateString() : 'Open'}`
+                      : '—'}
+                  </td>
+                  <td className="table-cell">
+                    {s.is_current ? (
+                      <span className="inline-block rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-medium text-emerald-600 border border-emerald-500/25">Current</span>
+                    ) : (
+                      <span className="inline-block rounded-full bg-gray-500/15 px-2.5 py-0.5 text-[11px] font-medium text-gray-500 border border-gray-500/20">Inactive</span>
+                    )}
+                  </td>
+                  <td className="table-cell text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <button onClick={() => openEdit(s)}
+                        className="icon-btn" title="Edit">
+                        <Pencil size={15} />
+                      </button>
+                      <button onClick={() => setDeleteId(s.id)}
+                        className="icon-btn icon-btn-danger" title="Delete">
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Create/Edit Modal */}
@@ -214,7 +207,7 @@ export default function SeasonsPage() {
 
           <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
             <button type="button" onClick={closeModal}
-              className="h-11 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">Cancel</button>
+              className="btn-outline h-11 rounded-xl px-5 text-sm font-medium">Cancel</button>
             <button type="submit" disabled={isSaving}
               className="btn-gradient h-11 rounded-xl px-5 text-sm font-medium">
               {isSaving ? 'Saving...' : editingId ? 'Update Season' : 'Create Season'}
@@ -229,9 +222,9 @@ export default function SeasonsPage() {
         {deleteMutation.error && <p className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{deleteMutation.error.message}</p>}
         <div className="mt-6 flex justify-end gap-3">
           <button onClick={() => setDeleteId(null)}
-            className="h-11 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">Cancel</button>
+            className="btn-outline h-11 rounded-xl px-5 text-sm font-medium">Cancel</button>
           <button onClick={() => deleteId && deleteMutation.mutate({ id: deleteId })} disabled={deleteMutation.isPending}
-            className="h-11 rounded-xl bg-red-600 px-5 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50">
+            className="btn-danger h-11 rounded-xl px-5 text-sm font-medium disabled:opacity-50">
             {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
           </button>
         </div>

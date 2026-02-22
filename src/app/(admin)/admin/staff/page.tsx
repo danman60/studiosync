@@ -33,16 +33,6 @@ type EditForm = {
   phone: string;
 };
 
-function ShimmerRow() {
-  return (
-    <tr>
-      {[...Array(5)].map((_, i) => (
-        <td key={i} className="px-5 py-4"><div className="skeleton h-4 w-24" /></td>
-      ))}
-    </tr>
-  );
-}
-
 export default function StaffPage() {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<EditForm | null>(null);
@@ -115,92 +105,95 @@ export default function StaffPage() {
       </div>
 
       {/* Table */}
-      <div className="glass-card overflow-x-auto rounded-2xl">
-        <table className="min-w-full divide-y divide-gray-100">
-          <thead>
-            <tr className="bg-gray-50/60">
-              {['Name', 'Email', 'Role', 'Status', ''].map((h) => (
-                <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">{h}</th>
+      <div className="glass-card-static overflow-hidden rounded-2xl">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-100">
+            <thead>
+              <tr className="bg-gray-50/60">
+                {['Name', 'Email', 'Role', 'Status', ''].map((h) => (
+                  <th key={h} className="table-header">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {staff.isLoading && [1, 2].map((i) => (
+                <tr key={i}>
+                  {[1, 2, 3, 4, 5].map((j) => (
+                    <td key={j} className="table-cell"><div className="skeleton h-4 w-24" /></td>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {staff.isLoading && (
-              <>
-                <ShimmerRow />
-                <ShimmerRow />
-              </>
-            )}
-            {staff.data?.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-5 py-10 text-center text-sm text-gray-400">
-                  No staff members yet.
-                </td>
-              </tr>
-            )}
-            {staff.data?.map((s) => (
-              <tr key={s.id} className="transition-colors hover:bg-indigo-50/40">
-                <td className="px-5 py-3.5 text-sm font-medium text-gray-900">{s.display_name}</td>
-                <td className="px-5 py-3.5 text-sm text-gray-600">{s.email}</td>
-                <td className="px-5 py-3.5">
-                  <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${ROLE_BADGE[s.role as StaffRole]}`}>
-                    {ROLE_LABELS[s.role as StaffRole]}
-                  </span>
-                </td>
-                <td className="px-5 py-3.5">
-                  {s.active ? (
-                    <span className="inline-block rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-medium text-emerald-600 border border-emerald-500/25">
-                      Active
+              {staff.data?.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="table-cell text-center py-10 text-gray-400">
+                    No staff members yet.
+                  </td>
+                </tr>
+              )}
+              {staff.data?.map((s) => (
+                <tr key={s.id} className="table-row-hover">
+                  <td className="table-cell font-medium text-gray-900">{s.display_name}</td>
+                  <td className="table-cell text-gray-600">{s.email}</td>
+                  <td className="table-cell">
+                    <span className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${ROLE_BADGE[s.role as StaffRole]}`}>
+                      {ROLE_LABELS[s.role as StaffRole]}
                     </span>
-                  ) : (
-                    <span className="inline-block rounded-full bg-gray-500/15 px-2.5 py-0.5 text-xs font-medium text-gray-500 border border-gray-500/20">
-                      Inactive
-                    </span>
-                  )}
-                </td>
-                <td className="px-5 py-3.5 text-right">
-                  {s.role !== 'owner' && (
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={() =>
-                          setEditTarget({
-                            id: s.id,
-                            display_name: s.display_name,
-                            role: s.role as 'admin' | 'instructor' | 'front_desk',
-                            phone: s.phone ?? '',
-                          })
-                        }
-                        className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-indigo-50 hover:text-indigo-600"
-                        title="Edit"
-                      >
-                        <Pencil size={15} />
-                      </button>
-                      {s.active ? (
+                  </td>
+                  <td className="table-cell">
+                    {s.active ? (
+                      <span className="inline-block rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-medium text-emerald-600 border border-emerald-500/25">
+                        Active
+                      </span>
+                    ) : (
+                      <span className="inline-block rounded-full bg-gray-500/15 px-2.5 py-0.5 text-[11px] font-medium text-gray-500 border border-gray-500/20">
+                        Inactive
+                      </span>
+                    )}
+                  </td>
+                  <td className="table-cell text-right">
+                    {s.role !== 'owner' && (
+                      <div className="flex items-center justify-end gap-1">
                         <button
-                          onClick={() => removeMutation.mutate({ id: s.id })}
-                          disabled={removeMutation.isPending}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
-                          title="Deactivate"
+                          onClick={() =>
+                            setEditTarget({
+                              id: s.id,
+                              display_name: s.display_name,
+                              role: s.role as 'admin' | 'instructor' | 'front_desk',
+                              phone: s.phone ?? '',
+                            })
+                          }
+                          className="icon-btn"
+                          title="Edit"
                         >
-                          <UserX size={15} />
+                          <Pencil size={15} />
                         </button>
-                      ) : (
-                        <button
-                          onClick={() => reactivateMutation.mutate({ id: s.id, active: true })}
-                          disabled={reactivateMutation.isPending}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-emerald-50 hover:text-emerald-600"
-                          title="Reactivate"
-                        >
-                          <UserCheck size={15} />
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                        {s.active ? (
+                          <button
+                            onClick={() => removeMutation.mutate({ id: s.id })}
+                            disabled={removeMutation.isPending}
+                            className="icon-btn icon-btn-danger"
+                            title="Deactivate"
+                          >
+                            <UserX size={15} />
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => reactivateMutation.mutate({ id: s.id, active: true })}
+                            disabled={reactivateMutation.isPending}
+                            className="icon-btn icon-btn-success"
+                            title="Reactivate"
+                          >
+                            <UserCheck size={15} />
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Invite Modal */}
@@ -235,7 +228,7 @@ export default function StaffPage() {
 
           <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
             <button type="button" onClick={() => setInviteOpen(false)}
-              className="h-11 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
+              className="btn-outline h-11 rounded-xl px-5 text-sm font-medium">
               Cancel
             </button>
             <button type="submit" disabled={inviteMutation.isPending}
@@ -279,7 +272,7 @@ export default function StaffPage() {
 
             <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
               <button type="button" onClick={() => setEditTarget(null)}
-                className="h-11 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
+                className="btn-outline h-11 rounded-xl px-5 text-sm font-medium">
                 Cancel
               </button>
               <button type="submit" disabled={updateMutation.isPending}

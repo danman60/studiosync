@@ -22,16 +22,6 @@ type EditForm = {
   medical_notes: string;
 };
 
-function ShimmerCard() {
-  return (
-    <div className="glass-card rounded-2xl p-6">
-      <div className="skeleton h-6 w-40 mb-2" />
-      <div className="skeleton h-4 w-56 mb-4" />
-      <div className="skeleton h-20 w-full" />
-    </div>
-  );
-}
-
 export default function MyChildrenPage() {
   const [editTarget, setEditTarget] = useState<EditForm | null>(null);
   const [showAdd, setShowAdd] = useState(false);
@@ -91,7 +81,7 @@ export default function MyChildrenPage() {
         </div>
         <button
           onClick={() => setShowAdd(true)}
-          className="btn-gradient inline-flex h-10 items-center gap-2 rounded-xl px-5 text-sm font-medium"
+          className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-medium"
         >
           <Plus size={16} /> Add Student
         </button>
@@ -99,13 +89,18 @@ export default function MyChildrenPage() {
 
       {children.isLoading && (
         <div className="space-y-4">
-          <ShimmerCard />
-          <ShimmerCard />
+          {[1, 2].map((i) => (
+            <div key={i} className="glass-card rounded-2xl p-6">
+              <div className="skeleton h-6 w-40 mb-2" />
+              <div className="skeleton h-4 w-56 mb-4" />
+              <div className="skeleton h-20 w-full" />
+            </div>
+          ))}
         </div>
       )}
 
       {children.data?.length === 0 && !children.isLoading && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white/60 py-20">
+        <div className="empty-state">
           <Users size={24} className="mb-3 text-indigo-400" />
           <p className="text-sm font-medium text-gray-600">No students yet</p>
           <p className="mt-1 text-xs text-gray-400">Add your first student to get started.</p>
@@ -130,7 +125,7 @@ export default function MyChildrenPage() {
                     {child.date_of_birth && <span>DOB: {child.date_of_birth}</span>}
                     {child.gender && <span>{child.gender}</span>}
                     {!child.active && (
-                      <span className="rounded-full bg-gray-500/15 px-2 py-0.5 text-xs text-gray-500 border border-gray-500/20">Inactive</span>
+                      <span className="rounded-full bg-gray-500/15 px-2 py-0.5 text-[11px] font-medium text-gray-500 border border-gray-500/20">Inactive</span>
                     )}
                   </div>
                 </div>
@@ -145,10 +140,10 @@ export default function MyChildrenPage() {
                       medical_notes: child.medical_notes ?? '',
                     })
                   }
-                  className="flex h-10 w-10 items-center justify-center rounded-xl text-gray-400 transition-colors hover:bg-indigo-50 hover:text-indigo-600"
+                  className="icon-btn"
                   title="Edit"
                 >
-                  <Pencil size={16} />
+                  <Pencil size={15} />
                 </button>
               </div>
 
@@ -166,14 +161,14 @@ export default function MyChildrenPage() {
                       <div key={en.id} className="flex items-center gap-2.5 text-sm">
                         {en.classes?.class_types && (
                           <span
-                            className="rounded-full px-2.5 py-0.5 text-xs font-medium text-white"
+                            className="rounded-full px-2.5 py-0.5 text-[11px] font-medium text-white"
                             style={{ backgroundColor: en.classes.class_types.color }}
                           >
                             {en.classes.class_types.name}
                           </span>
                         )}
                         <span className="text-gray-700">{en.classes?.name ?? '—'}</span>
-                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE[en.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                        <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_BADGE[en.status] ?? 'bg-gray-100 text-gray-600'}`}>
                           {en.status}
                         </span>
                       </div>
@@ -233,7 +228,7 @@ export default function MyChildrenPage() {
           {addMutation.error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{addMutation.error.message}</p>}
           <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
             <button type="button" onClick={() => setShowAdd(false)}
-              className="h-11 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">Cancel</button>
+              className="btn-outline h-11 rounded-xl px-5 text-sm font-medium">Cancel</button>
             <button type="submit" disabled={addMutation.isPending}
               className="btn-gradient h-11 rounded-xl px-5 text-sm font-medium">
               {addMutation.isPending ? 'Adding...' : 'Add Student'}
@@ -292,7 +287,7 @@ export default function MyChildrenPage() {
 
             <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
               <button type="button" onClick={() => setEditTarget(null)}
-                className="h-11 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">Cancel</button>
+                className="btn-outline h-11 rounded-xl px-5 text-sm font-medium">Cancel</button>
               <button type="submit" disabled={updateMutation.isPending}
                 className="btn-gradient h-11 rounded-xl px-5 text-sm font-medium">
                 {updateMutation.isPending ? 'Saving...' : 'Save'}

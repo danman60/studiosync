@@ -18,20 +18,6 @@ const STATUS_BADGE: Record<string, string> = {
   waitlisted: 'bg-blue-500/15 text-blue-600 border border-blue-500/25',
 };
 
-function ShimmerCards() {
-  return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-      {[...Array(3)].map((_, i) => (
-        <div key={i} className="glass-card rounded-2xl p-6">
-          <div className="skeleton h-10 w-10 rounded-xl mb-3" />
-          <div className="skeleton h-6 w-16 mb-1" />
-          <div className="skeleton h-4 w-24" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export default function ParentDashboardPage() {
   const dashboard = trpc.portal.dashboardData.useQuery();
 
@@ -40,7 +26,15 @@ export default function ParentDashboardPage() {
       <div>
         <div className="skeleton h-8 w-48 mb-2" />
         <div className="skeleton h-4 w-64 mb-8" />
-        <ShimmerCards />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="glass-card rounded-2xl p-6">
+              <div className="skeleton h-10 w-10 rounded-xl mb-3" />
+              <div className="skeleton h-6 w-16 mb-1" />
+              <div className="skeleton h-4 w-24" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -85,7 +79,7 @@ export default function ParentDashboardPage() {
             <Users size={20} />
           </div>
           <div>
-            <p className="text-2xl font-bold text-gray-900">{d.children.length}</p>
+            <p className="stat-number">{d.children.length}</p>
             <p className="text-sm text-gray-500">Students</p>
           </div>
         </div>
@@ -94,7 +88,7 @@ export default function ParentDashboardPage() {
             <BookOpen size={20} />
           </div>
           <div>
-            <p className="text-2xl font-bold text-gray-900">{d.enrollments.length}</p>
+            <p className="stat-number">{d.enrollments.length}</p>
             <p className="text-sm text-gray-500">Active Enrollments</p>
           </div>
         </div>
@@ -113,7 +107,9 @@ export default function ParentDashboardPage() {
       </div>
 
       {/* Enrollments */}
-      <h2 className="mt-8 text-lg font-semibold text-gray-900">Current Enrollments</h2>
+      <h2 className="section-heading text-base mt-8">
+        <BookOpen size={16} /> Current Enrollments
+      </h2>
       {d.enrollments.length === 0 ? (
         <p className="mt-3 text-sm text-gray-400">No active enrollments.</p>
       ) : (
@@ -131,7 +127,7 @@ export default function ParentDashboardPage() {
                 <div className="flex items-center gap-4">
                   {cls?.class_types && (
                     <span
-                      className="rounded-full px-2.5 py-0.5 text-xs font-medium text-white"
+                      className="rounded-full px-2.5 py-0.5 text-[11px] font-medium text-white"
                       style={{ backgroundColor: cls.class_types.color }}
                     >
                       {cls.class_types.name}
@@ -151,7 +147,7 @@ export default function ParentDashboardPage() {
                   <span className="text-sm text-gray-600">
                     {child ? `${child.first_name} ${child.last_name}` : '—'}
                   </span>
-                  <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[en.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                  <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_BADGE[en.status] ?? 'bg-gray-100 text-gray-600'}`}>
                     {en.status}
                   </span>
                 </div>

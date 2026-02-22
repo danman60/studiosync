@@ -55,16 +55,6 @@ const emptyForm: FormData = {
   allow_drop_in: false,
 };
 
-function ShimmerRow() {
-  return (
-    <tr>
-      {[...Array(8)].map((_, i) => (
-        <td key={i} className="px-5 py-4"><div className="skeleton h-4 w-20" /></td>
-      ))}
-    </tr>
-  );
-}
-
 export default function ClassesPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -161,7 +151,7 @@ export default function ClassesPage() {
 
   const isSaving = createMutation.isPending || updateMutation.isPending;
   const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
-  const selectClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
+  const selectClass = inputClass;
 
   return (
     <div>
@@ -181,93 +171,85 @@ export default function ClassesPage() {
       </div>
 
       {/* Table */}
-      <div className="glass-card overflow-x-auto rounded-2xl">
-        <table className="min-w-full divide-y divide-gray-100">
-          <thead>
-            <tr className="bg-gray-50/60">
-              {['Name', 'Type', 'Level', 'Day / Time', 'Instructor', 'Enrolled', 'Season', ''].map(
-                (h) => (
-                  <th
-                    key={h}
-                    className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
-                  >
-                    {h}
-                  </th>
-                )
+      <div className="glass-card-static overflow-hidden rounded-2xl">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-100">
+            <thead>
+              <tr className="bg-gray-50/60">
+                {['Name', 'Type', 'Level', 'Day / Time', 'Instructor', 'Enrolled', 'Season', ''].map(
+                  (h) => (
+                    <th key={h} className="table-header">{h}</th>
+                  )
+                )}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {classes.isLoading && [1, 2, 3].map((i) => (
+                <tr key={i}>
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((j) => (
+                    <td key={j} className="table-cell"><div className="skeleton h-4 w-20" /></td>
+                  ))}
+                </tr>
+              ))}
+              {classes.data?.length === 0 && (
+                <tr>
+                  <td colSpan={8} className="table-cell text-center py-10 text-gray-400">
+                    No classes yet. Click &quot;Add Class&quot; to create one.
+                  </td>
+                </tr>
               )}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {classes.isLoading && (
-              <>
-                <ShimmerRow />
-                <ShimmerRow />
-                <ShimmerRow />
-              </>
-            )}
-            {classes.data?.length === 0 && (
-              <tr>
-                <td colSpan={8} className="px-5 py-10 text-center text-sm text-gray-400">
-                  No classes yet. Click &quot;Add Class&quot; to create one.
-                </td>
-              </tr>
-            )}
-            {classes.data?.map((cls) => (
-              <tr key={cls.id} className="transition-colors hover:bg-indigo-50/40">
-                <td className="px-5 py-3.5 text-sm font-medium text-gray-900">{cls.name}</td>
-                <td className="px-5 py-3.5">
-                  <span
-                    className="inline-block rounded-full px-2.5 py-0.5 text-xs font-medium text-white"
-                    style={{ backgroundColor: cls.class_types?.color ?? '#6366f1' }}
-                  >
-                    {cls.class_types?.name ?? '—'}
-                  </span>
-                </td>
-                <td className="px-5 py-3.5 text-sm text-gray-600">{cls.levels?.name ?? '—'}</td>
-                <td className="px-5 py-3.5 text-sm text-gray-600">
-                  {DAYS[cls.day_of_week]} {formatTime(cls.start_time)}–{formatTime(cls.end_time)}
-                </td>
-                <td className="px-5 py-3.5 text-sm text-gray-600">
-                  {cls.staff?.display_name ?? '—'}
-                </td>
-                <td className="px-5 py-3.5 text-sm text-gray-600">
-                  <span className="font-medium text-gray-900">{cls.enrolled_count}</span>
-                  <span className="text-gray-400">/{cls.capacity}</span>
-                </td>
-                <td className="px-5 py-3.5 text-sm text-gray-600">
-                  {cls.seasons?.name ?? '—'}
-                </td>
-                <td className="px-5 py-3.5 text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <button
-                      onClick={() => openEdit(cls)}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-indigo-50 hover:text-indigo-600"
-                      title="Edit"
+              {classes.data?.map((cls) => (
+                <tr key={cls.id} className="table-row-hover">
+                  <td className="table-cell font-medium text-gray-900">{cls.name}</td>
+                  <td className="table-cell">
+                    <span
+                      className="inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium text-white"
+                      style={{ backgroundColor: cls.class_types?.color ?? '#6366f1' }}
                     >
-                      <Pencil size={15} />
-                    </button>
-                    <button
-                      onClick={() => setDeleteId(cls.id)}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
-                      title="Delete"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                      {cls.class_types?.name ?? '—'}
+                    </span>
+                  </td>
+                  <td className="table-cell text-gray-600">{cls.levels?.name ?? '—'}</td>
+                  <td className="table-cell text-gray-600">
+                    {DAYS[cls.day_of_week]} {formatTime(cls.start_time)}–{formatTime(cls.end_time)}
+                  </td>
+                  <td className="table-cell text-gray-600">
+                    {cls.staff?.display_name ?? '—'}
+                  </td>
+                  <td className="table-cell text-gray-600">
+                    <span className="font-medium text-gray-900">{cls.enrolled_count}</span>
+                    <span className="text-gray-400">/{cls.capacity}</span>
+                  </td>
+                  <td className="table-cell text-gray-600">
+                    {cls.seasons?.name ?? '—'}
+                  </td>
+                  <td className="table-cell text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <button
+                        onClick={() => openEdit(cls)}
+                        className="icon-btn"
+                        title="Edit"
+                      >
+                        <Pencil size={15} />
+                      </button>
+                      <button
+                        onClick={() => setDeleteId(cls.id)}
+                        className="icon-btn icon-btn-danger"
+                        title="Delete"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Create/Edit Modal */}
-      <Modal
-        open={modalOpen}
-        onClose={closeModal}
-        title={editingId ? 'Edit Class' : 'Add Class'}
-        wide
-      >
+      <Modal open={modalOpen} onClose={closeModal} title={editingId ? 'Edit Class' : 'Add Class'} wide>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Name *</label>
@@ -429,7 +411,7 @@ export default function ClassesPage() {
 
           <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
             <button type="button" onClick={closeModal}
-              className="h-11 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
+              className="btn-outline h-11 rounded-xl px-5 text-sm font-medium">
               Cancel
             </button>
             <button type="submit" disabled={isSaving}
@@ -450,12 +432,12 @@ export default function ClassesPage() {
         )}
         <div className="mt-6 flex justify-end gap-3">
           <button onClick={() => setDeleteId(null)}
-            className="h-11 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
+            className="btn-outline h-11 rounded-xl px-5 text-sm font-medium">
             Cancel
           </button>
           <button onClick={() => deleteId && deleteMutation.mutate({ id: deleteId })}
             disabled={deleteMutation.isPending}
-            className="h-11 rounded-xl bg-red-600 px-5 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50">
+            className="btn-danger h-11 rounded-xl px-5 text-sm font-medium disabled:opacity-50">
             {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
           </button>
         </div>
