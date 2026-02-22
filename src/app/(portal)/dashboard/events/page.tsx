@@ -27,10 +27,11 @@ export default function ParentEventsPage() {
 
       {isLoading && (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="animate-pulse rounded-2xl border border-gray-200/60 bg-white/80 p-5">
-              <div className="mb-3 h-5 w-40 rounded bg-gray-200/60" />
-              <div className="h-4 w-24 rounded bg-gray-200/40" />
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="glass-card rounded-2xl p-5">
+              <div className="mb-3 skeleton h-5 w-40" />
+              <div className="skeleton h-4 w-24" />
+              <div className="mt-3 skeleton h-3 w-32" />
             </div>
           ))}
         </div>
@@ -45,8 +46,7 @@ export default function ParentEventsPage() {
             return (
               <div
                 key={evt.id}
-                className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/5"
-                style={{ animationDelay: `${idx * 50}ms` }}
+                className={`glass-card rounded-2xl p-5 animate-fade-in-up stagger-${Math.min(idx + 1, 8)}`}
               >
                 <h3 className="text-base font-semibold text-gray-900">{evt.name}</h3>
                 {evt.description && (
@@ -60,13 +60,13 @@ export default function ParentEventsPage() {
                 <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
                   <span className="text-sm font-semibold text-gray-900">{formatCents(evt.ticket_price)}</span>
                   {soldOut ? (
-                    <span className="rounded-full bg-red-500/15 border border-red-500/25 px-3 py-1 text-xs font-medium text-red-600">Sold Out</span>
+                    <span className="rounded-full bg-red-500/15 border border-red-500/25 px-3 py-1 text-[11px] font-medium text-red-600">Sold Out</span>
                   ) : (
                     <div className="flex items-center gap-2">
                       {available !== null && (
                         <span className="text-xs text-gray-400">{available} left</span>
                       )}
-                      <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 text-xs font-medium text-indigo-600">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 text-[11px] font-medium text-indigo-600">
                         <Ticket size={12} /> Available
                       </span>
                     </div>
@@ -79,8 +79,10 @@ export default function ParentEventsPage() {
       )}
 
       {!isLoading && (events ?? []).length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white/60 py-20">
-          <Calendar size={24} className="mb-3 text-indigo-400" />
+        <div className="empty-state">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
+            <Calendar size={24} className="text-indigo-400" />
+          </div>
           <p className="text-sm font-medium text-gray-600">No upcoming events</p>
           <p className="mt-1 text-xs text-gray-400">Check back later for performances and recitals.</p>
         </div>

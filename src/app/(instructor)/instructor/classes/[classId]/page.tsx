@@ -32,7 +32,7 @@ export default function InstructorClassDetailPage() {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <Link href="/instructor/classes" className="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700">
+        <Link href="/instructor/classes" className="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 transition-colors">
           <ArrowLeft size={16} /> Back to My Classes
         </Link>
         {cls ? (
@@ -56,7 +56,7 @@ export default function InstructorClassDetailPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-8">
         <Link
           href={`/instructor/classes/${classId}/attendance`}
-          className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 p-6 transition-colors hover:bg-indigo-50/60"
+          className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 p-6 animate-fade-in-up stagger-1"
         >
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
             <CheckSquare size={22} />
@@ -67,7 +67,7 @@ export default function InstructorClassDetailPage() {
           </div>
         </Link>
 
-        <div className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 p-6">
+        <div className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 p-6 animate-fade-in-up stagger-2">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
             <Users size={22} />
           </div>
@@ -83,8 +83,8 @@ export default function InstructorClassDetailPage() {
       {/* Attendance Summary */}
       {summary.data && summary.data.totalSessions > 0 && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Attendance Summary</h2>
-          <div className="glass-card rounded-2xl p-5">
+          <h2 className="section-heading text-sm mb-3"><CheckSquare size={16} /> Attendance Summary</h2>
+          <div className="glass-card-static rounded-2xl p-5">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               {(['present', 'absent', 'late', 'excused'] as const).map((status) => {
                 const count = summary.data?.attendanceByStatus[status] ?? 0;
@@ -96,7 +96,7 @@ export default function InstructorClassDetailPage() {
                 };
                 return (
                   <div key={status} className="text-center">
-                    <p className={`text-2xl font-bold ${colors[status]}`}>{count}</p>
+                    <p className={`stat-number ${colors[status]}`}>{count}</p>
                     <p className="text-xs text-gray-500 capitalize">{status}</p>
                   </div>
                 );
@@ -108,16 +108,15 @@ export default function InstructorClassDetailPage() {
 
       {/* Roster */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-3">Class Roster</h2>
-        <div className="glass-card overflow-x-auto rounded-2xl">
+        <h2 className="section-heading text-sm mb-3"><Users size={16} /> Class Roster</h2>
+        <div className="glass-card-static overflow-hidden rounded-2xl">
           <table className="min-w-full divide-y divide-gray-100">
             <thead>
               <tr className="bg-gray-50/60">
-                {['Student', 'Age', 'Medical Notes', 'Status'].map((h) => (
-                  <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
-                    {h}
-                  </th>
-                ))}
+                <th className="table-header">Student</th>
+                <th className="table-header">Age</th>
+                <th className="table-header">Medical Notes</th>
+                <th className="table-header text-center">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -151,28 +150,29 @@ export default function InstructorClassDetailPage() {
                   ? calculateAge(child.date_of_birth)
                   : null;
 
-                const statusColors: Record<string, string> = {
-                  active: 'bg-emerald-500/15 text-emerald-600',
-                  pending: 'bg-amber-500/15 text-amber-600',
-                };
-
                 return (
-                  <tr key={enrollment.id} className="transition-colors hover:bg-indigo-50/40">
-                    <td className="px-5 py-3.5 text-sm font-medium text-gray-900">
+                  <tr key={enrollment.id} className="table-row-hover">
+                    <td className="table-cell font-medium text-gray-900">
                       {child.first_name} {child.last_name}
                     </td>
-                    <td className="px-5 py-3.5 text-sm text-gray-600">
+                    <td className="table-cell text-gray-600">
                       {age !== null ? `${age} yrs` : '—'}
                     </td>
-                    <td className="px-5 py-3.5 text-sm text-gray-600">
+                    <td className="table-cell text-gray-600">
                       {child.medical_notes ? (
                         <span className="text-amber-600">{child.medical_notes}</span>
                       ) : (
                         <span className="text-gray-400">None</span>
                       )}
                     </td>
-                    <td className="px-5 py-3.5">
-                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[enrollment.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                    <td className="table-cell text-center">
+                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+                        enrollment.status === 'active'
+                          ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25'
+                          : enrollment.status === 'pending'
+                            ? 'bg-amber-500/15 text-amber-600 border border-amber-500/25'
+                            : 'bg-gray-100 text-gray-600'
+                      }`}>
                         {enrollment.status}
                       </span>
                     </td>

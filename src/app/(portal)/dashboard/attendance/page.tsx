@@ -34,17 +34,19 @@ export default function ParentAttendancePage() {
       {isLoading && (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse rounded-2xl border border-gray-200/60 bg-white/80 p-5">
-              <div className="mb-2 h-5 w-32 rounded bg-gray-200/60" />
-              <div className="h-4 w-48 rounded bg-gray-200/40" />
+            <div key={i} className="glass-card-static rounded-2xl p-5">
+              <div className="mb-2 skeleton h-5 w-32" />
+              <div className="skeleton h-4 w-48" />
             </div>
           ))}
         </div>
       )}
 
       {!isLoading && byChild.size === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white/60 py-20">
-          <CheckSquare size={24} className="mb-3 text-indigo-400" />
+        <div className="empty-state">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
+            <CheckSquare size={24} className="text-indigo-400" />
+          </div>
           <p className="text-sm font-medium text-gray-600">No attendance records yet</p>
           <p className="mt-1 text-xs text-gray-400">Attendance will appear here once classes begin.</p>
         </div>
@@ -54,35 +56,35 @@ export default function ParentAttendancePage() {
         <div className="space-y-8">
           {Array.from(byChild.entries()).map(([childId, { childName, records }]) => (
             <div key={childId}>
-              <h2 className="mb-3 text-base font-semibold text-gray-900">{childName}</h2>
-              <div className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm overflow-hidden">
+              <h2 className="section-heading text-sm mb-3"><CheckSquare size={16} /> {childName}</h2>
+              <div className="glass-card-static overflow-hidden rounded-2xl">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-gray-100 bg-gray-50/50">
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Date</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Class</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Status</th>
+                    <tr className="bg-gray-50/60">
+                      <th className="table-header">Date</th>
+                      <th className="table-header">Class</th>
+                      <th className="table-header text-center">Status</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-gray-50">
                     {(records ?? []).map((rec) => {
                       const session = rec.class_sessions as unknown as {
                         session_date: string;
                         classes: { name: string } | null;
                       } | null;
                       return (
-                        <tr key={rec.id} className="border-b border-gray-50 transition-colors hover:bg-indigo-50/30">
-                          <td className="px-4 py-3 text-sm text-gray-700">
+                        <tr key={rec.id} className="table-row-hover">
+                          <td className="table-cell text-gray-700">
                             <span className="inline-flex items-center gap-1">
                               <Calendar size={12} className="text-gray-400" />
                               {session?.session_date ?? '—'}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-700">
+                          <td className="table-cell text-gray-700">
                             {session?.classes?.name ?? '—'}
                           </td>
-                          <td className="px-4 py-3">
-                            <span className={`inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-medium ${STATUS_COLORS[rec.status] ?? ''}`}>
+                          <td className="table-cell text-center">
+                            <span className={`inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_COLORS[rec.status] ?? ''}`}>
                               {rec.status}
                             </span>
                           </td>

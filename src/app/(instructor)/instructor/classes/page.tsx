@@ -26,7 +26,7 @@ export default function InstructorClassesPage() {
       {classes.isLoading && (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="glass-card rounded-2xl p-6">
+            <div key={i} className="glass-card-static rounded-2xl p-6">
               <div className="skeleton h-5 w-32 mb-3" />
               <div className="skeleton h-4 w-48" />
             </div>
@@ -35,9 +35,9 @@ export default function InstructorClassesPage() {
       )}
 
       {!classes.isLoading && (classes.data?.length ?? 0) === 0 && (
-        <div className="glass-card rounded-2xl p-12 text-center">
-          <p className="text-gray-500">No classes assigned to you yet.</p>
-          <p className="mt-1 text-sm text-gray-400">Contact your studio director to be assigned to classes.</p>
+        <div className="empty-state">
+          <p className="text-sm font-medium text-gray-600">No classes assigned to you yet.</p>
+          <p className="mt-1 text-xs text-gray-400">Contact your studio director to be assigned to classes.</p>
         </div>
       )}
 
@@ -50,7 +50,7 @@ export default function InstructorClassesPage() {
                 {DAY_NAMES[Number(day)]}
               </h2>
               <div className="space-y-3">
-                {(dayClasses ?? []).map((cls) => {
+                {(dayClasses ?? []).map((cls, idx) => {
                   const classType = cls.class_types as unknown as { name: string; color: string } | null;
                   const level = cls.levels as unknown as { name: string } | null;
                   const season = cls.seasons as unknown as { name: string; is_current: boolean } | null;
@@ -58,7 +58,7 @@ export default function InstructorClassesPage() {
                     <Link
                       key={cls.id}
                       href={`/instructor/classes/${cls.id}`}
-                      className="glass-card flex items-center justify-between rounded-2xl p-5 transition-colors hover:bg-indigo-50/40"
+                      className={`glass-card flex items-center justify-between rounded-2xl p-5 animate-fade-in-up stagger-${Math.min(idx + 1, 8)}`}
                     >
                       <div className="flex items-center gap-4">
                         <div

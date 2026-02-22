@@ -23,7 +23,6 @@ export default function ProgressPage() {
   });
   const upsertMark = trpc.instructor.upsertProgressMark.useMutation();
 
-  // Build a lookup: childId → mark data for current category
   const marksByChild = useMemo(() => {
     const map: Record<string, { mark?: string | null; score?: number | null; comments?: string | null }> = {};
     for (const m of marks ?? []) {
@@ -89,7 +88,7 @@ export default function ProgressPage() {
           <button
             onClick={saveAll}
             disabled={saving}
-            className="btn-gradient inline-flex h-10 items-center gap-2 rounded-xl px-5 text-sm font-medium disabled:opacity-50"
+            className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-medium disabled:opacity-50"
           >
             <Save size={16} />
             {saving ? 'Saving...' : 'Save Changes'}
@@ -104,7 +103,7 @@ export default function ProgressPage() {
           <select
             value={period}
             onChange={(e) => { setPeriod(e.target.value); setEdits({}); }}
-            className="h-9 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+            className="h-11 rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-700 input-glow"
           >
             <option value="current">Current</option>
             <option value="fall-2025">Fall 2025</option>
@@ -120,11 +119,7 @@ export default function ProgressPage() {
               <button
                 key={cat}
                 onClick={() => { setCategory(cat); setEdits({}); }}
-                className={`inline-flex h-9 items-center rounded-full border px-3.5 text-xs font-medium transition-all ${
-                  category === cat
-                    ? 'border-indigo-500/30 bg-indigo-500/10 text-indigo-700'
-                    : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
-                }`}
+                className={`filter-chip ${category === cat ? 'filter-chip-active' : ''}`}
               >
                 {cat}
               </button>
@@ -135,34 +130,32 @@ export default function ProgressPage() {
 
       {/* Student grid */}
       {roster && roster.length > 0 ? (
-        <div className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm overflow-hidden">
+        <div className="glass-card-static overflow-hidden rounded-2xl">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50/50">
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Student</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 w-32">Mark</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 w-24">Score</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Comments</th>
+              <tr className="bg-gray-50/60">
+                <th className="table-header">Student</th>
+                <th className="table-header w-32">Mark</th>
+                <th className="table-header w-24">Score</th>
+                <th className="table-header">Comments</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-50">
               {roster.map((enrollment) => {
                 const child = enrollment.children as unknown as { id: string; first_name: string; last_name: string } | null;
                 if (!child) return null;
                 const data = getEdit(child.id);
 
                 return (
-                  <tr key={child.id} className="border-b border-gray-50 transition-colors hover:bg-indigo-50/30">
-                    <td className="px-4 py-3">
-                      <span className="text-sm font-medium text-gray-900">
-                        {child.first_name} {child.last_name}
-                      </span>
+                  <tr key={child.id} className="table-row-hover">
+                    <td className="table-cell font-medium text-gray-900">
+                      {child.first_name} {child.last_name}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="table-cell">
                       <select
                         value={data.mark ?? ''}
                         onChange={(e) => setEdit(child.id, 'mark', e.target.value || undefined)}
-                        className="h-8 w-full rounded-lg border border-gray-200 bg-white px-2 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                        className="h-9 w-full rounded-lg border border-gray-200 bg-white px-2 text-sm input-glow"
                       >
                         <option value="">—</option>
                         {MARK_OPTIONS.map((m) => (
@@ -170,7 +163,7 @@ export default function ProgressPage() {
                         ))}
                       </select>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="table-cell">
                       <input
                         type="number"
                         min={0}
@@ -178,16 +171,16 @@ export default function ProgressPage() {
                         value={data.score ?? ''}
                         onChange={(e) => setEdit(child.id, 'score', e.target.value ? Number(e.target.value) : undefined)}
                         placeholder="0-100"
-                        className="h-8 w-full rounded-lg border border-gray-200 bg-white px-2 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                        className="h-9 w-full rounded-lg border border-gray-200 bg-white px-2 text-sm input-glow"
                       />
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="table-cell">
                       <input
                         type="text"
                         value={data.comments ?? ''}
                         onChange={(e) => setEdit(child.id, 'comments', e.target.value || undefined)}
                         placeholder="Optional notes..."
-                        className="h-8 w-full rounded-lg border border-gray-200 bg-white px-2 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                        className="h-9 w-full rounded-lg border border-gray-200 bg-white px-2 text-sm input-glow"
                       />
                     </td>
                   </tr>
@@ -197,8 +190,10 @@ export default function ProgressPage() {
           </table>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white/60 py-16">
-          <Award size={24} className="mb-3 text-indigo-400" />
+        <div className="empty-state">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
+            <Award size={24} className="text-indigo-400" />
+          </div>
           <p className="text-sm font-medium text-gray-600">No students enrolled</p>
           <p className="mt-1 text-xs text-gray-400">Enrolled students will appear here for progress marking.</p>
         </div>

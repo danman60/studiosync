@@ -66,19 +66,17 @@ export default function ParentProfilePage() {
     });
   };
 
-  const inputClass = 'h-10 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20';
-
   if (isLoading) {
     return (
       <div>
         <div className="mb-8">
-          <div className="h-8 w-40 animate-pulse rounded bg-gray-200/60" />
+          <div className="skeleton h-8 w-40" />
         </div>
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse rounded-2xl border border-gray-200/60 bg-white/80 p-6">
-              <div className="h-5 w-32 rounded bg-gray-200/60 mb-3" />
-              <div className="h-10 w-full rounded bg-gray-200/40" />
+            <div key={i} className="glass-card-static rounded-2xl p-6">
+              <div className="skeleton h-5 w-32 mb-3" />
+              <div className="skeleton h-11 w-full" />
             </div>
           ))}
         </div>
@@ -95,76 +93,67 @@ export default function ParentProfilePage() {
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
         {/* Name */}
-        <div className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <User size={16} className="text-indigo-500" />
-            <h2 className="text-sm font-semibold text-gray-900">Personal Information</h2>
-          </div>
+        <div className="glass-card-static rounded-2xl p-6">
+          <h2 className="section-heading text-sm mb-4"><User size={16} className="text-indigo-500" /> Personal Information</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs font-medium text-gray-600">First Name</label>
-              <input value={form.parent_first_name} onChange={(e) => setForm({ ...form, parent_first_name: e.target.value })} className={inputClass} />
+              <input value={form.parent_first_name} onChange={(e) => setForm({ ...form, parent_first_name: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium text-gray-600">Last Name</label>
-              <input value={form.parent_last_name} onChange={(e) => setForm({ ...form, parent_last_name: e.target.value })} className={inputClass} />
+              <input value={form.parent_last_name} onChange={(e) => setForm({ ...form, parent_last_name: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium text-gray-600">Phone</label>
-              <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={inputClass} placeholder="(555) 123-4567" />
+              <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" placeholder="(555) 123-4567" />
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium text-gray-600">Email</label>
-              <input readOnly value={profile?.email ?? ''} className="h-10 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-3 text-sm text-gray-500" />
+              <input readOnly value={profile?.email ?? ''} className="h-11 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-3 text-sm text-gray-500" />
             </div>
           </div>
         </div>
 
         {/* Emergency Contact */}
-        <div className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Shield size={16} className="text-red-500" />
-            <h2 className="text-sm font-semibold text-gray-900">Emergency Contact</h2>
-          </div>
+        <div className="glass-card-static rounded-2xl p-6">
+          <h2 className="section-heading text-sm mb-4"><Shield size={16} className="text-red-500" /> Emergency Contact</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs font-medium text-gray-600">Contact Name</label>
-              <input value={form.emergency_contact_name} onChange={(e) => setForm({ ...form, emergency_contact_name: e.target.value })} className={inputClass} />
+              <input value={form.emergency_contact_name} onChange={(e) => setForm({ ...form, emergency_contact_name: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium text-gray-600">Contact Phone</label>
-              <input value={form.emergency_contact_phone} onChange={(e) => setForm({ ...form, emergency_contact_phone: e.target.value })} className={inputClass} />
+              <input value={form.emergency_contact_phone} onChange={(e) => setForm({ ...form, emergency_contact_phone: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
             </div>
           </div>
         </div>
 
         {/* Address */}
-        <div className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <MapPin size={16} className="text-indigo-500" />
-            <h2 className="text-sm font-semibold text-gray-900">Address</h2>
-          </div>
+        <div className="glass-card-static rounded-2xl p-6">
+          <h2 className="section-heading text-sm mb-4"><MapPin size={16} className="text-indigo-500" /> Address</h2>
           <div className="space-y-4">
             <div>
               <label className="mb-1 block text-xs font-medium text-gray-600">Address Line 1</label>
-              <input value={form.address_line1} onChange={(e) => setForm({ ...form, address_line1: e.target.value })} className={inputClass} />
+              <input value={form.address_line1} onChange={(e) => setForm({ ...form, address_line1: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium text-gray-600">Address Line 2</label>
-              <input value={form.address_line2} onChange={(e) => setForm({ ...form, address_line2: e.target.value })} className={inputClass} />
+              <input value={form.address_line2} onChange={(e) => setForm({ ...form, address_line2: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div>
                 <label className="mb-1 block text-xs font-medium text-gray-600">City</label>
-                <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className={inputClass} />
+                <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-gray-600">State</label>
-                <input value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className={inputClass} />
+                <input value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-gray-600">ZIP</label>
-                <input value={form.zip} onChange={(e) => setForm({ ...form, zip: e.target.value })} className={inputClass} />
+                <input value={form.zip} onChange={(e) => setForm({ ...form, zip: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
               </div>
             </div>
           </div>
@@ -175,7 +164,7 @@ export default function ParentProfilePage() {
           <button
             type="submit"
             disabled={updateMut.isPending}
-            className="btn-gradient inline-flex h-10 items-center gap-2 rounded-xl px-6 text-sm font-medium disabled:opacity-50"
+            className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-6 text-sm font-medium disabled:opacity-50"
           >
             <Save size={16} />
             {updateMut.isPending ? 'Saving...' : 'Save Changes'}

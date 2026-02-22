@@ -15,10 +15,11 @@ export default function ParentAnnouncementsPage() {
 
       {isLoading && (
         <div className="space-y-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="animate-pulse rounded-2xl border border-gray-200/60 bg-white/80 p-5">
-              <div className="mb-2 h-5 w-48 rounded bg-gray-200/60" />
-              <div className="h-4 w-full rounded bg-gray-200/40" />
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="glass-card rounded-2xl p-5">
+              <div className="mb-2 skeleton h-5 w-48" />
+              <div className="skeleton h-4 w-full" />
+              <div className="mt-2 skeleton h-3 w-32" />
             </div>
           ))}
         </div>
@@ -32,8 +33,7 @@ export default function ParentAnnouncementsPage() {
             return (
               <div
                 key={ann.id}
-                className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/5"
-                style={{ animationDelay: `${idx * 40}ms` }}
+                className={`glass-card rounded-2xl p-5 animate-fade-in-up stagger-${Math.min(idx + 1, 8)}`}
               >
                 <div className="flex items-start gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10">
@@ -60,8 +60,10 @@ export default function ParentAnnouncementsPage() {
       )}
 
       {!isLoading && (announcements ?? []).length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white/60 py-20">
-          <Megaphone size={24} className="mb-3 text-indigo-400" />
+        <div className="empty-state">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
+            <Megaphone size={24} className="text-indigo-400" />
+          </div>
           <p className="text-sm font-medium text-gray-600">No announcements</p>
           <p className="mt-1 text-xs text-gray-400">Your studio has not posted any announcements yet.</p>
         </div>

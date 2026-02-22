@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { trpc } from '@/lib/trpc';
-import { Clock, MapPin } from 'lucide-react';
+import { Clock, MapPin, Calendar } from 'lucide-react';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -24,7 +24,6 @@ export default function InstructorCalendarPage() {
       if (!map[d]) map[d] = [];
       map[d]!.push(cls);
     }
-    // Sort each day by start_time
     for (const d of Object.keys(map)) {
       map[Number(d)]!.sort((a, b) => (a.start_time ?? '').localeCompare(b.start_time ?? ''));
     }
@@ -43,17 +42,19 @@ export default function InstructorCalendarPage() {
       {isLoading && (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse rounded-2xl border border-gray-200/60 bg-white/80 p-5">
-              <div className="mb-3 h-5 w-24 rounded bg-gray-200/60" />
-              <div className="h-4 w-48 rounded bg-gray-200/40" />
+            <div key={i} className="glass-card-static rounded-2xl p-5">
+              <div className="mb-3 skeleton h-5 w-24" />
+              <div className="skeleton h-4 w-48" />
             </div>
           ))}
         </div>
       )}
 
       {!isLoading && activeDays.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white/60 py-20">
-          <Clock size={24} className="mb-3 text-indigo-400" />
+        <div className="empty-state">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
+            <Calendar size={24} className="text-indigo-400" />
+          </div>
           <p className="text-sm font-medium text-gray-600">No classes assigned</p>
           <p className="mt-1 text-xs text-gray-400">Your class schedule will appear here.</p>
         </div>
@@ -73,7 +74,7 @@ export default function InstructorCalendarPage() {
                   return (
                     <div
                       key={cls.id}
-                      className="group rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/5"
+                      className="glass-card rounded-2xl p-4"
                     >
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0 flex-1">
@@ -81,7 +82,7 @@ export default function InstructorCalendarPage() {
                             <h3 className="text-sm font-semibold text-gray-900">{cls.name}</h3>
                             {ct && (
                               <span
-                                className="rounded-full px-2 py-0.5 text-[10px] font-medium"
+                                className="rounded-full px-2 py-0.5 text-[11px] font-medium"
                                 style={{ backgroundColor: `${ct.color}20`, color: ct.color, border: `1px solid ${ct.color}30` }}
                               >
                                 {ct.name}
@@ -101,7 +102,7 @@ export default function InstructorCalendarPage() {
                           </div>
                         </div>
                         {season && (
-                          <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-medium ${
+                          <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
                             season.is_current
                               ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25'
                               : 'bg-gray-500/15 text-gray-500 border border-gray-500/20'

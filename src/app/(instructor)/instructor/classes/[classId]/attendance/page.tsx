@@ -22,7 +22,6 @@ export default function AttendancePage() {
 
   const today = new Date().toISOString().split('T')[0]!;
   const [selectedDate, setSelectedDate] = useState(today);
-  // `overrides` holds user-modified statuses; merged with DB data during render
   const [overrides, setOverrides] = useState<Record<string, AttendanceStatus>>({});
   const [saved, setSaved] = useState(false);
 
@@ -37,7 +36,6 @@ export default function AttendancePage() {
     { enabled: !!session.data?.id }
   );
 
-  // Merge existing DB records with user overrides (overrides take precedence)
   const records = useMemo(() => {
     const base: Record<string, AttendanceStatus> = {};
     if (existingAttendance.data) {
@@ -96,7 +94,7 @@ export default function AttendancePage() {
       <div className="mb-8">
         <Link
           href={`/instructor/classes/${classId}`}
-          className="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
+          className="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 transition-colors"
         >
           <ArrowLeft size={16} /> Back to {cls?.name ?? 'Class'}
         </Link>
@@ -118,41 +116,38 @@ export default function AttendancePage() {
               setOverrides({});
               setSaved(false);
             }}
-            className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="h-11 rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 input-glow"
           />
         </div>
 
         <div className="flex items-end gap-2">
-          <label className="block text-xs font-medium text-gray-500 mb-1 sr-only">Quick</label>
           <button
             onClick={() => handleMarkAll('present')}
-            className="rounded-xl bg-emerald-100 px-3 py-2 text-xs font-medium text-emerald-700 hover:bg-emerald-200"
+            className="h-11 rounded-xl bg-emerald-100 px-4 text-xs font-medium text-emerald-700 hover:bg-emerald-200 transition-colors"
           >
             All Present
           </button>
           <button
             onClick={() => handleMarkAll('absent')}
-            className="rounded-xl bg-red-100 px-3 py-2 text-xs font-medium text-red-700 hover:bg-red-200"
+            className="h-11 rounded-xl bg-red-100 px-4 text-xs font-medium text-red-700 hover:bg-red-200 transition-colors"
           >
             All Absent
           </button>
         </div>
 
         {session.data?.status === 'completed' && (
-          <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-medium text-emerald-600">
+          <span className="rounded-full bg-emerald-500/15 border border-emerald-500/25 px-3 py-1 text-[11px] font-medium text-emerald-600">
             Session Completed
           </span>
         )}
       </div>
 
       {/* Attendance Grid */}
-      <div className="glass-card overflow-x-auto rounded-2xl">
+      <div className="glass-card-static overflow-hidden rounded-2xl">
         <table className="min-w-full divide-y divide-gray-100">
           <thead>
             <tr className="bg-gray-50/60">
-              <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
-                Student
-              </th>
+              <th className="table-header">Student</th>
               {STATUS_OPTIONS.map((opt) => (
                 <th key={opt.value} className="px-3 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-gray-400">
                   {opt.label}
@@ -191,15 +186,15 @@ export default function AttendancePage() {
               const currentStatus = records[child.id];
 
               return (
-                <tr key={enrollment.id} className="transition-colors hover:bg-indigo-50/40">
-                  <td className="px-5 py-3 text-sm font-medium text-gray-900">
+                <tr key={enrollment.id} className="table-row-hover">
+                  <td className="table-cell font-medium text-gray-900">
                     {child.first_name} {child.last_name}
                   </td>
                   {STATUS_OPTIONS.map((opt) => (
                     <td key={opt.value} className="px-3 py-3 text-center">
                       <button
                         onClick={() => handleStatusChange(child.id, opt.value)}
-                        className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border transition-all ${
+                        className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-all ${
                           currentStatus === opt.value
                             ? `${opt.bg} ${opt.color} shadow-sm`
                             : 'border-gray-200 bg-white text-gray-300 hover:border-gray-300 hover:text-gray-500'
@@ -222,7 +217,7 @@ export default function AttendancePage() {
         <button
           onClick={handleSave}
           disabled={markMutation.isPending || Object.keys(records).length === 0}
-          className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-6 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Save size={16} />
           {markMutation.isPending ? 'Saving...' : 'Save Attendance'}

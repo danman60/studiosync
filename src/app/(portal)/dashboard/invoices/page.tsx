@@ -52,9 +52,12 @@ function InvoiceList({ onView }: { onView: (id: string) => void }) {
       )}
 
       {!invoices.isLoading && (invoices.data?.length ?? 0) === 0 && (
-        <div className="glass-card rounded-2xl p-12 text-center">
-          <FileText size={32} className="mx-auto text-gray-300" />
-          <p className="mt-3 text-sm text-gray-400">No invoices yet.</p>
+        <div className="empty-state">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
+            <FileText size={24} className="text-indigo-400" />
+          </div>
+          <p className="text-sm font-medium text-gray-600">No invoices yet</p>
+          <p className="mt-1 text-xs text-gray-400">Invoices from your studio will appear here.</p>
         </div>
       )}
 
@@ -67,7 +70,7 @@ function InvoiceList({ onView }: { onView: (id: string) => void }) {
               <button
                 key={inv.id}
                 onClick={() => onView(inv.id)}
-                className="glass-card flex w-full items-center justify-between rounded-2xl p-5 text-left transition-colors hover:bg-indigo-50/40"
+                className="glass-card flex w-full items-center justify-between rounded-2xl p-5 text-left"
               >
                 <div>
                   <p className="font-medium text-gray-900">{inv.invoice_number}</p>
@@ -75,7 +78,7 @@ function InvoiceList({ onView }: { onView: (id: string) => void }) {
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-bold text-gray-900">{formatCents(inv.total - inv.amount_paid)}</p>
-                  <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[inv.status] ?? ''}`}>
+                  <span className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_BADGE[inv.status] ?? ''}`}>
                     {inv.status}
                   </span>
                 </div>
@@ -94,7 +97,7 @@ function InvoiceList({ onView }: { onView: (id: string) => void }) {
               <button
                 key={inv.id}
                 onClick={() => onView(inv.id)}
-                className="glass-card flex w-full items-center justify-between rounded-2xl p-5 text-left transition-colors hover:bg-indigo-50/40 opacity-75"
+                className="glass-card flex w-full items-center justify-between rounded-2xl p-5 text-left opacity-75"
               >
                 <div>
                   <p className="font-medium text-gray-900">{inv.invoice_number}</p>
@@ -102,7 +105,7 @@ function InvoiceList({ onView }: { onView: (id: string) => void }) {
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-bold text-gray-900">{formatCents(inv.total)}</p>
-                  <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE.paid}`}>
+                  <span className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_BADGE.paid}`}>
                     paid
                   </span>
                 </div>
@@ -124,9 +127,6 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
 
   const createPI = trpc.invoice.createPaymentIntent.useMutation({
     onSuccess: () => {
-      // In a real implementation, we'd use Stripe Elements here.
-      // For now, mark that the PI was created and the parent
-      // would be redirected to Stripe checkout.
       setPaymentStatus('idle');
       utils.invoice.myInvoices.invalidate();
       utils.invoice.myInvoiceDetail.invalidate({ id });
@@ -163,22 +163,22 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
 
   return (
     <div>
-      <button onClick={onBack} className="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700">
+      <button onClick={onBack} className="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 transition-colors">
         <ChevronLeft size={16} /> Back to Invoices
       </button>
 
       {/* Header */}
-      <div className="glass-card rounded-2xl p-6 mb-6">
+      <div className="glass-card-static rounded-2xl p-6 mb-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold text-gray-900">{inv.invoice_number}</h2>
             <p className="text-sm text-gray-500">Issued: {inv.issue_date} | Due: {inv.due_date}</p>
           </div>
           <div className="text-right">
-            <span className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${STATUS_BADGE[inv.status] ?? ''}`}>
+            <span className={`inline-block rounded-full px-3 py-1 text-[11px] font-medium ${STATUS_BADGE[inv.status] ?? ''}`}>
               {inv.status}
             </span>
-            <p className="mt-2 text-2xl font-bold text-gray-900">{formatCents(inv.total)}</p>
+            <p className="mt-2 stat-number">{formatCents(inv.total)}</p>
             {inv.amount_paid > 0 && inv.status !== 'paid' && (
               <p className="text-sm text-emerald-600">Paid: {formatCents(inv.amount_paid)}</p>
             )}
@@ -187,39 +187,40 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
       </div>
 
       {/* Line Items */}
-      <div className="glass-card rounded-2xl overflow-hidden mb-6">
+      <div className="glass-card-static overflow-hidden rounded-2xl mb-6">
         <table className="min-w-full divide-y divide-gray-100">
           <thead>
             <tr className="bg-gray-50/60">
-              {['Description', 'Qty', 'Price', 'Total'].map((h) => (
-                <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">{h}</th>
-              ))}
+              <th className="table-header">Description</th>
+              <th className="table-header text-center">Qty</th>
+              <th className="table-header text-center">Price</th>
+              <th className="table-header text-right">Total</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
             {items.map((item) => (
-              <tr key={item.id}>
-                <td className="px-5 py-3 text-sm text-gray-900">{item.description}</td>
-                <td className="px-5 py-3 text-sm text-gray-600">{item.quantity}</td>
-                <td className="px-5 py-3 text-sm text-gray-600">{formatCents(item.unit_price)}</td>
-                <td className="px-5 py-3 text-sm font-medium text-gray-900">{formatCents(item.total)}</td>
+              <tr key={item.id} className="table-row-hover">
+                <td className="table-cell text-gray-900">{item.description}</td>
+                <td className="table-cell text-center text-gray-600">{item.quantity}</td>
+                <td className="table-cell text-center text-gray-600">{formatCents(item.unit_price)}</td>
+                <td className="table-cell text-right font-medium text-gray-900">{formatCents(item.total)}</td>
               </tr>
             ))}
             <tr className="bg-gray-50/40">
               <td colSpan={3} className="px-5 py-2 text-right text-xs font-medium text-gray-500">Subtotal</td>
-              <td className="px-5 py-2 text-sm font-medium text-gray-900">{formatCents(inv.subtotal)}</td>
+              <td className="px-5 py-2 text-right text-sm font-medium text-gray-900">{formatCents(inv.subtotal)}</td>
             </tr>
             {inv.tax_rate > 0 && (
               <tr className="bg-gray-50/40">
                 <td colSpan={3} className="px-5 py-2 text-right text-xs font-medium text-gray-500">Tax</td>
-                <td className="px-5 py-2 text-sm font-medium text-gray-900">{formatCents(inv.tax_amount)}</td>
+                <td className="px-5 py-2 text-right text-sm font-medium text-gray-900">{formatCents(inv.tax_amount)}</td>
               </tr>
             )}
             <tr className="bg-gray-50/60">
               <td colSpan={3} className="px-5 py-3 text-right text-sm font-semibold text-gray-900">
                 {canPay ? 'Amount Due' : 'Total'}
               </td>
-              <td className="px-5 py-3 text-sm font-bold text-gray-900">
+              <td className="px-5 py-3 text-right text-sm font-bold text-gray-900">
                 {canPay ? formatCents(amountDue) : formatCents(inv.total)}
               </td>
             </tr>
@@ -229,7 +230,7 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
 
       {/* Pay Button */}
       {canPay && amountDue > 0 && (
-        <div className="glass-card rounded-2xl p-6 text-center">
+        <div className="glass-card-static rounded-2xl p-6 text-center">
           <button
             onClick={() => {
               setPaymentStatus('loading');
@@ -255,7 +256,7 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
 
       {/* Notes */}
       {inv.notes && (
-        <div className="mt-4 glass-card rounded-2xl p-5">
+        <div className="mt-4 glass-card-static rounded-2xl p-5">
           <h3 className="text-sm font-semibold text-gray-900 mb-2">Notes</h3>
           <p className="text-sm text-gray-600 whitespace-pre-wrap">{inv.notes}</p>
         </div>

@@ -28,7 +28,7 @@ export default function InstructorDashboardPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Link
           href="/instructor/classes"
-          className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 p-6"
+          className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 p-6 animate-fade-in-up stagger-1"
         >
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
             <BookOpen size={22} />
@@ -37,13 +37,13 @@ export default function InstructorDashboardPage() {
             {classes.isLoading ? (
               <div className="skeleton h-7 w-12 mb-1" />
             ) : (
-              <p className="text-2xl font-bold text-gray-900">{classes.data?.length ?? 0}</p>
+              <p className="stat-number">{classes.data?.length ?? 0}</p>
             )}
             <p className="text-sm text-gray-500">My Classes</p>
           </div>
         </Link>
 
-        <div className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 p-6">
+        <div className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 p-6 animate-fade-in-up stagger-2">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
             <Users size={22} />
           </div>
@@ -51,13 +51,13 @@ export default function InstructorDashboardPage() {
             {classes.isLoading ? (
               <div className="skeleton h-7 w-12 mb-1" />
             ) : (
-              <p className="text-2xl font-bold text-gray-900">{totalStudents}</p>
+              <p className="stat-number">{totalStudents}</p>
             )}
             <p className="text-sm text-gray-500">Total Students</p>
           </div>
         </div>
 
-        <div className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-600/5 p-6">
+        <div className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-600/5 p-6 animate-fade-in-up stagger-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
             <CheckSquare size={22} />
           </div>
@@ -65,7 +65,7 @@ export default function InstructorDashboardPage() {
             {classes.isLoading ? (
               <div className="skeleton h-7 w-12 mb-1" />
             ) : (
-              <p className="text-2xl font-bold text-gray-900">{todayClasses.length}</p>
+              <p className="stat-number">{todayClasses.length}</p>
             )}
             <p className="text-sm text-gray-500">Today&apos;s Classes</p>
           </div>
@@ -74,16 +74,16 @@ export default function InstructorDashboardPage() {
 
       {/* Today's Schedule */}
       <div className="mt-8">
-        <h2 className="text-lg font-semibold text-gray-900">Today&apos;s Schedule</h2>
+        <h2 className="section-heading text-sm"><CheckSquare size={16} /> Today&apos;s Schedule</h2>
         <div className="mt-3 space-y-3">
           {classes.isLoading && (
-            <div className="glass-card rounded-2xl p-6">
+            <div className="glass-card-static rounded-2xl p-6">
               <div className="skeleton h-5 w-48 mb-2" />
               <div className="skeleton h-4 w-32" />
             </div>
           )}
           {!classes.isLoading && todayClasses.length === 0 && (
-            <div className="glass-card rounded-2xl p-6 text-center text-sm text-gray-400">
+            <div className="glass-card-static rounded-2xl p-6 text-center text-sm text-gray-400">
               No classes scheduled today
             </div>
           )}
@@ -94,7 +94,7 @@ export default function InstructorDashboardPage() {
               <Link
                 key={cls.id}
                 href={`/instructor/classes/${cls.id}`}
-                className="glass-card flex items-center justify-between rounded-2xl p-5 transition-colors hover:bg-indigo-50/40"
+                className="glass-card flex items-center justify-between rounded-2xl p-5"
               >
                 <div className="flex items-center gap-4">
                   <div
@@ -123,35 +123,35 @@ export default function InstructorDashboardPage() {
       {/* All Classes */}
       {!classes.isLoading && (classes.data?.length ?? 0) > 0 && (
         <div className="mt-8">
-          <h2 className="text-lg font-semibold text-gray-900">Weekly Schedule</h2>
-          <div className="mt-3 glass-card overflow-x-auto rounded-2xl">
+          <h2 className="section-heading text-sm"><BookOpen size={16} /> Weekly Schedule</h2>
+          <div className="mt-3 glass-card-static overflow-hidden rounded-2xl">
             <table className="min-w-full divide-y divide-gray-100">
               <thead>
                 <tr className="bg-gray-50/60">
-                  {['Class', 'Day', 'Time', 'Room', 'Students'].map((h) => (
-                    <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
-                      {h}
-                    </th>
-                  ))}
+                  <th className="table-header">Class</th>
+                  <th className="table-header">Day</th>
+                  <th className="table-header">Time</th>
+                  <th className="table-header">Room</th>
+                  <th className="table-header text-center">Students</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {(classes.data ?? []).map((cls) => {
                   const classType = cls.class_types as unknown as { name: string; color: string } | null;
                   return (
-                    <tr key={cls.id} className="transition-colors hover:bg-indigo-50/40">
-                      <td className="px-5 py-3.5">
+                    <tr key={cls.id} className="table-row-hover">
+                      <td className="table-cell">
                         <Link href={`/instructor/classes/${cls.id}`} className="text-sm font-medium text-indigo-600 hover:text-indigo-800">
                           {cls.name}
                         </Link>
                         <p className="text-xs text-gray-500">{classType?.name}</p>
                       </td>
-                      <td className="px-5 py-3.5 text-sm text-gray-600">{DAY_NAMES[cls.day_of_week]}</td>
-                      <td className="px-5 py-3.5 text-sm text-gray-600">
+                      <td className="table-cell text-gray-600">{DAY_NAMES[cls.day_of_week]}</td>
+                      <td className="table-cell text-gray-600">
                         {cls.start_time?.slice(0, 5)} - {cls.end_time?.slice(0, 5)}
                       </td>
-                      <td className="px-5 py-3.5 text-sm text-gray-600">{cls.room ?? '—'}</td>
-                      <td className="px-5 py-3.5 text-sm text-gray-600">{cls.enrolled_count}/{cls.capacity}</td>
+                      <td className="table-cell text-gray-600">{cls.room ?? '—'}</td>
+                      <td className="table-cell text-center text-gray-600">{cls.enrolled_count}/{cls.capacity}</td>
                     </tr>
                   );
                 })}

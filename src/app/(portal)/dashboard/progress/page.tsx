@@ -45,12 +45,12 @@ export default function ParentProgressPage() {
       {/* Loading skeleton */}
       {isLoading && (
         <div className="space-y-6">
-          {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="animate-pulse rounded-2xl border border-gray-200/60 bg-white/80 p-6">
-              <div className="mb-4 h-5 w-40 rounded bg-gray-200/60" />
+          {[1, 2].map((i) => (
+            <div key={i} className="glass-card-static rounded-2xl p-6">
+              <div className="mb-4 skeleton h-5 w-40" />
               <div className="space-y-3">
-                <div className="h-12 rounded-xl bg-gray-200/40" />
-                <div className="h-12 rounded-xl bg-gray-200/40" />
+                <div className="skeleton h-12 rounded-xl" />
+                <div className="skeleton h-12 rounded-xl" />
               </div>
             </div>
           ))}
@@ -60,14 +60,14 @@ export default function ParentProgressPage() {
       {/* Progress by child */}
       {!isLoading && children.length > 0 && (
         <div className="space-y-6">
-          {children.map((child) => {
+          {children.map((child, idx) => {
             const childMarks = grouped.get(child.id);
             const hasMarks = childMarks && childMarks.size > 0;
 
             return (
               <div
                 key={child.id}
-                className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-6"
+                className={`glass-card-static rounded-2xl p-6 animate-fade-in-up stagger-${Math.min(idx + 1, 8)}`}
               >
                 <div className="mb-4 flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10">
@@ -94,7 +94,7 @@ export default function ParentProgressPage() {
                             <span className="text-sm font-medium text-gray-700">
                               {classInfo?.name ?? 'Class'}
                             </span>
-                            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] text-gray-500">
+                            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-500">
                               {classMarks[0]?.period ?? 'current'}
                             </span>
                           </div>
@@ -110,7 +110,7 @@ export default function ParentProgressPage() {
                                     <span className="text-xs text-gray-500">{m.score}/100</span>
                                   )}
                                   {m.mark && (
-                                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${MARK_COLOR[m.mark] ?? 'bg-gray-100 text-gray-600 border-gray-200'}`}>
+                                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold ${MARK_COLOR[m.mark] ?? 'bg-gray-100 text-gray-600 border-gray-200'}`}>
                                       {m.mark}
                                     </span>
                                   )}
@@ -142,8 +142,10 @@ export default function ParentProgressPage() {
 
       {/* Empty state */}
       {!isLoading && children.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white/60 py-20">
-          <Award size={24} className="mb-3 text-indigo-400" />
+        <div className="empty-state">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
+            <Award size={24} className="text-indigo-400" />
+          </div>
           <p className="text-sm font-medium text-gray-600">No students found</p>
           <p className="mt-1 text-xs text-gray-400">Add children to your family to see their progress.</p>
         </div>

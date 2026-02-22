@@ -28,11 +28,11 @@ export default function ParentMediaPage() {
       {/* Loading skeleton */}
       {isLoading && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="animate-pulse rounded-2xl border border-gray-200/60 bg-white/80 p-4">
-              <div className="mb-3 h-36 rounded-xl bg-gray-200/60" />
-              <div className="h-4 w-2/3 rounded bg-gray-200/60" />
-              <div className="mt-2 h-3 w-1/3 rounded bg-gray-200/60" />
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="glass-card rounded-2xl p-4">
+              <div className="mb-3 skeleton h-36 w-full rounded-xl" />
+              <div className="skeleton h-4 w-2/3" />
+              <div className="mt-2 skeleton h-3 w-1/3" />
             </div>
           ))}
         </div>
@@ -47,8 +47,7 @@ export default function ParentMediaPage() {
               href={item.url ?? '#'}
               target="_blank"
               rel="noopener noreferrer"
-              className="group rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/5"
-              style={{ animationDelay: `${idx * 50}ms` }}
+              className={`glass-card group rounded-2xl p-4 animate-fade-in-up stagger-${Math.min(idx + 1, 6)}`}
             >
               {/* Preview */}
               <div className="mb-3 flex h-36 items-center justify-center rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
@@ -89,7 +88,7 @@ export default function ParentMediaPage() {
 
       {/* Empty state */}
       {!isLoading && media && media.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white/60 py-20">
+        <div className="empty-state">
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
             <Image size={24} className="text-indigo-400" />
           </div>
