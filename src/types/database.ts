@@ -708,6 +708,84 @@ export interface Database {
         };
         Update: Partial<Database['studiosync']['Tables']['messages']['Insert']>;
       };
+      private_lessons: {
+        Row: {
+          id: string;
+          studio_id: string;
+          instructor_id: string;
+          child_id: string;
+          family_id: string;
+          title: string;
+          lesson_date: string;
+          start_time: string;
+          end_time: string;
+          duration_minutes: number;
+          price: number;
+          status: 'scheduled' | 'completed' | 'cancelled' | 'no_show';
+          location: string | null;
+          notes: string | null;
+          recurring: boolean;
+          recurrence_rule: string | null;
+          parent_recurrence_id: string | null;
+          invoice_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['private_lessons']['Row'], 'id' | 'created_at' | 'updated_at' | 'status' | 'recurring' | 'duration_minutes' | 'price' | 'title'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          status?: 'scheduled' | 'completed' | 'cancelled' | 'no_show';
+          recurring?: boolean;
+          duration_minutes?: number;
+          price?: number;
+          title?: string;
+        };
+        Update: Partial<Database['studiosync']['Tables']['private_lessons']['Insert']>;
+      };
+      instructor_availability: {
+        Row: {
+          id: string;
+          studio_id: string;
+          instructor_id: string;
+          day_of_week: number;
+          start_time: string;
+          end_time: string;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['instructor_availability']['Row'], 'id' | 'created_at' | 'updated_at' | 'is_active'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          is_active?: boolean;
+        };
+        Update: Partial<Database['studiosync']['Tables']['instructor_availability']['Insert']>;
+      };
+      message_templates: {
+        Row: {
+          id: string;
+          studio_id: string;
+          name: string;
+          subject: string | null;
+          body: string;
+          category: 'general' | 'billing' | 'enrollment' | 'attendance' | 'announcement' | 'reminder';
+          merge_fields: string[];
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['message_templates']['Row'], 'id' | 'created_at' | 'updated_at' | 'category' | 'merge_fields' | 'is_active'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          category?: 'general' | 'billing' | 'enrollment' | 'attendance' | 'announcement' | 'reminder';
+          merge_fields?: string[];
+          is_active?: boolean;
+        };
+        Update: Partial<Database['studiosync']['Tables']['message_templates']['Insert']>;
+      };
     };
   };
 }
@@ -752,3 +830,6 @@ export type PromoCode = Database['studiosync']['Tables']['promo_codes']['Row'];
 export type DiscountApplication = Database['studiosync']['Tables']['discount_applications']['Row'];
 export type NotificationPreferences = Database['studiosync']['Tables']['notification_preferences']['Row'];
 export type NotificationLog = Database['studiosync']['Tables']['notification_log']['Row'];
+export type PrivateLesson = Database['studiosync']['Tables']['private_lessons']['Row'];
+export type InstructorAvailability = Database['studiosync']['Tables']['instructor_availability']['Row'];
+export type MessageTemplate = Database['studiosync']['Tables']['message_templates']['Row'];

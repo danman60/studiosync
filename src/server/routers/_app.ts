@@ -14,6 +14,8 @@ import { tuitionRouter } from './tuition';
 import { waiverRouter } from './waiver';
 import { promoRouter } from './promo';
 import { notificationRouter } from './notification';
+import { privateLessonRouter } from './private-lesson';
+import { messageTemplateRouter } from './message-template';
 
 export const appRouter = router({
   catalog: catalogRouter,
@@ -31,6 +33,8 @@ export const appRouter = router({
   waiver: waiverRouter,
   promo: promoRouter,
   notification: notificationRouter,
+  privateLesson: privateLessonRouter,
+  messageTemplate: messageTemplateRouter,
 });
 
 export type AppRouter = typeof appRouter;
