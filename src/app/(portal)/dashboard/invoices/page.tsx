@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { trpc } from '@/lib/trpc';
-import { FileText, ChevronLeft, CreditCard, RefreshCw, XCircle } from 'lucide-react';
+import { FileText, ChevronLeft, CreditCard, Building2, RefreshCw, XCircle } from 'lucide-react';
 
 const STATUS_BADGE: Record<string, string> = {
   sent: 'bg-blue-500/15 text-blue-600 border border-blue-500/25',
@@ -308,20 +308,33 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
         </table>
       </div>
 
-      {/* Pay Button */}
+      {/* Pay Buttons */}
       {canPay && amountDue > 0 && (
         <div className="glass-card-static rounded-2xl p-6 text-center">
-          <button
-            onClick={() => {
-              setPaymentStatus('loading');
-              createPI.mutate({ invoiceId: id });
-            }}
-            disabled={paymentStatus === 'loading' || createPI.isPending}
-            className="btn-gradient inline-flex h-12 items-center gap-2 rounded-xl px-8 text-sm font-medium disabled:opacity-50"
-          >
-            <CreditCard size={18} />
-            {createPI.isPending ? 'Processing...' : `Pay ${formatCents(amountDue)}`}
-          </button>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              onClick={() => {
+                setPaymentStatus('loading');
+                createPI.mutate({ invoiceId: id, paymentMethod: 'card' });
+              }}
+              disabled={paymentStatus === 'loading' || createPI.isPending}
+              className="btn-gradient inline-flex h-12 items-center gap-2 rounded-xl px-8 text-sm font-medium disabled:opacity-50"
+            >
+              <CreditCard size={18} />
+              {createPI.isPending ? 'Processing...' : `Pay ${formatCents(amountDue)}`}
+            </button>
+            <button
+              onClick={() => {
+                setPaymentStatus('loading');
+                createPI.mutate({ invoiceId: id, paymentMethod: 'us_bank_account' });
+              }}
+              disabled={paymentStatus === 'loading' || createPI.isPending}
+              className="inline-flex h-12 items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+            >
+              <Building2 size={18} />
+              Pay via Bank (ACH)
+            </button>
+          </div>
           {createPI.isSuccess && (
             <p className="mt-3 text-sm text-emerald-600">
               Payment initiated. You will receive a confirmation when complete.

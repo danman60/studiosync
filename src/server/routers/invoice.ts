@@ -470,6 +470,93 @@ export const invoiceRouter = router({
     return { markedOverdue, feesApplied };
   }),
 
+  // ── Refund (full or partial via Stripe) ────────────────
+
+  refund: adminProcedure
+    .input(z.object({
+      id: z.string().uuid(),
+      amount: z.number().int().min(1).optional(), // cents — omit for full refund
+      reason: z.string().max(500).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+
+      const { data: invoice } = await supabase
+        .from('invoices')
+        .select('id, status, total, amount_paid, stripe_payment_intent_id, family_id, invoice_number, families(email, parent_first_name)')
+        .eq('id', input.id)
+        .eq('studio_id', ctx.studioId)
+        .single();
+
+      if (!invoice) throw new TRPCError({ code: 'NOT_FOUND' });
+      if (invoice.status !== 'paid' && invoice.status !== 'partial') {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'Only paid or partially paid invoices can be refunded' });
+      }
+
+      const refundAmount = input.amount ?? invoice.amount_paid;
+      if (refundAmount > invoice.amount_paid) {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'Refund amount exceeds amount paid' });
+      }
+
+      // Attempt Stripe refund if payment was via Stripe
+      if (invoice.stripe_payment_intent_id) {
+        try {
+          await getStripe().refunds.create({
+            payment_intent: invoice.stripe_payment_intent_id,
+            amount: refundAmount,
+            reason: 'requested_by_customer',
+          });
+        } catch (err) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Stripe refund failed: ${err instanceof Error ? err.message : 'Unknown error'}`,
+          });
+        }
+      }
+
+      // Update invoice
+      const newAmountPaid = invoice.amount_paid - refundAmount;
+      const newStatus = refundAmount >= invoice.amount_paid ? 'void' : 'partial';
+
+      const { data, error } = await supabase
+        .from('invoices')
+        .update({
+          amount_paid: newAmountPaid,
+          status: newStatus,
+        })
+        .eq('id', input.id)
+        .eq('studio_id', ctx.studioId)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Record refund payment
+      await supabase.from('payments').insert({
+        studio_id: ctx.studioId,
+        family_id: invoice.family_id,
+        amount: -refundAmount,
+        type: 'refund',
+        status: 'succeeded',
+        description: `Refund for Invoice #${invoice.invoice_number}${input.reason ? ': ' + input.reason : ''}`,
+      });
+
+      // Notify family (non-blocking)
+      const family = invoice.families as unknown as { email: string; parent_first_name: string } | null;
+      if (family?.email) {
+        sendNotification({
+          studioId: ctx.studioId,
+          familyId: invoice.family_id,
+          type: 'invoice_sent',
+          subject: `Refund Processed — Invoice #${invoice.invoice_number}`,
+          body: `Hi ${family.parent_first_name}, a refund of $${(refundAmount / 100).toFixed(2)} has been processed for invoice #${invoice.invoice_number}.`,
+          recipientEmail: family.email,
+        });
+      }
+
+      return data;
+    }),
+
   // ═══════════════════════════════════════════════════════
   // PARENT PROCEDURES
   // ═══════════════════════════════════════════════════════
@@ -513,7 +600,10 @@ export const invoiceRouter = router({
     }),
 
   createPaymentIntent: protectedProcedure
-    .input(z.object({ invoiceId: z.string().uuid() }))
+    .input(z.object({
+      invoiceId: z.string().uuid(),
+      paymentMethod: z.enum(['card', 'us_bank_account']).default('card'),
+    }))
     .mutation(async ({ ctx, input }) => {
       const supabase = createServiceClient();
 
@@ -552,10 +642,15 @@ export const invoiceRouter = router({
 
       const family = invoice.families as unknown as { email: string; parent_first_name: string; parent_last_name: string } | null;
 
-      // Create PaymentIntent
+      // Create PaymentIntent with chosen method
+      const paymentMethodTypes: string[] = input.paymentMethod === 'us_bank_account'
+        ? ['us_bank_account']
+        : ['card'];
+
       const piParams: Stripe.PaymentIntentCreateParams = {
         amount: amountDue,
         currency: 'usd',
+        payment_method_types: paymentMethodTypes,
         metadata: {
           invoice_id: invoice.id,
           invoice_number: invoice.invoice_number,

@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   Download,
   RefreshCw,
+  RotateCcw,
   Pause,
   Play,
   AlertCircle,
@@ -754,6 +755,15 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
       utils.invoice.stats.invalidate();
     },
   });
+  const refundInv = trpc.invoice.refund.useMutation({
+    onSuccess: () => {
+      utils.invoice.get.invalidate({ id });
+      utils.invoice.list.invalidate();
+      utils.invoice.stats.invalidate();
+    },
+  });
+  const [showRefundInput, setShowRefundInput] = useState(false);
+  const [refundAmount, setRefundAmount] = useState('');
 
   const inv = invoice.data;
   const fam = inv?.families as unknown as { parent_first_name: string; parent_last_name: string; email: string } | null;
@@ -852,10 +862,46 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
               <XCircle size={14} /> {voidInv.isPending ? 'Voiding...' : 'Void'}
             </button>
           )}
+          {(inv.status === 'paid' || inv.status === 'partial') && inv.amount_paid > 0 && (
+            <button
+              onClick={() => {
+                if (showRefundInput) {
+                  const cents = refundAmount ? Math.round(parseFloat(refundAmount) * 100) : undefined;
+                  if (confirm(`Refund ${cents ? formatCents(cents) : 'full amount'}?`)) {
+                    refundInv.mutate({ id, amount: cents });
+                    setShowRefundInput(false);
+                    setRefundAmount('');
+                  }
+                } else {
+                  setShowRefundInput(true);
+                }
+              }}
+              disabled={refundInv.isPending}
+              className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-amber-100 px-4 text-xs font-medium text-amber-700 hover:bg-amber-200 disabled:opacity-50"
+            >
+              <RotateCcw size={14} /> {refundInv.isPending ? 'Processing...' : showRefundInput ? 'Confirm Refund' : 'Refund'}
+            </button>
+          )}
         </div>
-        {(sendInv.isError || markPaid.isError || voidInv.isError) && (
+        {showRefundInput && (
+          <div className="mt-3 flex items-center gap-2">
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              max={(inv.amount_paid / 100).toFixed(2)}
+              placeholder={`Full refund: ${formatCents(inv.amount_paid)}`}
+              value={refundAmount}
+              onChange={(e) => setRefundAmount(e.target.value)}
+              className="h-9 w-48 rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow"
+            />
+            <span className="text-xs text-gray-400">Leave empty for full refund</span>
+            <button onClick={() => { setShowRefundInput(false); setRefundAmount(''); }} className="text-xs text-gray-500 hover:text-gray-700">Cancel</button>
+          </div>
+        )}
+        {(sendInv.isError || markPaid.isError || voidInv.isError || refundInv.isError) && (
           <p className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
-            {sendInv.error?.message ?? markPaid.error?.message ?? voidInv.error?.message}
+            {sendInv.error?.message ?? markPaid.error?.message ?? voidInv.error?.message ?? refundInv.error?.message}
           </p>
         )}
       </div>
