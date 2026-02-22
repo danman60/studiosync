@@ -10,6 +10,7 @@ import { ChildInfoStep } from './ChildInfoStep';
 import { ParentInfoStep } from './ParentInfoStep';
 import { ReviewStep } from './ReviewStep';
 import { ConfirmationStep } from './ConfirmationStep';
+import { WaiverStep } from './WaiverStep';
 
 const registrationSchema = z.object({
   student: z.object({
@@ -31,7 +32,13 @@ const registrationSchema = z.object({
 
 export type RegistrationFormData = z.infer<typeof registrationSchema>;
 
-const STEPS = ['Student Info', 'Parent Info', 'Review', 'Confirmation'] as const;
+interface WaiverSignatureData {
+  waiverId: string;
+  waiverVersion: number;
+  accepted: boolean;
+  signedName: string;
+}
+
 const STEP_FIELDS: Record<number, (keyof RegistrationFormData)[]> = {
   0: ['student'],
   1: ['parent'],
@@ -44,6 +51,7 @@ interface Props {
 export function RegistrationWizard({ classId }: Props) {
   const [step, setStep] = useState(0);
   const [existingFamilyId, setExistingFamilyId] = useState<string | null>(null);
+  const [waiverSignatures, setWaiverSignatures] = useState<WaiverSignatureData[]>([]);
   const [result, setResult] = useState<{
     status: 'pending' | 'waitlisted';
     waitlistPosition: number | null;
@@ -62,9 +70,20 @@ export function RegistrationWizard({ classId }: Props) {
   });
 
   const classQuery = trpc.registration.getClassForRegistration.useQuery({ classId });
+  const waiversQuery = trpc.waiver.getForRegistration.useQuery({ classId });
   const submitMutation = trpc.registration.submit.useMutation();
 
   const cls = classQuery.data;
+  const waivers = waiversQuery.data ?? [];
+  const hasWaivers = waivers.length > 0;
+
+  // Steps: 0=Student, 1=Parent, 2=Review, 3=Waivers (if any), last=Confirmation
+  const STEPS = hasWaivers
+    ? ['Student Info', 'Parent Info', 'Review', 'Waivers', 'Confirmation'] as const
+    : ['Student Info', 'Parent Info', 'Review', 'Confirmation'] as const;
+  const REVIEW_STEP = 2;
+  const WAIVER_STEP = hasWaivers ? 3 : -1;
+  const CONFIRMATION_STEP = hasWaivers ? 4 : 3;
 
   function validateAge(): string | null {
     if (!cls) return null;
@@ -93,17 +112,29 @@ export function RegistrationWizard({ classId }: Props) {
   async function handleNext() {
     const fields = STEP_FIELDS[step];
     if (fields) {
-      // Validate current step fields
       const valid = await form.trigger(fields as unknown as (keyof RegistrationFormData)[]);
       if (!valid) return;
     }
 
-    // Age validation on step 0
     if (step === 0) {
       const ageError = validateAge();
       if (ageError) {
         form.setError('student.dateOfBirth', { message: ageError });
         return;
+      }
+    }
+
+    // When moving to waiver step, initialize signatures
+    if (step === REVIEW_STEP && hasWaivers) {
+      if (waiverSignatures.length === 0) {
+        setWaiverSignatures(
+          waivers.map((w) => ({
+            waiverId: w.id,
+            waiverVersion: w.version,
+            accepted: false,
+            signedName: '',
+          }))
+        );
       }
     }
 
@@ -117,6 +148,17 @@ export function RegistrationWizard({ classId }: Props) {
   async function handleSubmit() {
     setSubmitError(null);
     const values = form.getValues();
+
+    // Build waiver signatures for submission
+    const signedWaivers = hasWaivers
+      ? waiverSignatures
+          .filter((s) => s.accepted && s.signedName.trim())
+          .map((s) => ({
+            waiverId: s.waiverId,
+            waiverVersion: s.waiverVersion,
+            parentName: s.signedName.trim(),
+          }))
+      : undefined;
 
     try {
       const res = await submitMutation.mutateAsync({
@@ -137,6 +179,7 @@ export function RegistrationWizard({ classId }: Props) {
           emergencyContactPhone: values.parent.emergencyContactPhone || undefined,
         },
         existingFamilyId: existingFamilyId ?? undefined,
+        waiverSignatures: signedWaivers,
       });
 
       setResult({
@@ -145,7 +188,7 @@ export function RegistrationWizard({ classId }: Props) {
         childName: res.childName,
         className: res.className,
       });
-      setStep(3);
+      setStep(CONFIRMATION_STEP);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Registration failed. Please try again.';
       setSubmitError(message);
@@ -197,6 +240,9 @@ export function RegistrationWizard({ classId }: Props) {
   const rawSeasons = cls.seasons as unknown as { name: string; start_date: string; end_date: string } | { name: string; start_date: string; end_date: string }[] | null;
   const seasons = Array.isArray(rawSeasons) ? rawSeasons[0] ?? null : rawSeasons;
 
+  const stepCountForIndicator = hasWaivers ? 4 : 3;
+  const parentName = `${form.getValues('parent.firstName')} ${form.getValues('parent.lastName')}`.trim();
+
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       {/* Class Summary Sidebar */}
@@ -240,9 +286,9 @@ export function RegistrationWizard({ classId }: Props) {
       {/* Form Area */}
       <div className="lg:col-span-2">
         {/* Step Indicator */}
-        {step < 3 && (
+        {step < CONFIRMATION_STEP && (
           <div className="mb-6 flex items-center gap-2 animate-fade-in-up">
-            {STEPS.slice(0, 3).map((label, i) => (
+            {STEPS.slice(0, stepCountForIndicator).map((label, i) => (
               <div key={label} className="flex items-center gap-2">
                 <div
                   className={`flex h-8 w-8 items-center justify-center rounded-xl text-xs font-medium transition-all ${
@@ -262,7 +308,7 @@ export function RegistrationWizard({ classId }: Props) {
                 >
                   {label}
                 </span>
-                {i < 2 && <div className="mx-1 h-px w-6 bg-gray-200" />}
+                {i < stepCountForIndicator - 1 && <div className="mx-1 h-px w-6 bg-gray-200" />}
               </div>
             ))}
           </div>
@@ -288,7 +334,7 @@ export function RegistrationWizard({ classId }: Props) {
             <ParentInfoStep form={form} onExistingFamily={setExistingFamilyId} />
           )}
 
-          {step === 2 && (
+          {step === REVIEW_STEP && (
             <ReviewStep
               form={form}
               classInfo={{
@@ -301,12 +347,25 @@ export function RegistrationWizard({ classId }: Props) {
                 class_types: classTypes,
                 levels: levels,
               }}
-              isSubmitting={submitMutation.isPending}
-              onSubmit={handleSubmit}
+              isSubmitting={!hasWaivers && submitMutation.isPending}
+              onSubmit={hasWaivers ? handleNext : handleSubmit}
+              submitLabel={hasWaivers ? 'Continue to Waivers' : undefined}
             />
           )}
 
-          {step === 3 && result && (
+          {step === WAIVER_STEP && hasWaivers && (
+            <WaiverStep
+              waivers={waivers}
+              parentName={parentName}
+              signatures={waiverSignatures}
+              onSignaturesChange={setWaiverSignatures}
+              isSubmitting={submitMutation.isPending}
+              onSubmit={handleSubmit}
+              onBack={handleBack}
+            />
+          )}
+
+          {step === CONFIRMATION_STEP && result && (
             <ConfirmationStep
               status={result.status}
               waitlistPosition={result.waitlistPosition}
@@ -315,8 +374,8 @@ export function RegistrationWizard({ classId }: Props) {
             />
           )}
 
-          {/* Navigation */}
-          {step < 2 && (
+          {/* Navigation for steps 0-1 */}
+          {step < REVIEW_STEP && (
             <div className="mt-6 flex justify-between">
               {step > 0 ? (
                 <button
@@ -339,7 +398,8 @@ export function RegistrationWizard({ classId }: Props) {
             </div>
           )}
 
-          {step === 2 && (
+          {/* Back button on Review step (no waivers case — with waivers, ReviewStep handles its own back) */}
+          {step === REVIEW_STEP && (
             <div className="mt-4">
               <button
                 type="button"

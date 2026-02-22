@@ -531,6 +531,52 @@ export interface Database {
         };
         Update: Partial<Database['studiosync']['Tables']['announcements']['Insert']>;
       };
+      waivers: {
+        Row: {
+          id: string;
+          studio_id: string;
+          season_id: string | null;
+          title: string;
+          content: string;
+          is_required: boolean;
+          is_active: boolean;
+          version: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['waivers']['Row'], 'id' | 'created_at' | 'updated_at' | 'version' | 'is_required' | 'is_active'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          version?: number;
+          is_required?: boolean;
+          is_active?: boolean;
+        };
+        Update: Partial<Database['studiosync']['Tables']['waivers']['Insert']>;
+      };
+      waiver_signatures: {
+        Row: {
+          id: string;
+          studio_id: string;
+          waiver_id: string;
+          family_id: string | null;
+          child_id: string | null;
+          parent_name: string;
+          parent_email: string;
+          ip_address: string | null;
+          user_agent: string | null;
+          waiver_version: number;
+          signed_at: string;
+          created_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['waiver_signatures']['Row'], 'id' | 'created_at' | 'signed_at' | 'waiver_version'> & {
+          id?: string;
+          created_at?: string;
+          signed_at?: string;
+          waiver_version?: number;
+        };
+        Update: Partial<Database['studiosync']['Tables']['waiver_signatures']['Insert']>;
+      };
       messages: {
         Row: {
           id: string;
@@ -589,3 +635,5 @@ export type TicketOrderStatus = TicketOrder['status'];
 export type Announcement = Database['studiosync']['Tables']['announcements']['Row'];
 export type AnnouncementTargetType = Announcement['target_type'];
 export type Message = Database['studiosync']['Tables']['messages']['Row'];
+export type Waiver = Database['studiosync']['Tables']['waivers']['Row'];
+export type WaiverSignature = Database['studiosync']['Tables']['waiver_signatures']['Row'];

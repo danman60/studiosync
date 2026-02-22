@@ -20,9 +20,10 @@ interface Props {
   classInfo: ClassInfo;
   isSubmitting: boolean;
   onSubmit: () => void;
+  submitLabel?: string;
 }
 
-export function ReviewStep({ form, classInfo, isSubmitting, onSubmit }: Props) {
+export function ReviewStep({ form, classInfo, isSubmitting, onSubmit, submitLabel }: Props) {
   const values = form.getValues();
 
   return (
@@ -95,7 +96,7 @@ export function ReviewStep({ form, classInfo, isSubmitting, onSubmit }: Props) {
         {isSubmitting ? (
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
         ) : (
-          'Submit Registration'
+          submitLabel ?? 'Submit Registration'
         )}
       </button>
     </div>

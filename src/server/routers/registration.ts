@@ -72,6 +72,11 @@ export const registrationRouter = router({
           emergencyContactPhone: z.string().optional(),
         }),
         existingFamilyId: z.string().uuid().optional(),
+        waiverSignatures: z.array(z.object({
+          waiverId: z.string().uuid(),
+          waiverVersion: z.number().int(),
+          parentName: z.string().min(1),
+        })).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -201,7 +206,22 @@ export const registrationRouter = router({
 
       const result = enrollment as { enrollment_id: string; status: string; waitlist_position: number | null };
 
-      // 6. Send magic link for account verification
+      // 6. Save waiver signatures if provided
+      if (input.waiverSignatures?.length) {
+        const sigRows = input.waiverSignatures.map((sig) => ({
+          studio_id: ctx.studioId,
+          waiver_id: sig.waiverId,
+          family_id: familyId,
+          child_id: newChild.id,
+          parent_name: sig.parentName,
+          parent_email: email,
+          waiver_version: sig.waiverVersion,
+        }));
+
+        await supabase.from('waiver_signatures').insert(sigRows);
+      }
+
+      // 7. Send magic link for account verification
       try {
         const { error: linkError } = await supabase.auth.admin.generateLink({
           type: 'magiclink',
