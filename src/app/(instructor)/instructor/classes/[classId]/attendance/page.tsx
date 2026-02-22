@@ -23,6 +23,7 @@ export default function AttendancePage() {
   const today = new Date().toISOString().split('T')[0]!;
   const [selectedDate, setSelectedDate] = useState(today);
   const [overrides, setOverrides] = useState<Record<string, AttendanceStatus>>({});
+  const [sessionNotes, setSessionNotes] = useState('');
   const [saved, setSaved] = useState(false);
 
   const classes = trpc.instructor.myClasses.useQuery();
@@ -54,6 +55,19 @@ export default function AttendancePage() {
       utils.instructor.attendanceSummary.invalidate();
     },
   });
+
+  const notesMutation = trpc.instructor.updateSessionNotes.useMutation({
+    onSuccess: () => {
+      utils.instructor.getSession.invalidate({ classId, date: selectedDate });
+    },
+  });
+
+  // Sync notes when session loads
+  const [lastSessionId, setLastSessionId] = useState<string | null>(null);
+  if (session.data?.id && session.data.id !== lastSessionId) {
+    setLastSessionId(session.data.id);
+    setSessionNotes(session.data.notes ?? '');
+  }
 
   const cls = (classes.data ?? []).find((c) => c.id === classId);
 
@@ -229,6 +243,35 @@ export default function AttendancePage() {
           <span className="text-sm text-red-600">{markMutation.error.message}</span>
         )}
       </div>
+
+      {/* Session Notes */}
+      {session.data?.id && (
+        <div className="mt-6 glass-card-static rounded-2xl p-5">
+          <h3 className="section-heading text-sm mb-3"><Save size={14} className="text-indigo-500" /> Session Notes</h3>
+          <textarea
+            value={sessionNotes}
+            onChange={(e) => setSessionNotes(e.target.value)}
+            rows={3}
+            placeholder="Add notes about this session (observations, reminders, things to follow up on...)"
+            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow resize-none"
+          />
+          <div className="mt-3 flex items-center gap-3">
+            <button
+              onClick={() => {
+                if (!session.data?.id) return;
+                notesMutation.mutate({ sessionId: session.data.id, notes: sessionNotes || null });
+              }}
+              disabled={notesMutation.isPending}
+              className="btn-outline inline-flex h-9 items-center gap-1.5 rounded-lg px-4 text-xs font-medium disabled:opacity-50"
+            >
+              {notesMutation.isPending ? 'Saving...' : 'Save Notes'}
+            </button>
+            {notesMutation.isSuccess && (
+              <span className="text-xs text-emerald-600">Notes saved</span>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -127,14 +127,16 @@ export interface Database {
           registration_opens_at: string | null;
           registration_closes_at: string | null;
           is_current: boolean;
+          archived: boolean;
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database['studiosync']['Tables']['seasons']['Row'], 'id' | 'created_at' | 'updated_at' | 'is_current'> & {
+        Insert: Omit<Database['studiosync']['Tables']['seasons']['Row'], 'id' | 'created_at' | 'updated_at' | 'is_current' | 'archived'> & {
           id?: string;
           created_at?: string;
           updated_at?: string;
           is_current?: boolean;
+          archived?: boolean;
         };
         Update: Partial<Database['studiosync']['Tables']['seasons']['Insert']>;
       };
@@ -522,6 +524,26 @@ export interface Database {
         };
         Update: Partial<Database['studiosync']['Tables']['announcements']['Insert']>;
       };
+      messages: {
+        Row: {
+          id: string;
+          studio_id: string;
+          family_id: string;
+          sender_type: 'parent' | 'admin';
+          sender_id: string;
+          body: string;
+          is_read: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['messages']['Row'], 'id' | 'created_at' | 'updated_at' | 'is_read'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          is_read?: boolean;
+        };
+        Update: Partial<Database['studiosync']['Tables']['messages']['Insert']>;
+      };
     };
   };
 }
@@ -559,3 +581,4 @@ export type TicketOrder = Database['studiosync']['Tables']['ticket_orders']['Row
 export type TicketOrderStatus = TicketOrder['status'];
 export type Announcement = Database['studiosync']['Tables']['announcements']['Row'];
 export type AnnouncementTargetType = Announcement['target_type'];
+export type Message = Database['studiosync']['Tables']['messages']['Row'];

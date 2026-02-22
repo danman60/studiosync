@@ -20,6 +20,7 @@ import {
   Layers,
   Megaphone,
   Menu,
+  MessageCircle,
   Settings,
   Ticket,
   Users,
@@ -48,6 +49,7 @@ const adminNavItems: NavItem[] = [
   { label: 'Events', href: '/admin/events', icon: <Ticket size={18} />, section: 'admin' },
   { label: 'Announcements', href: '/admin/announcements', icon: <Megaphone size={18} />, section: 'admin' },
   { label: 'Attendance', href: '/admin/attendance', icon: <CheckSquare size={18} />, section: 'admin' },
+  { label: 'Messages', href: '/admin/messages', icon: <MessageCircle size={18} />, section: 'admin' },
   { label: 'Analytics', href: '/admin/analytics', icon: <BarChart3 size={18} />, section: 'admin' },
   { label: 'Settings', href: '/admin/settings', icon: <Settings size={18} />, section: 'admin' },
 ];
@@ -71,6 +73,7 @@ const portalNavItems: NavItem[] = [
   { label: 'Progress', href: '/dashboard/progress', icon: <Award size={18} />, section: 'portal' },
   { label: 'Media', href: '/dashboard/media', icon: <ImageIcon size={18} />, section: 'portal' },
   { label: 'Events', href: '/dashboard/events', icon: <Ticket size={18} />, section: 'portal' },
+  { label: 'Messages', href: '/dashboard/messages', icon: <MessageCircle size={18} />, section: 'portal' },
   { label: 'Announcements', href: '/dashboard/announcements', icon: <Megaphone size={18} />, section: 'portal' },
   { label: 'Profile', href: '/dashboard/profile', icon: <Users size={18} />, section: 'portal' },
 ];

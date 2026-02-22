@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Modal } from '@/components/admin/Modal';
-import { Plus, Pencil, Trash2, Star } from 'lucide-react';
+import { Plus, Pencil, Trash2, Star, Archive, ArchiveRestore } from 'lucide-react';
 
 type SeasonForm = {
   name: string;
@@ -27,10 +27,11 @@ export default function SeasonsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [showArchived, setShowArchived] = useState(false);
   const [form, setForm] = useState<SeasonForm>(emptyForm);
 
   const utils = trpc.useUtils();
-  const seasons = trpc.admin.getSeasons.useQuery();
+  const seasons = trpc.admin.getSeasons.useQuery(showArchived ? { includeArchived: true } : undefined);
 
   const createMutation = trpc.admin.createSeason.useMutation({
     onSuccess: () => { utils.admin.getSeasons.invalidate(); closeModal(); },
@@ -40,6 +41,9 @@ export default function SeasonsPage() {
   });
   const deleteMutation = trpc.admin.deleteSeason.useMutation({
     onSuccess: () => { utils.admin.getSeasons.invalidate(); setDeleteId(null); },
+  });
+  const archiveMutation = trpc.admin.archiveSeason.useMutation({
+    onSuccess: () => { utils.admin.getSeasons.invalidate(); },
   });
 
   function closeModal() {
@@ -95,10 +99,21 @@ export default function SeasonsPage() {
           <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Seasons</h1>
           <p className="mt-1 text-sm text-gray-500">Manage registration seasons and terms</p>
         </div>
-        <button onClick={openCreate}
-          className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-medium">
-          <Plus size={16} /> Add Season
-        </button>
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-2 text-sm text-gray-500">
+            <input
+              type="checkbox"
+              checked={showArchived}
+              onChange={(e) => setShowArchived(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500/30"
+            />
+            Show archived
+          </label>
+          <button onClick={openCreate}
+            className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-medium">
+            <Plus size={16} /> Add Season
+          </button>
+        </div>
       </div>
 
       <div className="glass-card-static overflow-hidden rounded-2xl">
@@ -138,7 +153,9 @@ export default function SeasonsPage() {
                       : '—'}
                   </td>
                   <td className="table-cell">
-                    {s.is_current ? (
+                    {s.archived ? (
+                      <span className="inline-block rounded-full bg-gray-500/15 px-2.5 py-0.5 text-[11px] font-medium text-gray-400 border border-gray-500/20">Archived</span>
+                    ) : s.is_current ? (
                       <span className="inline-block rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-medium text-emerald-600 border border-emerald-500/25">Current</span>
                     ) : (
                       <span className="inline-block rounded-full bg-gray-500/15 px-2.5 py-0.5 text-[11px] font-medium text-gray-500 border border-gray-500/20">Inactive</span>
@@ -149,6 +166,13 @@ export default function SeasonsPage() {
                       <button onClick={() => openEdit(s)}
                         className="icon-btn" title="Edit">
                         <Pencil size={15} />
+                      </button>
+                      <button
+                        onClick={() => archiveMutation.mutate({ id: s.id, archived: !s.archived })}
+                        disabled={archiveMutation.isPending}
+                        className="icon-btn" title={s.archived ? 'Unarchive' : 'Archive'}
+                      >
+                        {s.archived ? <ArchiveRestore size={15} /> : <Archive size={15} />}
                       </button>
                       <button onClick={() => setDeleteId(s.id)}
                         className="icon-btn icon-btn-danger" title="Delete">

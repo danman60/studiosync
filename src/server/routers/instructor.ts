@@ -353,6 +353,46 @@ export const instructorRouter = router({
       return child;
     }),
 
+  // ── Update Session Notes ─────────────────────────────
+  // Instructor can save notes for a class session
+
+  updateSessionNotes: instructorProcedure
+    .input(z.object({
+      sessionId: z.string().uuid(),
+      notes: z.string().max(5000).nullable(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+
+      // Verify session ownership
+      const { data: session } = await supabase
+        .from('class_sessions')
+        .select('id, classes(instructor_id)')
+        .eq('id', input.sessionId)
+        .eq('studio_id', ctx.studioId)
+        .single();
+
+      if (!session) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Session not found' });
+      }
+
+      const classData = session.classes as unknown as { instructor_id: string | null };
+      if (ctx.userRole === 'instructor' && classData?.instructor_id !== ctx.staffId) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Not your class' });
+      }
+
+      const { data, error } = await supabase
+        .from('class_sessions')
+        .update({ notes: input.notes })
+        .eq('id', input.sessionId)
+        .eq('studio_id', ctx.studioId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    }),
+
   // ── Progress Marks ───────────────────────────────────
   // List marks for a class (optionally filtered by period)
 

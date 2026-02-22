@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { adminProcedure, ownerProcedure, router } from '../trpc';
 import { createServiceClient } from '@/lib/supabase-server';
+import { getStripe } from '@/lib/stripe';
 
 const classInput = z.object({
   name: z.string().min(1).max(200),
@@ -285,17 +286,39 @@ export const adminRouter = router({
 
   // ── Seasons ────────────────────────────────────────────
 
-  getSeasons: adminProcedure.query(async ({ ctx }) => {
-    const supabase = createServiceClient();
-    const { data, error } = await supabase
-      .from('seasons')
-      .select('*')
-      .eq('studio_id', ctx.studioId)
-      .order('start_date', { ascending: false });
+  getSeasons: adminProcedure
+    .input(z.object({ includeArchived: z.boolean().optional() }).optional())
+    .query(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+      let query = supabase
+        .from('seasons')
+        .select('*')
+        .eq('studio_id', ctx.studioId);
 
-    if (error) throw error;
-    return data ?? [];
-  }),
+      if (!input?.includeArchived) {
+        query = query.eq('archived', false);
+      }
+
+      const { data, error } = await query.order('start_date', { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    }),
+
+  archiveSeason: adminProcedure
+    .input(z.object({ id: z.string().uuid(), archived: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+      const { data, error } = await supabase
+        .from('seasons')
+        .update({ archived: input.archived, is_current: input.archived ? false : undefined })
+        .eq('id', input.id)
+        .eq('studio_id', ctx.studioId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    }),
 
   createSeason: adminProcedure
     .input(
@@ -663,6 +686,64 @@ export const adminRouter = router({
       };
     }),
 
+  // ── Bulk Enrollment Import ────────────────────────────
+  // Import multiple enrollments from CSV-like data
+
+  bulkEnroll: adminProcedure
+    .input(z.object({
+      classId: z.string().uuid(),
+      entries: z.array(z.object({
+        childId: z.string().uuid(),
+        familyId: z.string().uuid(),
+      })),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+
+      // Verify class exists
+      const { data: cls } = await supabase
+        .from('classes')
+        .select('id, capacity')
+        .eq('id', input.classId)
+        .eq('studio_id', ctx.studioId)
+        .single();
+
+      if (!cls) throw new TRPCError({ code: 'NOT_FOUND', message: 'Class not found' });
+
+      // Check for existing enrollments
+      const childIds = input.entries.map((e) => e.childId);
+      const { data: existing } = await supabase
+        .from('enrollments')
+        .select('child_id')
+        .eq('class_id', input.classId)
+        .eq('studio_id', ctx.studioId)
+        .in('status', ['active', 'pending', 'waitlisted'])
+        .in('child_id', childIds);
+
+      const existingIds = new Set((existing ?? []).map((e) => e.child_id));
+      const newEntries = input.entries.filter((e) => !existingIds.has(e.childId));
+
+      if (newEntries.length === 0) {
+        return { enrolled: 0, skipped: input.entries.length };
+      }
+
+      const rows = newEntries.map((e) => ({
+        studio_id: ctx.studioId,
+        class_id: input.classId,
+        child_id: e.childId,
+        family_id: e.familyId,
+        status: 'active' as const,
+      }));
+
+      const { data, error } = await supabase
+        .from('enrollments')
+        .insert(rows)
+        .select();
+
+      if (error) throw error;
+      return { enrolled: data?.length ?? 0, skipped: input.entries.length - newEntries.length };
+    }),
+
   // ── Waitlist Management ────────────────────────────────
 
   promoteFromWaitlist: adminProcedure
@@ -708,4 +789,82 @@ export const adminRouter = router({
       if (error) throw error;
       return data;
     }),
+
+  // ── Stripe Connect ──────────────────────────────────────
+
+  stripeConnectUrl: ownerProcedure.mutation(async ({ ctx }) => {
+    const supabase = createServiceClient();
+    const stripe = getStripe();
+
+    // Check if studio already has a Stripe account
+    const { data: studio } = await supabase
+      .from('studios')
+      .select('stripe_account_id, stripe_onboarding_complete')
+      .eq('id', ctx.studioId)
+      .single();
+
+    let accountId = studio?.stripe_account_id;
+
+    if (!accountId) {
+      // Create a new Stripe Connect Standard account
+      const account = await stripe.accounts.create({
+        type: 'standard',
+        metadata: { studio_id: ctx.studioId },
+      });
+      accountId = account.id;
+
+      // Save account ID to studio
+      await supabase
+        .from('studios')
+        .update({ stripe_account_id: accountId })
+        .eq('id', ctx.studioId);
+    }
+
+    // Create an account link for onboarding
+    const accountLink = await stripe.accountLinks.create({
+      account: accountId,
+      refresh_url: `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/admin/settings?stripe=refresh`,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/admin/settings?stripe=success`,
+      type: 'account_onboarding',
+    });
+
+    return { url: accountLink.url };
+  }),
+
+  stripeConnectStatus: adminProcedure.query(async ({ ctx }) => {
+    const supabase = createServiceClient();
+
+    const { data: studio } = await supabase
+      .from('studios')
+      .select('stripe_account_id, stripe_onboarding_complete')
+      .eq('id', ctx.studioId)
+      .single();
+
+    if (!studio?.stripe_account_id) {
+      return { connected: false, chargesEnabled: false, payoutsEnabled: false };
+    }
+
+    try {
+      const stripe = getStripe();
+      const account = await stripe.accounts.retrieve(studio.stripe_account_id);
+
+      const connected = account.charges_enabled && account.payouts_enabled;
+
+      // Update onboarding status if newly completed
+      if (connected && !studio.stripe_onboarding_complete) {
+        await supabase
+          .from('studios')
+          .update({ stripe_onboarding_complete: true })
+          .eq('id', ctx.studioId);
+      }
+
+      return {
+        connected,
+        chargesEnabled: account.charges_enabled ?? false,
+        payoutsEnabled: account.payouts_enabled ?? false,
+      };
+    } catch {
+      return { connected: false, chargesEnabled: false, payoutsEnabled: false };
+    }
+  }),
 });

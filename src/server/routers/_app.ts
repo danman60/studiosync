@@ -9,6 +9,7 @@ import { mediaRouter } from './media';
 import { analyticsRouter } from './analytics';
 import { eventRouter } from './event';
 import { announcementRouter } from './announcement';
+import { messagingRouter } from './messaging';
 
 export const appRouter = router({
   catalog: catalogRouter,
@@ -21,6 +22,7 @@ export const appRouter = router({
   analytics: analyticsRouter,
   event: eventRouter,
   announcement: announcementRouter,
+  messaging: messagingRouter,
 });
 
 export type AppRouter = typeof appRouter;

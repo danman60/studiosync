@@ -12,6 +12,7 @@ import {
   XCircle,
   Eye,
   ChevronLeft,
+  Download,
 } from 'lucide-react';
 
 const STATUS_BADGE: Record<string, string> = {
@@ -83,8 +84,45 @@ function InvoiceList({
     statusFilter ? { status: statusFilter as 'draft' | 'sent' | 'paid' | 'partial' | 'overdue' | 'void' | 'cancelled' } : undefined
   );
 
+  function exportCSV() {
+    const rows = invoices.data ?? [];
+    if (rows.length === 0) return;
+    const header = ['Invoice #', 'Family', 'Email', 'Status', 'Due Date', 'Total', 'Paid'];
+    const csvRows = rows.map((inv) => {
+      const fam = inv.families as unknown as { parent_first_name: string; parent_last_name: string; email: string } | null;
+      return [
+        inv.invoice_number,
+        fam ? `${fam.parent_first_name} ${fam.parent_last_name}` : '',
+        fam?.email ?? '',
+        inv.status,
+        inv.due_date,
+        (inv.total / 100).toFixed(2),
+        (inv.amount_paid / 100).toFixed(2),
+      ].map((v) => `"${v}"`).join(',');
+    });
+    const csv = [header.join(','), ...csvRows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `invoices-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <>
+      {/* Export */}
+      <div className="mb-4 flex justify-end">
+        <button
+          onClick={exportCSV}
+          disabled={!invoices.data?.length}
+          className="btn-outline inline-flex h-9 items-center gap-2 rounded-xl px-4 text-xs font-medium disabled:opacity-50"
+        >
+          <Download size={14} /> Export CSV
+        </button>
+      </div>
+
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
         <div className="glass-card rounded-2xl bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 p-6 animate-fade-in-up stagger-1">

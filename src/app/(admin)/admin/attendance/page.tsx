@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { trpc } from '@/lib/trpc';
 import { keepPreviousData } from '@tanstack/react-query';
-import { CheckSquare, AlertTriangle, BarChart3 } from 'lucide-react';
+import { CheckSquare, AlertTriangle, BarChart3, Download } from 'lucide-react';
 
 function getInitialDates() {
   const now = new Date();
@@ -25,13 +25,41 @@ export default function AdminAttendanceReportPage() {
     { placeholderData: keepPreviousData }
   );
 
+  function exportAttendanceCSV() {
+    if (!data) return;
+    const header = ['Class', 'Present', 'Absent', 'Late', 'Excused', 'Total', 'Rate'];
+    const csvRows = data.attendanceByClass.map((cls) => {
+      const rate = cls.total > 0 ? Math.round(((cls.present + cls.late) / cls.total) * 100) : 0;
+      return [cls.name, cls.present, cls.absent, cls.late, cls.excused, cls.total, `${rate}%`]
+        .map((v) => `"${v}"`)
+        .join(',');
+    });
+    const csv = [header.join(','), ...csvRows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `attendance-${startDate}-to-${endDate}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   const inputClass = 'h-11 rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 transition-shadow input-glow';
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Attendance Reports</h1>
-        <p className="mt-1 text-sm text-gray-500">Attendance breakdown by class and absentee tracking.</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Attendance Reports</h1>
+          <p className="mt-1 text-sm text-gray-500">Attendance breakdown by class and absentee tracking.</p>
+        </div>
+        <button
+          onClick={exportAttendanceCSV}
+          disabled={!data?.attendanceByClass.length}
+          className="btn-outline inline-flex h-11 items-center gap-2 rounded-xl px-4 text-sm font-medium disabled:opacity-50"
+        >
+          <Download size={16} /> Export CSV
+        </button>
       </div>
 
       {/* Date Range */}

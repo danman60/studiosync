@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useStudio } from '@/contexts/StudioContext';
 import { trpc } from '@/lib/trpc';
-import { Save, Settings, Palette, CreditCard } from 'lucide-react';
+import { Save, Settings, Palette, CreditCard, ExternalLink, CheckCircle, Loader2 } from 'lucide-react';
 
 export default function SettingsPage() {
   const { studio } = useStudio();
@@ -157,21 +157,8 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Stripe Status (read-only) */}
-        <div className="glass-card-static rounded-2xl p-6 animate-fade-in-up stagger-3">
-          <h2 className="section-heading text-sm mb-4">
-            <CreditCard size={16} className="text-emerald-500" /> Payment Integration
-          </h2>
-          <div className="flex items-center gap-3">
-            <div className={`h-3 w-3 rounded-full ${studio?.stripe_onboarding_complete ? 'bg-emerald-500' : 'bg-gray-300'}`} />
-            <span className="text-sm text-gray-700">
-              Stripe: {studio?.stripe_onboarding_complete ? 'Connected' : 'Not connected'}
-            </span>
-          </div>
-          {studio?.stripe_account_id && (
-            <p className="mt-2 text-xs text-gray-400">Account: {studio.stripe_account_id}</p>
-          )}
-        </div>
+        {/* Stripe Connect */}
+        <StripeConnectSection />
 
         {/* Submit */}
         <div className="flex items-center gap-3">
@@ -187,6 +174,66 @@ export default function SettingsPage() {
           {updateMut.isError && <span className="text-sm text-red-600">{updateMut.error.message}</span>}
         </div>
       </form>
+    </div>
+  );
+}
+
+function StripeConnectSection() {
+  const status = trpc.admin.stripeConnectStatus.useQuery();
+  const connectMut = trpc.admin.stripeConnectUrl.useMutation({
+    onSuccess: (data) => {
+      window.location.href = data.url;
+    },
+  });
+
+  return (
+    <div className="glass-card-static rounded-2xl p-6 animate-fade-in-up stagger-3">
+      <h2 className="section-heading text-sm mb-4">
+        <CreditCard size={16} className="text-emerald-500" /> Payment Integration
+      </h2>
+
+      {status.isLoading ? (
+        <div className="flex items-center gap-2 text-sm text-gray-400">
+          <Loader2 size={16} className="animate-spin" /> Checking Stripe status...
+        </div>
+      ) : status.data?.connected ? (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <CheckCircle size={18} className="text-emerald-500" />
+            <span className="text-sm font-medium text-emerald-700">Stripe Connected</span>
+          </div>
+          <div className="flex items-center gap-4 text-xs text-gray-500">
+            <span className="flex items-center gap-1">
+              <span className={`h-2 w-2 rounded-full ${status.data.chargesEnabled ? 'bg-emerald-500' : 'bg-gray-300'}`} />
+              Charges {status.data.chargesEnabled ? 'enabled' : 'disabled'}
+            </span>
+            <span className="flex items-center gap-1">
+              <span className={`h-2 w-2 rounded-full ${status.data.payoutsEnabled ? 'bg-emerald-500' : 'bg-gray-300'}`} />
+              Payouts {status.data.payoutsEnabled ? 'enabled' : 'disabled'}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <p className="text-sm text-gray-600">
+            Connect your Stripe account to accept online payments from families.
+          </p>
+          <button
+            onClick={() => connectMut.mutate()}
+            disabled={connectMut.isPending}
+            className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-medium disabled:opacity-50"
+          >
+            {connectMut.isPending ? (
+              <><Loader2 size={16} className="animate-spin" /> Redirecting...</>
+            ) : (
+              <><ExternalLink size={16} /> Connect with Stripe</>
+            )}
+          </button>
+          {connectMut.isError && (
+            <p className="text-sm text-red-600">{connectMut.error.message}</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
