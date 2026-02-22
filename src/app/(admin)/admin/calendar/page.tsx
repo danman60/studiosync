@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { trpc } from '@/lib/trpc';
-import { Clock, MapPin, Users } from 'lucide-react';
+import { Clock, MapPin, Users, Calendar } from 'lucide-react';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const SHORT_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -23,7 +23,6 @@ export default function CalendarPage() {
     for (const cls of classes ?? []) {
       byDay[cls.day_of_week]?.push(cls);
     }
-    // Sort each day by start_time
     for (const d of Object.keys(byDay)) {
       byDay[Number(d)]?.sort((a, b) => a.start_time.localeCompare(b.start_time));
     }
@@ -37,22 +36,20 @@ export default function CalendarPage() {
         <p className="mt-1 text-sm text-gray-500">All classes organized by day and time.</p>
       </div>
 
-      {/* Loading skeleton */}
       {isLoading && (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="animate-pulse rounded-2xl border border-gray-200/60 bg-white/80 p-5">
-              <div className="mb-3 h-5 w-24 rounded bg-gray-200/60" />
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="glass-card-static rounded-2xl p-5">
+              <div className="mb-3 skeleton h-5 w-24" />
               <div className="space-y-3">
-                <div className="h-16 rounded-xl bg-gray-200/40" />
-                <div className="h-16 rounded-xl bg-gray-200/40" />
+                <div className="skeleton h-16 w-full rounded-xl" />
+                <div className="skeleton h-16 w-full rounded-xl" />
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Calendar grid */}
       {!isLoading && (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {DAYS.map((dayName, dayIdx) => {
@@ -60,16 +57,13 @@ export default function CalendarPage() {
             if (dayClasses.length === 0) return null;
 
             return (
-              <div
-                key={dayIdx}
-                className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-5"
-              >
+              <div key={dayIdx} className="glass-card-static rounded-2xl p-5">
                 <div className="mb-4 flex items-center gap-2">
                   <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500/10 to-purple-500/10 text-xs font-bold text-indigo-600">
                     {SHORT_DAYS[dayIdx]}
                   </span>
                   <h2 className="text-sm font-semibold text-gray-900">{dayName}</h2>
-                  <span className="ml-auto rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                  <span className="ml-auto rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500">
                     {dayClasses.length}
                   </span>
                 </div>
@@ -128,9 +122,9 @@ export default function CalendarPage() {
         </div>
       )}
 
-      {/* Empty state */}
       {!isLoading && (classes ?? []).length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white/60 py-20">
+        <div className="empty-state">
+          <Calendar size={24} className="mb-3 text-indigo-400" />
           <p className="text-sm font-medium text-gray-600">No classes scheduled</p>
           <p className="mt-1 text-xs text-gray-400">Create classes to see them on the calendar.</p>
         </div>

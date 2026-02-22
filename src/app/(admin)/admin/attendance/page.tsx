@@ -25,6 +25,8 @@ export default function AdminAttendanceReportPage() {
     { placeholderData: keepPreviousData }
   );
 
+  const inputClass = 'h-11 rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 transition-shadow input-glow';
+
   return (
     <div>
       <div className="mb-8">
@@ -36,30 +38,20 @@ export default function AdminAttendanceReportPage() {
       <div className="mb-6 flex flex-wrap items-center gap-4">
         <div>
           <label className="block text-xs font-medium text-gray-500 mb-1">From</label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-          />
+          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={inputClass} />
         </div>
         <div>
           <label className="block text-xs font-medium text-gray-500 mb-1">To</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-          />
+          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className={inputClass} />
         </div>
       </div>
 
       {isLoading && (
         <div className="space-y-4">
           {[1, 2].map((i) => (
-            <div key={i} className="animate-pulse rounded-2xl border border-gray-200/60 bg-white/80 p-6">
-              <div className="mb-3 h-5 w-40 rounded bg-gray-200/60" />
-              <div className="h-32 w-full rounded bg-gray-200/40" />
+            <div key={i} className="glass-card-static rounded-2xl p-6">
+              <div className="mb-3 skeleton h-5 w-40" />
+              <div className="skeleton h-32 w-full" />
             </div>
           ))}
         </div>
@@ -68,10 +60,9 @@ export default function AdminAttendanceReportPage() {
       {!isLoading && data && (
         <div className="space-y-6">
           {/* Attendance by Class */}
-          <div className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <BarChart3 size={16} className="text-indigo-500" />
-              <h2 className="text-sm font-semibold text-gray-900">Attendance by Class</h2>
+          <div className="glass-card-static overflow-hidden rounded-2xl">
+            <div className="px-5 py-4 border-b border-gray-100">
+              <h2 className="section-heading text-sm"><BarChart3 size={16} /> Attendance by Class</h2>
             </div>
 
             {data.attendanceByClass.length === 0 && (
@@ -83,31 +74,31 @@ export default function AdminAttendanceReportPage() {
                 <table className="min-w-full divide-y divide-gray-100">
                   <thead>
                     <tr className="bg-gray-50/60">
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Class</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-emerald-600">Present</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-red-600">Absent</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-amber-600">Late</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-blue-600">Excused</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600">Rate</th>
+                      <th className="table-header">Class</th>
+                      <th className="table-header text-center text-emerald-600">Present</th>
+                      <th className="table-header text-center text-red-600">Absent</th>
+                      <th className="table-header text-center text-amber-600">Late</th>
+                      <th className="table-header text-center text-blue-600">Excused</th>
+                      <th className="table-header text-center">Rate</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
                     {data.attendanceByClass.map((cls) => {
                       const rate = cls.total > 0 ? Math.round(((cls.present + cls.late) / cls.total) * 100) : 0;
                       return (
-                        <tr key={cls.classId} className="transition-colors hover:bg-indigo-50/30">
-                          <td className="px-4 py-3 text-sm font-medium text-gray-900">{cls.name}</td>
-                          <td className="px-4 py-3 text-center text-sm text-emerald-600 font-medium">{cls.present}</td>
-                          <td className="px-4 py-3 text-center text-sm text-red-600 font-medium">{cls.absent}</td>
-                          <td className="px-4 py-3 text-center text-sm text-amber-600 font-medium">{cls.late}</td>
-                          <td className="px-4 py-3 text-center text-sm text-blue-600 font-medium">{cls.excused}</td>
-                          <td className="px-4 py-3 text-center">
-                            <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                        <tr key={cls.classId} className="table-row-hover">
+                          <td className="table-cell font-medium text-gray-900">{cls.name}</td>
+                          <td className="table-cell text-center text-emerald-600 font-medium">{cls.present}</td>
+                          <td className="table-cell text-center text-red-600 font-medium">{cls.absent}</td>
+                          <td className="table-cell text-center text-amber-600 font-medium">{cls.late}</td>
+                          <td className="table-cell text-center text-blue-600 font-medium">{cls.excused}</td>
+                          <td className="table-cell text-center">
+                            <span className={`inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
                               rate >= 90
-                                ? 'bg-emerald-500/15 text-emerald-600'
+                                ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25'
                                 : rate >= 70
-                                  ? 'bg-amber-500/15 text-amber-600'
-                                  : 'bg-red-500/15 text-red-600'
+                                  ? 'bg-amber-500/15 text-amber-600 border border-amber-500/25'
+                                  : 'bg-red-500/15 text-red-600 border border-red-500/25'
                             }`}>
                               {rate}%
                             </span>
@@ -122,10 +113,9 @@ export default function AdminAttendanceReportPage() {
           </div>
 
           {/* Absentee Report */}
-          <div className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <AlertTriangle size={16} className="text-amber-500" />
-              <h2 className="text-sm font-semibold text-gray-900">Chronic Absentees (&gt;30% absent)</h2>
+          <div className="glass-card-static overflow-hidden rounded-2xl">
+            <div className="px-5 py-4 border-b border-gray-100">
+              <h2 className="section-heading text-sm"><AlertTriangle size={16} className="text-amber-500" /> Chronic Absentees (&gt;30% absent)</h2>
             </div>
 
             {data.absenteeReport.length === 0 && (
@@ -140,20 +130,20 @@ export default function AdminAttendanceReportPage() {
                 <table className="min-w-full divide-y divide-gray-100">
                   <thead>
                     <tr className="bg-gray-50/60">
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Student</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600">Absences</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600">Total Records</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600">Absence Rate</th>
+                      <th className="table-header">Student</th>
+                      <th className="table-header text-center">Absences</th>
+                      <th className="table-header text-center">Total Records</th>
+                      <th className="table-header text-center">Absence Rate</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
                     {data.absenteeReport.map((student) => (
-                      <tr key={student.childId} className="transition-colors hover:bg-red-50/30">
-                        <td className="px-4 py-3 text-sm font-medium text-gray-900">{student.name}</td>
-                        <td className="px-4 py-3 text-center text-sm text-red-600 font-medium">{student.absent}</td>
-                        <td className="px-4 py-3 text-center text-sm text-gray-600">{student.total}</td>
-                        <td className="px-4 py-3 text-center">
-                          <span className="inline-flex rounded-full bg-red-500/15 px-2.5 py-0.5 text-xs font-medium text-red-600">
+                      <tr key={student.childId} className="table-row-hover">
+                        <td className="table-cell font-medium text-gray-900">{student.name}</td>
+                        <td className="table-cell text-center text-red-600 font-medium">{student.absent}</td>
+                        <td className="table-cell text-center text-gray-600">{student.total}</td>
+                        <td className="table-cell text-center">
+                          <span className="inline-flex rounded-full bg-red-500/15 px-2.5 py-0.5 text-[11px] font-medium text-red-600 border border-red-500/25">
                             {student.rate}%
                           </span>
                         </td>

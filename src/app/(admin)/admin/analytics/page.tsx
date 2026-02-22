@@ -34,10 +34,10 @@ export default function AnalyticsPage() {
       {/* KPI Cards */}
       {isLoading ? (
         <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="animate-pulse rounded-2xl border border-gray-200/60 bg-white/80 p-5">
-              <div className="mb-3 h-4 w-20 rounded bg-gray-200/60" />
-              <div className="h-8 w-16 rounded bg-gray-200/60" />
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <div key={i} className="glass-card rounded-2xl p-5">
+              <div className="mb-3 skeleton h-4 w-20" />
+              <div className="skeleton h-8 w-16" />
             </div>
           ))}
         </div>
@@ -49,6 +49,7 @@ export default function AnalyticsPage() {
             value={String(overview.totalClasses)}
             gradient="from-indigo-500/10 to-indigo-500/5"
             iconColor="text-indigo-600"
+            stagger={1}
           />
           <KpiCard
             icon={<Users size={20} />}
@@ -57,6 +58,7 @@ export default function AnalyticsPage() {
             subtitle={`${overview.waitlistedCount} waitlisted`}
             gradient="from-purple-500/10 to-purple-500/5"
             iconColor="text-purple-600"
+            stagger={2}
           />
           <KpiCard
             icon={<UserCheck size={20} />}
@@ -65,6 +67,7 @@ export default function AnalyticsPage() {
             subtitle={`${overview.activeStaff} staff`}
             gradient="from-emerald-500/10 to-emerald-500/5"
             iconColor="text-emerald-600"
+            stagger={3}
           />
           <KpiCard
             icon={<DollarSign size={20} />}
@@ -72,6 +75,7 @@ export default function AnalyticsPage() {
             value={formatCents(overview.totalRevenue)}
             gradient="from-amber-500/10 to-amber-500/5"
             iconColor="text-amber-600"
+            stagger={4}
           />
           <KpiCard
             icon={<TrendingUp size={20} />}
@@ -79,6 +83,7 @@ export default function AnalyticsPage() {
             value={String(overview.totalEnrollments)}
             gradient="from-blue-500/10 to-blue-500/5"
             iconColor="text-blue-600"
+            stagger={5}
           />
           <KpiCard
             icon={<Clock size={20} />}
@@ -86,6 +91,7 @@ export default function AnalyticsPage() {
             value={String(overview.completedSessions)}
             gradient="from-cyan-500/10 to-cyan-500/5"
             iconColor="text-cyan-600"
+            stagger={6}
           />
           <KpiCard
             icon={<Activity size={20} />}
@@ -93,6 +99,7 @@ export default function AnalyticsPage() {
             value={`${overview.attendanceRate}%`}
             gradient="from-rose-500/10 to-rose-500/5"
             iconColor="text-rose-600"
+            stagger={7}
           />
           <KpiCard
             icon={<BarChart3 size={20} />}
@@ -100,18 +107,19 @@ export default function AnalyticsPage() {
             value={String(overview.activeStaff)}
             gradient="from-violet-500/10 to-violet-500/5"
             iconColor="text-violet-600"
+            stagger={8}
           />
         </div>
       ) : null}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Class Popularity */}
-        <div className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-6">
-          <h2 className="mb-4 text-sm font-semibold text-gray-900">Most Popular Classes</h2>
+        <div className="glass-card-static rounded-2xl p-6">
+          <h2 className="section-heading text-sm mb-4"><BarChart3 size={16} /> Most Popular Classes</h2>
           {loadingPop ? (
             <div className="space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="animate-pulse h-8 rounded bg-gray-200/40" />
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="skeleton h-8 w-full" />
               ))}
             </div>
           ) : (popularity ?? []).length > 0 ? (
@@ -148,8 +156,8 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Enrollments by Type */}
-        <div className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-6">
-          <h2 className="mb-4 text-sm font-semibold text-gray-900">Enrollments by Class Type</h2>
+        <div className="glass-card-static rounded-2xl p-6">
+          <h2 className="section-heading text-sm mb-4"><Users size={16} /> Enrollments by Class Type</h2>
           {(byType ?? []).length > 0 ? (
             <div className="space-y-3">
               {(byType ?? []).map((ct) => {
@@ -185,8 +193,8 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Revenue by Month */}
-        <div className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-6 lg:col-span-2">
-          <h2 className="mb-4 text-sm font-semibold text-gray-900">Revenue by Month</h2>
+        <div className="glass-card-static rounded-2xl p-6 lg:col-span-2">
+          <h2 className="section-heading text-sm mb-4"><DollarSign size={16} /> Revenue by Month</h2>
           {(revenue ?? []).length > 0 ? (
             <div className="flex items-end gap-2" style={{ height: 160 }}>
               {(revenue ?? []).map((r) => {
@@ -220,6 +228,7 @@ function KpiCard({
   subtitle,
   gradient,
   iconColor,
+  stagger,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -227,16 +236,17 @@ function KpiCard({
   subtitle?: string;
   gradient: string;
   iconColor: string;
+  stagger: number;
 }) {
   return (
-    <div className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/5">
+    <div className={`glass-card rounded-2xl p-5 animate-fade-in-up stagger-${Math.min(stagger, 8)}`}>
       <div className="mb-3 flex items-center gap-3">
         <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${gradient}`}>
           <span className={iconColor}>{icon}</span>
         </div>
         <span className="text-xs font-medium text-gray-500">{label}</span>
       </div>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
+      <p className="stat-number">{value}</p>
       {subtitle && <p className="mt-0.5 text-xs text-gray-400">{subtitle}</p>}
     </div>
   );

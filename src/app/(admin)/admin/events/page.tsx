@@ -61,31 +61,31 @@ export default function EventsPage() {
           <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Ticket Orders</h1>
           <p className="mt-1 text-sm text-gray-500">{event?.name ?? 'Event'}</p>
         </div>
-        <div className="rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm overflow-hidden">
+        <div className="glass-card-static overflow-hidden rounded-2xl">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50/50">
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Buyer</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Email</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Qty</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Amount</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Status</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Date</th>
+              <tr className="bg-gray-50/60">
+                <th className="table-header">Buyer</th>
+                <th className="table-header">Email</th>
+                <th className="table-header text-center">Qty</th>
+                <th className="table-header text-center">Amount</th>
+                <th className="table-header text-center">Status</th>
+                <th className="table-header">Date</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-50">
               {(orders ?? []).map((o) => (
-                <tr key={o.id} className="border-b border-gray-50 transition-colors hover:bg-indigo-50/30">
-                  <td className="px-4 py-3 text-sm text-gray-900">{o.buyer_name}</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">{o.buyer_email}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{o.quantity}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{formatCents(o.total_amount)}</td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_BADGE[o.status] ?? STATUS_BADGE.draft}`}>
+                <tr key={o.id} className="table-row-hover">
+                  <td className="table-cell font-medium text-gray-900">{o.buyer_name}</td>
+                  <td className="table-cell text-gray-500">{o.buyer_email}</td>
+                  <td className="table-cell text-center text-gray-700">{o.quantity}</td>
+                  <td className="table-cell text-center text-gray-700">{formatCents(o.total_amount)}</td>
+                  <td className="table-cell text-center">
+                    <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_BADGE[o.status] ?? STATUS_BADGE.draft}`}>
                       {o.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-xs text-gray-400">{new Date(o.created_at).toLocaleDateString()}</td>
+                  <td className="table-cell text-xs text-gray-400">{new Date(o.created_at).toLocaleDateString()}</td>
                 </tr>
               ))}
               {(orders ?? []).length === 0 && (
@@ -105,7 +105,7 @@ export default function EventsPage() {
           <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Events</h1>
           <p className="mt-1 text-sm text-gray-500">Manage performances, recitals, and showcases.</p>
         </div>
-        <button onClick={() => setShowCreate(true)} className="btn-gradient inline-flex h-10 items-center gap-2 rounded-xl px-5 text-sm font-medium">
+        <button onClick={() => setShowCreate(true)} className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-medium">
           <Plus size={16} /> New Event
         </button>
       </div>
@@ -113,10 +113,11 @@ export default function EventsPage() {
       {/* Loading */}
       {isLoading && (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="animate-pulse rounded-2xl border border-gray-200/60 bg-white/80 p-5">
-              <div className="mb-3 h-5 w-40 rounded bg-gray-200/60" />
-              <div className="h-4 w-24 rounded bg-gray-200/40" />
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="glass-card rounded-2xl p-5">
+              <div className="mb-3 skeleton h-5 w-40" />
+              <div className="skeleton h-4 w-24" />
+              <div className="mt-3 skeleton h-3 w-32" />
             </div>
           ))}
         </div>
@@ -128,8 +129,7 @@ export default function EventsPage() {
           {(events ?? []).map((evt, idx) => (
             <div
               key={evt.id}
-              className="group rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/5"
-              style={{ animationDelay: `${idx * 50}ms` }}
+              className={`glass-card rounded-2xl p-5 animate-fade-in-up stagger-${Math.min(idx + 1, 8)}`}
             >
               <div className="flex items-start justify-between">
                 <div className="min-w-0 flex-1">
@@ -148,7 +148,7 @@ export default function EventsPage() {
                     </span>
                   </div>
                 </div>
-                <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-medium ${STATUS_BADGE[evt.status]}`}>
+                <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_BADGE[evt.status]}`}>
                   {evt.status}
                 </span>
               </div>
@@ -158,7 +158,7 @@ export default function EventsPage() {
                 {evt.status === 'draft' && (
                   <button
                     onClick={() => updateMut.mutate({ id: evt.id, status: 'published' })}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-emerald-500/10 px-3 text-xs font-medium text-emerald-600 transition-colors hover:bg-emerald-500/20"
+                    className="icon-btn-success inline-flex items-center gap-1.5 px-3 text-xs font-medium"
                   >
                     <Eye size={13} /> Publish
                   </button>
@@ -166,23 +166,23 @@ export default function EventsPage() {
                 {evt.status === 'published' && (
                   <button
                     onClick={() => updateMut.mutate({ id: evt.id, status: 'completed' })}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-blue-500/10 px-3 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-500/20"
+                    className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-blue-500/10 px-3 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-500/20"
                   >
                     Complete
                   </button>
                 )}
                 <button
                   onClick={() => { setSelectedEventId(evt.id); setView('orders'); }}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-gray-100 px-3 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200"
+                  className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-gray-100 px-3 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200"
                 >
                   <Users size={13} /> Orders
                 </button>
                 {evt.tickets_sold === 0 && (
                   <button
                     onClick={() => { if (confirm('Delete this event?')) deleteMut.mutate({ id: evt.id }); }}
-                    className="ml-auto inline-flex h-8 items-center gap-1 rounded-lg px-2 text-xs text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                    className="icon-btn icon-btn-danger ml-auto"
                   >
-                    <Trash2 size={13} />
+                    <Trash2 size={14} />
                   </button>
                 )}
               </div>
@@ -193,8 +193,10 @@ export default function EventsPage() {
 
       {/* Empty */}
       {!isLoading && (events ?? []).length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white/60 py-20">
-          <Ticket size={24} className="mb-3 text-indigo-400" />
+        <div className="empty-state">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
+            <Ticket size={24} className="text-indigo-400" />
+          </div>
           <p className="text-sm font-medium text-gray-600">No events yet</p>
           <p className="mt-1 text-xs text-gray-400">Create your first performance or recital.</p>
         </div>
@@ -244,39 +246,39 @@ function CreateEventModal({
       >
         <div>
           <label className="mb-1 block text-xs font-medium text-gray-600">Event Name *</label>
-          <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="h-10 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
+          <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="mb-1 block text-xs font-medium text-gray-600">Date *</label>
-            <input type="date" value={form.event_date} onChange={(e) => setForm({ ...form, event_date: e.target.value })} required className="h-10 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
+            <input type="date" value={form.event_date} onChange={(e) => setForm({ ...form, event_date: e.target.value })} required className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
           </div>
           <div>
             <label className="mb-1 block text-xs font-medium text-gray-600">Time</label>
-            <input type="time" value={form.event_time} onChange={(e) => setForm({ ...form, event_time: e.target.value })} className="h-10 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
+            <input type="time" value={form.event_time} onChange={(e) => setForm({ ...form, event_time: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
           </div>
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-gray-600">Location</label>
-          <input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} className="h-10 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
+          <input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="mb-1 block text-xs font-medium text-gray-600">Ticket Price ($)</label>
-            <input type="number" step="0.01" min="0" value={form.ticket_price} onChange={(e) => setForm({ ...form, ticket_price: e.target.value })} className="h-10 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
+            <input type="number" step="0.01" min="0" value={form.ticket_price} onChange={(e) => setForm({ ...form, ticket_price: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
           </div>
           <div>
             <label className="mb-1 block text-xs font-medium text-gray-600">Max Tickets</label>
-            <input type="number" min="1" value={form.max_tickets} onChange={(e) => setForm({ ...form, max_tickets: e.target.value })} placeholder="Unlimited" className="h-10 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
+            <input type="number" min="1" value={form.max_tickets} onChange={(e) => setForm({ ...form, max_tickets: e.target.value })} placeholder="Unlimited" className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
           </div>
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-gray-600">Description</label>
-          <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
+          <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm input-glow" />
         </div>
         <div className="flex justify-end gap-2 pt-2">
-          <button type="button" onClick={onClose} className="h-10 rounded-xl border border-gray-200 px-4 text-sm font-medium text-gray-600 hover:bg-gray-50">Cancel</button>
-          <button type="submit" disabled={loading} className="btn-gradient h-10 rounded-xl px-5 text-sm font-medium disabled:opacity-50">
+          <button type="button" onClick={onClose} className="btn-outline h-11 rounded-xl px-4 text-sm font-medium">Cancel</button>
+          <button type="submit" disabled={loading} className="btn-gradient h-11 rounded-xl px-5 text-sm font-medium disabled:opacity-50">
             {loading ? 'Creating...' : 'Create Event'}
           </button>
         </div>

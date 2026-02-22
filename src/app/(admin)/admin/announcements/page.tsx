@@ -44,7 +44,7 @@ export default function AnnouncementsPage() {
           <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Announcements</h1>
           <p className="mt-1 text-sm text-gray-500">Send targeted messages to families and staff.</p>
         </div>
-        <button onClick={() => setShowCreate(true)} className="btn-gradient inline-flex h-10 items-center gap-2 rounded-xl px-5 text-sm font-medium">
+        <button onClick={() => setShowCreate(true)} className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-medium">
           <Plus size={16} /> New Announcement
         </button>
       </div>
@@ -52,10 +52,11 @@ export default function AnnouncementsPage() {
       {/* Loading */}
       {isLoading && (
         <div className="space-y-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="animate-pulse rounded-2xl border border-gray-200/60 bg-white/80 p-5">
-              <div className="mb-2 h-5 w-48 rounded bg-gray-200/60" />
-              <div className="h-4 w-full rounded bg-gray-200/40" />
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="glass-card rounded-2xl p-5">
+              <div className="mb-2 skeleton h-5 w-48" />
+              <div className="skeleton h-4 w-full" />
+              <div className="mt-2 skeleton h-3 w-32" />
             </div>
           ))}
         </div>
@@ -69,17 +70,16 @@ export default function AnnouncementsPage() {
             return (
               <div
                 key={ann.id}
-                className="group rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/5"
-                style={{ animationDelay: `${idx * 40}ms` }}
+                className={`glass-card rounded-2xl p-5 animate-fade-in-up stagger-${Math.min(idx + 1, 8)}`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <h3 className="text-sm font-semibold text-gray-900">{ann.title}</h3>
                       {ann.is_draft ? (
-                        <span className="rounded-full bg-gray-500/15 border border-gray-500/20 px-2 py-0.5 text-[10px] font-medium text-gray-500">Draft</span>
+                        <span className="rounded-full bg-gray-500/15 border border-gray-500/20 px-2 py-0.5 text-[11px] font-medium text-gray-500">Draft</span>
                       ) : (
-                        <span className="rounded-full bg-emerald-500/15 border border-emerald-500/25 px-2 py-0.5 text-[10px] font-medium text-emerald-600">Published</span>
+                        <span className="rounded-full bg-emerald-500/15 border border-emerald-500/25 px-2 py-0.5 text-[11px] font-medium text-emerald-600">Published</span>
                       )}
                     </div>
                     <p className="mt-1 line-clamp-2 text-sm text-gray-600">{ann.body}</p>
@@ -96,7 +96,7 @@ export default function AnnouncementsPage() {
                     {ann.is_draft ? (
                       <button
                         onClick={() => publishMut.mutate({ id: ann.id })}
-                        className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-emerald-500/10 px-3 text-xs font-medium text-emerald-600 hover:bg-emerald-500/20"
+                        className="icon-btn-success inline-flex items-center gap-1.5 px-3 text-xs font-medium"
                         title="Publish"
                       >
                         <Send size={13} /> Publish
@@ -104,7 +104,7 @@ export default function AnnouncementsPage() {
                     ) : (
                       <button
                         onClick={() => unpublishMut.mutate({ id: ann.id })}
-                        className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-gray-100 px-3 text-xs font-medium text-gray-600 hover:bg-gray-200"
+                        className="icon-btn inline-flex items-center gap-1.5 px-3 text-xs font-medium"
                         title="Unpublish"
                       >
                         <EyeOff size={13} /> Unpublish
@@ -112,7 +112,7 @@ export default function AnnouncementsPage() {
                     )}
                     <button
                       onClick={() => { if (confirm('Delete this announcement?')) deleteMut.mutate({ id: ann.id }); }}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500"
+                      className="icon-btn icon-btn-danger"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -126,8 +126,10 @@ export default function AnnouncementsPage() {
 
       {/* Empty */}
       {!isLoading && (announcements ?? []).length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white/60 py-20">
-          <Megaphone size={24} className="mb-3 text-indigo-400" />
+        <div className="empty-state">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
+            <Megaphone size={24} className="text-indigo-400" />
+          </div>
           <p className="text-sm font-medium text-gray-600">No announcements yet</p>
           <p className="mt-1 text-xs text-gray-400">Create your first announcement to communicate with families.</p>
         </div>
@@ -184,11 +186,11 @@ function CreateAnnouncementModal({
       >
         <div>
           <label className="mb-1 block text-xs font-medium text-gray-600">Title *</label>
-          <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className="h-10 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
+          <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-gray-600">Message *</label>
-          <textarea value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} required rows={4} className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
+          <textarea value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} required rows={4} className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm input-glow" />
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-gray-600">Target Audience</label>
@@ -198,11 +200,7 @@ function CreateAnnouncementModal({
                 key={t}
                 type="button"
                 onClick={() => setForm({ ...form, target_type: t, target_id: '' })}
-                className={`inline-flex h-9 items-center gap-1.5 rounded-full border px-3.5 text-xs font-medium transition-all ${
-                  form.target_type === t
-                    ? 'border-indigo-500/30 bg-indigo-500/10 text-indigo-700'
-                    : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
-                }`}
+                className={`filter-chip ${form.target_type === t ? 'filter-chip-active' : ''}`}
               >
                 {TARGET_ICON[t]} {t === 'all' ? 'Everyone' : t === 'class_type' ? 'Class Type' : t.charAt(0).toUpperCase() + t.slice(1)}
               </button>
@@ -216,7 +214,7 @@ function CreateAnnouncementModal({
               value={form.target_id}
               onChange={(e) => setForm({ ...form, target_id: e.target.value })}
               required
-              className="h-10 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+              className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow"
             >
               <option value="">Choose...</option>
               {targetOptions.map((opt) => (
@@ -230,8 +228,8 @@ function CreateAnnouncementModal({
           <label htmlFor="publish" className="text-sm text-gray-600">Publish immediately</label>
         </div>
         <div className="flex justify-end gap-2 pt-2">
-          <button type="button" onClick={onClose} className="h-10 rounded-xl border border-gray-200 px-4 text-sm font-medium text-gray-600 hover:bg-gray-50">Cancel</button>
-          <button type="submit" disabled={loading} className="btn-gradient h-10 rounded-xl px-5 text-sm font-medium disabled:opacity-50">
+          <button type="button" onClick={onClose} className="btn-outline h-11 rounded-xl px-4 text-sm font-medium">Cancel</button>
+          <button type="submit" disabled={loading} className="btn-gradient h-11 rounded-xl px-5 text-sm font-medium disabled:opacity-50">
             {loading ? 'Creating...' : form.publish ? 'Create & Publish' : 'Save Draft'}
           </button>
         </div>

@@ -12,7 +12,6 @@ import {
   Eye,
   EyeOff,
   Filter,
-  X,
 } from 'lucide-react';
 
 const TYPE_ICON: Record<string, React.ReactNode> = {
@@ -60,13 +59,11 @@ export default function MediaPage() {
 
     setUploading(true);
     try {
-      // Get signed upload URL
       const { uploadUrl, token, media: mediaRecord } = await getUploadUrl.mutateAsync({
         fileName: file.name,
         mimeType: file.type,
       });
 
-      // Upload file directly to storage
       const res = await fetch(uploadUrl, {
         method: 'PUT',
         headers: {
@@ -79,7 +76,6 @@ export default function MediaPage() {
 
       if (!res.ok) throw new Error('Upload failed');
 
-      // Confirm upload with file size
       await confirmUpload.mutateAsync({
         mediaId: mediaRecord.id,
         fileSize: file.size,
@@ -112,7 +108,7 @@ export default function MediaPage() {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="btn-gradient inline-flex h-10 items-center gap-2 rounded-xl px-5 text-sm font-medium disabled:opacity-50"
+            className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-medium disabled:opacity-50"
           >
             <Upload size={16} />
             {uploading ? 'Uploading...' : 'Upload File'}
@@ -126,11 +122,7 @@ export default function MediaPage() {
           <button
             key={t}
             onClick={() => setTypeFilter(t)}
-            className={`inline-flex h-9 items-center gap-1.5 rounded-full border px-4 text-xs font-medium transition-all ${
-              typeFilter === t
-                ? 'border-indigo-500/30 bg-indigo-500/10 text-indigo-700'
-                : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50'
-            }`}
+            className={`filter-chip ${typeFilter === t ? 'filter-chip-active' : ''}`}
           >
             {t === '' ? <Filter size={14} /> : TYPE_ICON[t]}
             {t === '' ? 'All' : t.charAt(0).toUpperCase() + t.slice(1)}
@@ -141,11 +133,11 @@ export default function MediaPage() {
       {/* Loading skeleton */}
       {isLoading && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="animate-pulse rounded-2xl border border-gray-200/60 bg-white/80 p-4">
-              <div className="mb-3 h-32 rounded-xl bg-gray-200/60" />
-              <div className="h-4 w-2/3 rounded bg-gray-200/60" />
-              <div className="mt-2 h-3 w-1/3 rounded bg-gray-200/60" />
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="glass-card rounded-2xl p-4">
+              <div className="mb-3 skeleton h-32 w-full rounded-xl" />
+              <div className="skeleton h-4 w-2/3" />
+              <div className="mt-2 skeleton h-3 w-1/3" />
             </div>
           ))}
         </div>
@@ -157,8 +149,7 @@ export default function MediaPage() {
           {media.map((item, idx) => (
             <div
               key={item.id}
-              className="group relative rounded-2xl border border-gray-200/60 bg-white/80 backdrop-blur-sm p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/5"
-              style={{ animationDelay: `${idx * 50}ms` }}
+              className={`glass-card group relative rounded-2xl p-4 animate-fade-in-up stagger-${Math.min(idx + 1, 6)}`}
             >
               {/* Preview */}
               <div className="mb-3 flex h-32 items-center justify-center rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
@@ -197,7 +188,7 @@ export default function MediaPage() {
                 <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                   <button
                     onClick={() => togglePublic.mutate({ id: item.id, isPublic: !item.is_public })}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                    className="icon-btn"
                     title={item.is_public ? 'Make private' : 'Make public'}
                   >
                     {item.is_public ? <Eye size={15} /> : <EyeOff size={15} />}
@@ -207,7 +198,7 @@ export default function MediaPage() {
                       href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-indigo-600"
+                      className="icon-btn"
                       title="Open"
                     >
                       <Eye size={15} />
@@ -219,7 +210,7 @@ export default function MediaPage() {
                         deleteMutation.mutate({ id: item.id });
                       }
                     }}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                    className="icon-btn icon-btn-danger"
                     title="Delete"
                   >
                     <Trash2 size={15} />
@@ -240,7 +231,7 @@ export default function MediaPage() {
 
       {/* Empty state */}
       {!isLoading && media && media.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white/60 py-20">
+        <div className="empty-state">
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
             <Image size={24} className="text-indigo-400" />
           </div>
