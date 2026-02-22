@@ -1,7 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { trpc } from '@/lib/trpc';
-import { Award, BookOpen } from 'lucide-react';
+import { Award, BookOpen, Printer } from 'lucide-react';
 
 const MARK_COLOR: Record<string, string> = {
   'A+': 'bg-emerald-500/15 text-emerald-600 border-emerald-500/25',
@@ -73,7 +74,7 @@ export default function ParentProgressPage() {
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10">
                     <Award size={20} className="text-indigo-600" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h2 className="text-base font-semibold text-gray-900">
                       {child.first_name} {child.last_name}
                     </h2>
@@ -81,6 +82,12 @@ export default function ParentProgressPage() {
                       {hasMarks ? `${Array.from(childMarks.values()).flat().length} marks across ${childMarks.size} class${childMarks.size > 1 ? 'es' : ''}` : 'No marks yet'}
                     </p>
                   </div>
+                  <Link
+                    href={`/dashboard/report-card/${child.id}`}
+                    className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-indigo-600"
+                  >
+                    <Printer size={14} /> Report Card
+                  </Link>
                 </div>
 
                 {hasMarks ? (

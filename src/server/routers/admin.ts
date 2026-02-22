@@ -906,4 +906,68 @@ export const adminRouter = router({
       return { connected: false, chargesEnabled: false, payoutsEnabled: false };
     }
   }),
+
+  // ── Report Card Overview ──────────────────────────────
+
+  reportCardOverview: adminProcedure
+    .input(z.object({ period: z.string().max(100).default('current') }).optional())
+    .query(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+      const period = input?.period ?? 'current';
+
+      // Get all classes with enrollment counts
+      const { data: classes } = await supabase
+        .from('classes')
+        .select('id, name, class_types(name), levels(name), staff(display_name)')
+        .eq('studio_id', ctx.studioId)
+        .eq('is_active', true);
+
+      if (!classes?.length) return [];
+
+      // Get enrolled student counts per class
+      const { data: enrollments } = await supabase
+        .from('enrollments')
+        .select('class_id, child_id')
+        .eq('studio_id', ctx.studioId)
+        .in('status', ['active', 'pending']);
+
+      // Get marks for this period grouped by class
+      const { data: marks } = await supabase
+        .from('progress_marks')
+        .select('class_id, child_id')
+        .eq('studio_id', ctx.studioId)
+        .eq('period', period);
+
+      // Calculate per-class stats
+      const enrollmentsByClass: Record<string, Set<string>> = {};
+      for (const e of enrollments ?? []) {
+        if (!enrollmentsByClass[e.class_id]) enrollmentsByClass[e.class_id] = new Set();
+        enrollmentsByClass[e.class_id].add(e.child_id);
+      }
+
+      const markedByClass: Record<string, Set<string>> = {};
+      for (const m of marks ?? []) {
+        if (!markedByClass[m.class_id]) markedByClass[m.class_id] = new Set();
+        markedByClass[m.class_id].add(m.child_id);
+      }
+
+      return classes.map((cls) => {
+        const enrolledCount = enrollmentsByClass[cls.id]?.size ?? 0;
+        const markedCount = markedByClass[cls.id]?.size ?? 0;
+        const classTypes = cls.class_types as unknown as { name: string } | null;
+        const levels = cls.levels as unknown as { name: string } | null;
+        const staff = cls.staff as unknown as { display_name: string } | null;
+
+        return {
+          id: cls.id,
+          name: cls.name,
+          classType: classTypes?.name ?? null,
+          level: levels?.name ?? null,
+          instructor: staff?.display_name ?? null,
+          enrolledStudents: enrolledCount,
+          markedStudents: markedCount,
+          completionPercent: enrolledCount > 0 ? Math.round((markedCount / enrolledCount) * 100) : 0,
+        };
+      });
+    }),
 });

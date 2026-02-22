@@ -252,6 +252,98 @@ export const portalRouter = router({
     return data ?? [];
   }),
 
+  // ── Report Card ──────────────────────────────────────────
+
+  reportCard: protectedProcedure
+    .input(z.object({
+      childId: z.string().uuid(),
+      period: z.string().max(100).default('current'),
+    }))
+    .query(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+
+      // Verify family ownership
+      const { data: family } = await supabase
+        .from('families')
+        .select('id')
+        .eq('studio_id', ctx.studioId)
+        .eq('auth_user_id', ctx.userId)
+        .single();
+
+      if (!family) throw new TRPCError({ code: 'NOT_FOUND', message: 'Family not found' });
+
+      // Verify child belongs to family
+      const { data: child } = await supabase
+        .from('children')
+        .select('id, first_name, last_name, date_of_birth')
+        .eq('id', input.childId)
+        .eq('family_id', family.id)
+        .eq('studio_id', ctx.studioId)
+        .single();
+
+      if (!child) throw new TRPCError({ code: 'NOT_FOUND', message: 'Student not found' });
+
+      // Get studio info for report header
+      const { data: studio } = await supabase
+        .from('studios')
+        .select('name, logo_url, phone, email, settings')
+        .eq('id', ctx.studioId)
+        .single();
+
+      // Get enrollments with class info
+      const { data: enrollments } = await supabase
+        .from('enrollments')
+        .select('id, class_id, classes(name, day_of_week, start_time, end_time, class_types(name), levels(name), seasons(name), instructor_id, staff(display_name))')
+        .eq('child_id', input.childId)
+        .eq('studio_id', ctx.studioId)
+        .in('status', ['active', 'pending']);
+
+      // Get progress marks for this period
+      const { data: marks } = await supabase
+        .from('progress_marks')
+        .select('*, classes(name), staff(display_name)')
+        .eq('child_id', input.childId)
+        .eq('studio_id', ctx.studioId)
+        .eq('period', input.period)
+        .order('category');
+
+      // Get attendance summary per class
+      const { data: attendance } = await supabase
+        .from('attendance')
+        .select('status, class_sessions(class_id)')
+        .eq('child_id', input.childId)
+        .eq('studio_id', ctx.studioId);
+
+      // Compute attendance stats per class
+      const attendanceByClass: Record<string, { present: number; absent: number; late: number; excused: number; total: number }> = {};
+      for (const a of attendance ?? []) {
+        const session = a.class_sessions as unknown as { class_id: string } | null;
+        if (!session) continue;
+        const cid = session.class_id;
+        if (!attendanceByClass[cid]) attendanceByClass[cid] = { present: 0, absent: 0, late: 0, excused: 0, total: 0 };
+        attendanceByClass[cid].total++;
+        if (a.status === 'present') attendanceByClass[cid].present++;
+        else if (a.status === 'absent') attendanceByClass[cid].absent++;
+        else if (a.status === 'late') attendanceByClass[cid].late++;
+        else if (a.status === 'excused') attendanceByClass[cid].excused++;
+      }
+
+      // Group marks by class
+      const marksByClass: Record<string, typeof marks> = {};
+      for (const m of marks ?? []) {
+        (marksByClass[m.class_id] ??= []).push(m);
+      }
+
+      return {
+        child,
+        studio: studio ?? { name: '', logo_url: null, phone: null, email: null, settings: {} },
+        period: input.period,
+        enrollments: enrollments ?? [],
+        marksByClass,
+        attendanceByClass,
+      };
+    }),
+
   // ── Profile ────────────────────────────────────────────
 
   getProfile: protectedProcedure.query(async ({ ctx }) => {

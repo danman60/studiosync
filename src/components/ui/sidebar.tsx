@@ -53,6 +53,7 @@ const adminNavItems: NavItem[] = [
   { label: 'Announcements', href: '/admin/announcements', icon: <Megaphone size={18} />, section: 'admin' },
   { label: 'Attendance', href: '/admin/attendance', icon: <CheckSquare size={18} />, section: 'admin' },
   { label: 'Messages', href: '/admin/messages', icon: <MessageCircle size={18} />, section: 'admin' },
+  { label: 'Report Cards', href: '/admin/reports', icon: <Award size={18} />, section: 'admin' },
   { label: 'Analytics', href: '/admin/analytics', icon: <BarChart3 size={18} />, section: 'admin' },
   { label: 'Settings', href: '/admin/settings', icon: <Settings size={18} />, section: 'admin' },
 ];

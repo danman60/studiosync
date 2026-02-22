@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useStudio } from '@/contexts/StudioContext';
 import { trpc } from '@/lib/trpc';
-import { Save, Settings, Palette, CreditCard, ExternalLink, CheckCircle, Loader2, Clock } from 'lucide-react';
+import { Save, Settings, Palette, CreditCard, ExternalLink, CheckCircle, Loader2, Clock, Award, Plus, X } from 'lucide-react';
 
 export default function SettingsPage() {
   const { studio } = useStudio();
@@ -160,6 +160,9 @@ export default function SettingsPage() {
         {/* Late Fees */}
         <LateFeeSettings />
 
+        {/* Assessment Config */}
+        <AssessmentSettings />
+
         {/* Stripe Connect */}
         <StripeConnectSection />
 
@@ -293,6 +296,167 @@ function LateFeeSettings() {
       <p className="mt-3 text-xs text-gray-400">
         Set amount to $0 to disable late fees. Invoices are marked overdue and fees applied daily via automated processing.
       </p>
+    </div>
+  );
+}
+
+function AssessmentSettings() {
+  const settings = trpc.admin.getSettings.useQuery();
+  const utils = trpc.useUtils();
+  const updateSettings = trpc.admin.updateSettings.useMutation({
+    onSuccess: () => {
+      utils.admin.getSettings.invalidate();
+      setAssessSaved(true);
+      setTimeout(() => setAssessSaved(false), 2000);
+    },
+  });
+
+  const [assessSaved, setAssessSaved] = useState(false);
+
+  const s = settings.data ?? {};
+  const defaultCategories = ['Technique', 'Musicality', 'Effort', 'Performance'];
+  const defaultPeriods = ['current', 'fall-2025', 'spring-2026', 'summer-2026'];
+
+  const [categories, setCategories] = useState<string[]>(
+    Array.isArray(s.assessment_categories) ? (s.assessment_categories as string[]) : defaultCategories
+  );
+  const [periods, setPeriods] = useState<string[]>(
+    Array.isArray(s.assessment_periods) ? (s.assessment_periods as string[]) : defaultPeriods
+  );
+  const [newCategory, setNewCategory] = useState('');
+  const [newPeriod, setNewPeriod] = useState('');
+
+  // Sync when data loads
+  const [assessLoaded, setAssessLoaded] = useState(false);
+  if (settings.data && !assessLoaded) {
+    setAssessLoaded(true);
+    if (Array.isArray(settings.data.assessment_categories)) {
+      setCategories(settings.data.assessment_categories as string[]);
+    }
+    if (Array.isArray(settings.data.assessment_periods)) {
+      setPeriods(settings.data.assessment_periods as string[]);
+    }
+  }
+
+  const handleSave = () => {
+    updateSettings.mutate({
+      assessment_categories: categories as unknown as string,
+      assessment_periods: periods as unknown as string,
+    });
+  };
+
+  const addCategory = () => {
+    const val = newCategory.trim();
+    if (val && !categories.includes(val)) {
+      setCategories([...categories, val]);
+      setNewCategory('');
+    }
+  };
+
+  const addPeriod = () => {
+    const val = newPeriod.trim();
+    if (val && !periods.includes(val)) {
+      setPeriods([...periods, val]);
+      setNewPeriod('');
+    }
+  };
+
+  const inputClass = 'h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-900 transition-shadow input-glow';
+
+  return (
+    <div className="glass-card-static rounded-2xl p-6 animate-fade-in-up stagger-3">
+      <h2 className="section-heading text-sm mb-4">
+        <Award size={16} className="text-indigo-500" /> Assessment Configuration
+      </h2>
+      <p className="text-xs text-gray-500 mb-4">
+        Customize grading categories and reporting periods for progress reports.
+      </p>
+
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        {/* Categories */}
+        <div>
+          <label className="mb-2 block text-xs font-medium text-gray-600">Grading Categories</label>
+          <div className="space-y-1.5 mb-2">
+            {categories.map((cat) => (
+              <div key={cat} className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-1.5">
+                <span className="text-sm text-gray-700">{cat}</span>
+                <button
+                  type="button"
+                  onClick={() => setCategories(categories.filter((c) => c !== cat))}
+                  className="text-gray-400 hover:text-red-500"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              placeholder="New category..."
+              className={inputClass}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCategory(); } }}
+            />
+            <button
+              type="button"
+              onClick={addCategory}
+              className="inline-flex h-11 items-center rounded-xl bg-gray-100 px-3 text-gray-600 hover:bg-gray-200"
+            >
+              <Plus size={16} />
+            </button>
+          </div>
+        </div>
+
+        {/* Periods */}
+        <div>
+          <label className="mb-2 block text-xs font-medium text-gray-600">Reporting Periods</label>
+          <div className="space-y-1.5 mb-2">
+            {periods.map((p) => (
+              <div key={p} className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-1.5">
+                <span className="text-sm text-gray-700">{p}</span>
+                <button
+                  type="button"
+                  onClick={() => setPeriods(periods.filter((x) => x !== p))}
+                  className="text-gray-400 hover:text-red-500"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input
+              value={newPeriod}
+              onChange={(e) => setNewPeriod(e.target.value)}
+              placeholder="New period..."
+              className={inputClass}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addPeriod(); } }}
+            />
+            <button
+              type="button"
+              onClick={addPeriod}
+              className="inline-flex h-11 items-center rounded-xl bg-gray-100 px-3 text-gray-600 hover:bg-gray-200"
+            >
+              <Plus size={16} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={updateSettings.isPending}
+          className="btn-gradient inline-flex h-10 items-center gap-2 rounded-xl px-5 text-sm font-medium disabled:opacity-50"
+        >
+          <Save size={14} />
+          {updateSettings.isPending ? 'Saving...' : 'Save Assessment Config'}
+        </button>
+        {assessSaved && <span className="text-sm text-emerald-600 font-medium">Saved</span>}
+        {updateSettings.isError && <span className="text-sm text-red-600">{updateSettings.error.message}</span>}
+      </div>
     </div>
   );
 }
