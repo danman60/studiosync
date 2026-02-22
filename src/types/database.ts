@@ -84,13 +84,15 @@ export interface Database {
           emergency_contact_name: string | null;
           emergency_contact_phone: string | null;
           notes: string | null;
+          stripe_customer_id: string | null;
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database['studiosync']['Tables']['families']['Row'], 'id' | 'created_at' | 'updated_at'> & {
+        Insert: Omit<Database['studiosync']['Tables']['families']['Row'], 'id' | 'created_at' | 'updated_at' | 'stripe_customer_id'> & {
           id?: string;
           created_at?: string;
           updated_at?: string;
+          stripe_customer_id?: string | null;
         };
         Update: Partial<Database['studiosync']['Tables']['families']['Insert']>;
       };
@@ -252,22 +254,27 @@ export interface Database {
           id: string;
           studio_id: string;
           family_id: string;
+          name: string;
+          description: string | null;
           stripe_subscription_id: string | null;
           stripe_price_id: string | null;
           amount: number;
           interval: 'month' | 'year';
           status: 'active' | 'past_due' | 'cancelled' | 'paused';
+          cancel_at_period_end: boolean;
           current_period_start: string | null;
           current_period_end: string | null;
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database['studiosync']['Tables']['tuition_plans']['Row'], 'id' | 'created_at' | 'updated_at' | 'interval' | 'status'> & {
+        Insert: Omit<Database['studiosync']['Tables']['tuition_plans']['Row'], 'id' | 'created_at' | 'updated_at' | 'interval' | 'status' | 'cancel_at_period_end' | 'name'> & {
           id?: string;
           created_at?: string;
           updated_at?: string;
           interval?: 'month' | 'year';
           status?: 'active' | 'past_due' | 'cancelled' | 'paused';
+          cancel_at_period_end?: boolean;
+          name?: string;
         };
         Update: Partial<Database['studiosync']['Tables']['tuition_plans']['Insert']>;
       };

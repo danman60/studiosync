@@ -10,6 +10,7 @@ import { analyticsRouter } from './analytics';
 import { eventRouter } from './event';
 import { announcementRouter } from './announcement';
 import { messagingRouter } from './messaging';
+import { tuitionRouter } from './tuition';
 
 export const appRouter = router({
   catalog: catalogRouter,
@@ -23,6 +24,7 @@ export const appRouter = router({
   event: eventRouter,
   announcement: announcementRouter,
   messaging: messagingRouter,
+  tuition: tuitionRouter,
 });
 
 export type AppRouter = typeof appRouter;

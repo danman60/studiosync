@@ -2,13 +2,16 @@
 
 import { useState } from 'react';
 import { trpc } from '@/lib/trpc';
-import { FileText, ChevronLeft, CreditCard } from 'lucide-react';
+import { FileText, ChevronLeft, CreditCard, RefreshCw, XCircle } from 'lucide-react';
 
 const STATUS_BADGE: Record<string, string> = {
   sent: 'bg-blue-500/15 text-blue-600 border border-blue-500/25',
   paid: 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25',
   partial: 'bg-amber-500/15 text-amber-600 border border-amber-500/25',
   overdue: 'bg-red-500/15 text-red-600 border border-red-500/25',
+  active: 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25',
+  past_due: 'bg-red-500/15 text-red-600 border border-red-500/25',
+  paused: 'bg-amber-500/15 text-amber-600 border border-amber-500/25',
 };
 
 function formatCents(cents: number) {
@@ -29,16 +32,30 @@ export default function ParentInvoicesPage() {
 
 function InvoiceList({ onView }: { onView: (id: string) => void }) {
   const invoices = trpc.invoice.myInvoices.useQuery();
+  const plans = trpc.tuition.myPlans.useQuery();
 
   const unpaid = (invoices.data ?? []).filter((i) => ['sent', 'partial', 'overdue'].includes(i.status));
   const paid = (invoices.data ?? []).filter((i) => i.status === 'paid');
+  const activePlans = plans.data ?? [];
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Invoices</h1>
-        <p className="mt-1 text-sm text-gray-500">View and pay your invoices.</p>
+        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Invoices & Auto-Pay</h1>
+        <p className="mt-1 text-sm text-gray-500">View invoices and manage your auto-pay plans.</p>
       </div>
+
+      {/* Active Auto-Pay Plans */}
+      {activePlans.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-3">Auto-Pay Plans</h2>
+          <div className="space-y-3">
+            {activePlans.map((plan) => (
+              <AutoPayCard key={plan.id} plan={plan} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {invoices.isLoading && (
         <div className="space-y-3">
@@ -51,7 +68,7 @@ function InvoiceList({ onView }: { onView: (id: string) => void }) {
         </div>
       )}
 
-      {!invoices.isLoading && (invoices.data?.length ?? 0) === 0 && (
+      {!invoices.isLoading && (invoices.data?.length ?? 0) === 0 && activePlans.length === 0 && (
         <div className="empty-state">
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
             <FileText size={24} className="text-indigo-400" />
@@ -112,6 +129,69 @@ function InvoiceList({ onView }: { onView: (id: string) => void }) {
               </button>
             ))}
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Auto-Pay Card ────────────────────────────────────────
+
+function AutoPayCard({ plan }: { plan: { id: string; name: string; description: string | null; amount: number; interval: string; status: string; cancel_at_period_end: boolean; current_period_end: string | null } }) {
+  const utils = trpc.useUtils();
+  const requestCancel = trpc.tuition.requestCancel.useMutation({
+    onSuccess: () => {
+      utils.tuition.myPlans.invalidate();
+    },
+  });
+
+  return (
+    <div className="glass-card rounded-2xl p-5">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+            <RefreshCw size={18} />
+          </div>
+          <div>
+            <p className="font-medium text-gray-900">{plan.name}</p>
+            {plan.description && <p className="text-xs text-gray-500">{plan.description}</p>}
+            <div className="mt-1 flex items-center gap-2">
+              <span className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_BADGE[plan.status] ?? ''}`}>
+                {plan.status.replace('_', ' ')}
+              </span>
+              {plan.cancel_at_period_end && (
+                <span className="text-[11px] text-amber-600 font-medium">Cancels at period end</span>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="text-right">
+          <p className="text-lg font-bold text-gray-900">{formatCents(plan.amount)}</p>
+          <p className="text-xs text-gray-500">/{plan.interval}</p>
+          {plan.current_period_end && (
+            <p className="text-xs text-gray-400 mt-1">
+              Next: {new Date(plan.current_period_end).toLocaleDateString()}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {plan.status === 'active' && !plan.cancel_at_period_end && (
+        <div className="mt-3 pt-3 border-t border-gray-100">
+          <button
+            onClick={() => {
+              if (confirm('Request cancellation? Your plan will remain active until the end of the current billing period.')) {
+                requestCancel.mutate({ id: plan.id });
+              }
+            }}
+            disabled={requestCancel.isPending}
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-medium text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+          >
+            <XCircle size={14} /> {requestCancel.isPending ? 'Requesting...' : 'Cancel Auto-Pay'}
+          </button>
+          {requestCancel.isError && (
+            <p className="mt-1 text-xs text-red-600">{requestCancel.error.message}</p>
+          )}
         </div>
       )}
     </div>

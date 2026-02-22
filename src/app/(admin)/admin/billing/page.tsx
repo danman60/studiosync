@@ -13,6 +13,10 @@ import {
   Eye,
   ChevronLeft,
   Download,
+  RefreshCw,
+  Pause,
+  Play,
+  AlertCircle,
 } from 'lucide-react';
 
 const STATUS_BADGE: Record<string, string> = {
@@ -23,6 +27,9 @@ const STATUS_BADGE: Record<string, string> = {
   overdue: 'bg-red-500/15 text-red-600 border border-red-500/25',
   void: 'bg-gray-500/15 text-gray-400 border border-gray-500/20',
   cancelled: 'bg-gray-500/15 text-gray-400 border border-gray-500/20',
+  active: 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25',
+  past_due: 'bg-red-500/15 text-red-600 border border-red-500/25',
+  paused: 'bg-amber-500/15 text-amber-600 border border-amber-500/25',
 };
 
 function formatCents(cents: number) {
@@ -30,6 +37,7 @@ function formatCents(cents: number) {
 }
 
 export default function BillingPage() {
+  const [tab, setTab] = useState<'invoices' | 'tuition'>('invoices');
   const [view, setView] = useState<'list' | 'create' | 'detail'>('list');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('');
@@ -38,10 +46,10 @@ export default function BillingPage() {
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Invoices</h1>
-          <p className="mt-1 text-sm text-gray-500">Create and manage invoices for families.</p>
+          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Billing</h1>
+          <p className="mt-1 text-sm text-gray-500">Invoices and recurring tuition plans.</p>
         </div>
-        {view === 'list' && (
+        {tab === 'invoices' && view === 'list' && (
           <button
             onClick={() => setView('create')}
             className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-medium"
@@ -51,24 +59,359 @@ export default function BillingPage() {
         )}
       </div>
 
+      {/* Tabs */}
       {view === 'list' && (
-        <InvoiceList
-          statusFilter={statusFilter}
-          onStatusFilter={setStatusFilter}
-          onView={(id) => { setSelectedId(id); setView('detail'); }}
-        />
+        <div className="mb-6 flex items-center gap-1 rounded-xl bg-gray-100 p-1 w-fit">
+          <button
+            onClick={() => setTab('invoices')}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+              tab === 'invoices' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <FileText size={14} className="mr-1.5 inline" /> Invoices
+          </button>
+          <button
+            onClick={() => setTab('tuition')}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+              tab === 'tuition' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <RefreshCw size={14} className="mr-1.5 inline" /> Auto-Pay Plans
+          </button>
+        </div>
       )}
-      {view === 'create' && (
-        <CreateInvoice onBack={() => setView('list')} onCreated={(id) => { setSelectedId(id); setView('detail'); }} />
+
+      {tab === 'invoices' && (
+        <>
+          {view === 'list' && (
+            <InvoiceList
+              statusFilter={statusFilter}
+              onStatusFilter={setStatusFilter}
+              onView={(id) => { setSelectedId(id); setView('detail'); }}
+            />
+          )}
+          {view === 'create' && (
+            <CreateInvoice onBack={() => setView('list')} onCreated={(id) => { setSelectedId(id); setView('detail'); }} />
+          )}
+          {view === 'detail' && selectedId && (
+            <InvoiceDetail id={selectedId} onBack={() => { setSelectedId(null); setView('list'); }} />
+          )}
+        </>
       )}
-      {view === 'detail' && selectedId && (
-        <InvoiceDetail id={selectedId} onBack={() => { setSelectedId(null); setView('list'); }} />
-      )}
+
+      {tab === 'tuition' && view === 'list' && <TuitionPlansSection />}
     </div>
   );
 }
 
-// ── Invoice List ─────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// TUITION PLANS SECTION
+// ══════════════════════════════════════════════════════════
+
+function TuitionPlansSection() {
+  const [showCreate, setShowCreate] = useState(false);
+  const utils = trpc.useUtils();
+  const stats = trpc.tuition.stats.useQuery();
+  const plans = trpc.tuition.list.useQuery();
+  const families = trpc.admin.listFamilies.useQuery();
+
+  const [form, setForm] = useState({ family_id: '', name: '', description: '', amount: '', interval: 'month' as 'month' | 'year' });
+
+  const createPlan = trpc.tuition.create.useMutation({
+    onSuccess: () => {
+      utils.tuition.list.invalidate();
+      utils.tuition.stats.invalidate();
+      setShowCreate(false);
+      setForm({ family_id: '', name: '', description: '', amount: '', interval: 'month' });
+    },
+  });
+
+  const cancelPlan = trpc.tuition.cancel.useMutation({
+    onSuccess: () => {
+      utils.tuition.list.invalidate();
+      utils.tuition.stats.invalidate();
+    },
+  });
+
+  const pausePlan = trpc.tuition.pause.useMutation({
+    onSuccess: () => {
+      utils.tuition.list.invalidate();
+      utils.tuition.stats.invalidate();
+    },
+  });
+
+  const resumePlan = trpc.tuition.resume.useMutation({
+    onSuccess: () => {
+      utils.tuition.list.invalidate();
+      utils.tuition.stats.invalidate();
+    },
+  });
+
+  const handleCreate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.family_id || !form.name || !form.amount) return;
+    createPlan.mutate({
+      family_id: form.family_id,
+      name: form.name,
+      description: form.description || undefined,
+      amount: Math.round(parseFloat(form.amount) * 100),
+      interval: form.interval,
+    });
+  };
+
+  const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
+
+  return (
+    <>
+      {/* Stats */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
+        <div className="glass-card rounded-2xl bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 p-6 animate-fade-in-up stagger-1">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+              <RefreshCw size={20} />
+            </div>
+            <div>
+              <p className="stat-number">{stats.data?.activeCount ?? '—'}</p>
+              <p className="text-xs text-gray-500">Active Plans</p>
+            </div>
+          </div>
+        </div>
+        <div className="glass-card rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 p-6 animate-fade-in-up stagger-2">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
+              <DollarSign size={20} />
+            </div>
+            <div>
+              <p className="stat-number">{stats.data ? formatCents(stats.data.monthlyRecurring) : '—'}</p>
+              <p className="text-xs text-gray-500">Monthly Recurring</p>
+            </div>
+          </div>
+        </div>
+        <div className="glass-card rounded-2xl bg-gradient-to-br from-red-500/10 to-red-600/5 p-6 animate-fade-in-up stagger-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-100 text-red-600">
+              <AlertCircle size={20} />
+            </div>
+            <div>
+              <p className="stat-number">{stats.data?.pastDueCount ?? '—'}</p>
+              <p className="text-xs text-gray-500">Past Due</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Create Plan Button / Form */}
+      {!showCreate ? (
+        <div className="mb-4">
+          <button
+            onClick={() => setShowCreate(true)}
+            className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-medium"
+          >
+            <Plus size={16} /> New Tuition Plan
+          </button>
+        </div>
+      ) : (
+        <div className="glass-card-static max-w-lg rounded-2xl p-6 mb-6 animate-fade-in-up">
+          <h3 className="section-heading text-sm mb-4"><RefreshCw size={14} /> Create Auto-Pay Plan</h3>
+          <form onSubmit={handleCreate} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Family *</label>
+              <select
+                value={form.family_id}
+                onChange={(e) => setForm((p) => ({ ...p, family_id: e.target.value }))}
+                required
+                className={inputClass}
+              >
+                <option value="">Select a family...</option>
+                {(families.data ?? []).map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.parent_first_name} {f.parent_last_name} ({f.email})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Plan Name *</label>
+              <input
+                value={form.name}
+                onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                required
+                placeholder="e.g. Monthly Ballet Tuition"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Description</label>
+              <input
+                value={form.description}
+                onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+                placeholder="Optional details"
+                className={inputClass}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Amount ($) *</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="1"
+                  value={form.amount}
+                  onChange={(e) => setForm((p) => ({ ...p, amount: e.target.value }))}
+                  required
+                  placeholder="0.00"
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Billing Interval</label>
+                <select
+                  value={form.interval}
+                  onChange={(e) => setForm((p) => ({ ...p, interval: e.target.value as 'month' | 'year' }))}
+                  className={inputClass}
+                >
+                  <option value="month">Monthly</option>
+                  <option value="year">Yearly</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                type="submit"
+                disabled={createPlan.isPending || !form.family_id || !form.name || !form.amount}
+                className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-6 text-sm font-medium disabled:opacity-50"
+              >
+                {createPlan.isPending ? 'Creating...' : 'Create Plan'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowCreate(false)}
+                className="inline-flex h-11 items-center rounded-xl px-4 text-sm font-medium text-gray-500 hover:text-gray-700"
+              >
+                Cancel
+              </button>
+            </div>
+            {createPlan.isError && (
+              <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{createPlan.error.message}</p>
+            )}
+          </form>
+        </div>
+      )}
+
+      {/* Plans Table */}
+      <div className="glass-card-static overflow-hidden rounded-2xl">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-100">
+            <thead>
+              <tr className="bg-gray-50/60">
+                {['Plan', 'Family', 'Amount', 'Interval', 'Status', 'Next Charge', ''].map((h) => (
+                  <th key={h} className="table-header">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {plans.isLoading && [1, 2, 3].map((i) => (
+                <tr key={i}>
+                  {[1, 2, 3, 4, 5, 6, 7].map((j) => (
+                    <td key={j} className="table-cell"><div className="skeleton h-4 w-20" /></td>
+                  ))}
+                </tr>
+              ))}
+              {plans.data?.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="table-cell text-center py-14">
+                    <RefreshCw size={32} className="mx-auto text-gray-300" />
+                    <p className="mt-3 text-sm text-gray-400">No tuition plans yet</p>
+                    <p className="text-xs text-gray-400">Create a plan to start auto-billing families.</p>
+                  </td>
+                </tr>
+              )}
+              {plans.data?.map((plan) => {
+                const fam = plan.families as unknown as { parent_first_name: string; parent_last_name: string; email: string } | null;
+                return (
+                  <tr key={plan.id} className="table-row-hover">
+                    <td className="table-cell">
+                      <p className="font-medium text-gray-900">{plan.name}</p>
+                      {plan.description && <p className="text-xs text-gray-400">{plan.description}</p>}
+                    </td>
+                    <td className="table-cell text-gray-600">
+                      {fam ? `${fam.parent_first_name} ${fam.parent_last_name}` : '—'}
+                    </td>
+                    <td className="table-cell font-medium text-gray-900">{formatCents(plan.amount)}</td>
+                    <td className="table-cell text-gray-600 capitalize">{plan.interval}ly</td>
+                    <td className="table-cell">
+                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_BADGE[plan.status] ?? ''}`}>
+                        {plan.status.replace('_', ' ')}
+                      </span>
+                      {plan.cancel_at_period_end && (
+                        <span className="ml-1 inline-block rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-600 border border-amber-200">
+                          cancelling
+                        </span>
+                      )}
+                    </td>
+                    <td className="table-cell text-gray-600 text-xs">
+                      {plan.current_period_end
+                        ? new Date(plan.current_period_end).toLocaleDateString()
+                        : '—'}
+                    </td>
+                    <td className="table-cell">
+                      <div className="flex items-center gap-1 justify-end">
+                        {plan.status === 'active' && (
+                          <button
+                            onClick={() => pausePlan.mutate({ id: plan.id })}
+                            disabled={pausePlan.isPending}
+                            title="Pause"
+                            className="icon-btn text-amber-600 hover:bg-amber-50"
+                          >
+                            <Pause size={14} />
+                          </button>
+                        )}
+                        {plan.status === 'paused' && (
+                          <button
+                            onClick={() => resumePlan.mutate({ id: plan.id })}
+                            disabled={resumePlan.isPending}
+                            title="Resume"
+                            className="icon-btn text-emerald-600 hover:bg-emerald-50"
+                          >
+                            <Play size={14} />
+                          </button>
+                        )}
+                        {plan.status !== 'cancelled' && (
+                          <button
+                            onClick={() => {
+                              if (confirm('Cancel this tuition plan? The family will no longer be auto-billed.')) {
+                                cancelPlan.mutate({ id: plan.id, immediately: true });
+                              }
+                            }}
+                            disabled={cancelPlan.isPending}
+                            title="Cancel Plan"
+                            className="icon-btn text-red-500 hover:bg-red-50"
+                          >
+                            <XCircle size={14} />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {(cancelPlan.isError || pausePlan.isError || resumePlan.isError) && (
+        <p className="mt-3 rounded-lg bg-red-50 px-4 py-2 text-sm text-red-600">
+          {cancelPlan.error?.message ?? pausePlan.error?.message ?? resumePlan.error?.message}
+        </p>
+      )}
+    </>
+  );
+}
+
+// ══════════════════════════════════════════════════════════
+// INVOICE LIST
+// ══════════════════════════════════════════════════════════
 
 function InvoiceList({
   statusFilter,
@@ -235,7 +578,9 @@ function InvoiceList({
   );
 }
 
-// ── Create Invoice ───────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// CREATE INVOICE
+// ══════════════════════════════════════════════════════════
 
 function CreateInvoice({
   onBack,
@@ -343,7 +688,9 @@ function CreateInvoice({
   );
 }
 
-// ── Invoice Detail ───────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// INVOICE DETAIL
+// ══════════════════════════════════════════════════════════
 
 function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
   const utils = trpc.useUtils();
