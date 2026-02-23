@@ -3,18 +3,42 @@ import { TRPCError } from '@trpc/server';
 import { protectedProcedure, router } from '../trpc';
 import { createServiceClient } from '@/lib/supabase-server';
 
+/** Resolve family ID: prefer ctx.familyId (direct), fall back to auth_user_id lookup */
+async function resolveFamilyId(
+  supabase: ReturnType<typeof createServiceClient>,
+  studioId: string,
+  userId: string | null,
+  familyId: string | null,
+): Promise<string | null> {
+  if (familyId) return familyId;
+  if (userId) {
+    const { data } = await supabase
+      .from('families')
+      .select('id')
+      .eq('studio_id', studioId)
+      .eq('auth_user_id', userId)
+      .single();
+    return data?.id ?? null;
+  }
+  return null;
+}
+
 export const portalRouter = router({
   // ── Dashboard ──────────────────────────────────────────
 
   dashboardData: protectedProcedure.query(async ({ ctx }) => {
     const supabase = createServiceClient();
 
-    // Get family for this user
+    const familyId = await resolveFamilyId(supabase, ctx.studioId, ctx.userId, ctx.familyId);
+    if (!familyId) {
+      return { family: null, students: [], enrollments: [], upcomingClasses: [] };
+    }
+
+    // Get family info
     const { data: family } = await supabase
       .from('families')
       .select('id, parent_first_name, parent_last_name')
-      .eq('studio_id', ctx.studioId)
-      .eq('auth_user_id', ctx.userId)
+      .eq('id', familyId)
       .single();
 
     if (!family) {
@@ -25,7 +49,7 @@ export const portalRouter = router({
     const { data: students } = await supabase
       .from('students')
       .select('id, first_name, last_name, date_of_birth, active')
-      .eq('family_id', family.id)
+      .eq('family_id', familyId)
       .eq('studio_id', ctx.studioId)
       .eq('active', true)
       .order('first_name');
@@ -34,7 +58,7 @@ export const portalRouter = router({
     const { data: enrollments } = await supabase
       .from('enrollments')
       .select('id, status, students(first_name, last_name), classes(name, day_of_week, start_time, end_time, room, class_types(name, color), staff(display_name))')
-      .eq('family_id', family.id)
+      .eq('family_id', familyId)
       .eq('studio_id', ctx.studioId)
       .in('status', ['active', 'pending', 'waitlisted'])
       .order('created_at', { ascending: false });
@@ -51,19 +75,13 @@ export const portalRouter = router({
   listStudents: protectedProcedure.query(async ({ ctx }) => {
     const supabase = createServiceClient();
 
-    const { data: family } = await supabase
-      .from('families')
-      .select('id')
-      .eq('studio_id', ctx.studioId)
-      .eq('auth_user_id', ctx.userId)
-      .single();
-
-    if (!family) return [];
+    const familyId = await resolveFamilyId(supabase, ctx.studioId, ctx.userId, ctx.familyId);
+    if (!familyId) return [];
 
     const { data, error } = await supabase
       .from('students')
       .select('*, enrollments(id, status, classes(name, class_types(name, color)))')
-      .eq('family_id', family.id)
+      .eq('family_id', familyId)
       .eq('studio_id', ctx.studioId)
       .order('first_name');
 
@@ -84,14 +102,8 @@ export const portalRouter = router({
     .mutation(async ({ ctx, input }) => {
       const supabase = createServiceClient();
 
-      const { data: family } = await supabase
-        .from('families')
-        .select('id')
-        .eq('studio_id', ctx.studioId)
-        .eq('auth_user_id', ctx.userId)
-        .single();
-
-      if (!family) {
+      const familyId = await resolveFamilyId(supabase, ctx.studioId, ctx.userId, ctx.familyId);
+      if (!familyId) {
         throw new TRPCError({ code: 'FORBIDDEN', message: 'No family found.' });
       }
 
@@ -99,7 +111,7 @@ export const portalRouter = router({
         .from('students')
         .insert({
           studio_id: ctx.studioId,
-          family_id: family.id,
+          family_id: familyId,
           first_name: input.first_name,
           last_name: input.last_name,
           date_of_birth: input.date_of_birth ?? null,
@@ -128,15 +140,8 @@ export const portalRouter = router({
       const { id, ...updates } = input;
       const supabase = createServiceClient();
 
-      // Verify student belongs to user's family
-      const { data: family } = await supabase
-        .from('families')
-        .select('id')
-        .eq('studio_id', ctx.studioId)
-        .eq('auth_user_id', ctx.userId)
-        .single();
-
-      if (!family) {
+      const familyId = await resolveFamilyId(supabase, ctx.studioId, ctx.userId, ctx.familyId);
+      if (!familyId) {
         throw new TRPCError({ code: 'FORBIDDEN', message: 'No family found.' });
       }
 
@@ -144,7 +149,7 @@ export const portalRouter = router({
         .from('students')
         .update(updates)
         .eq('id', id)
-        .eq('family_id', family.id)
+        .eq('family_id', familyId)
         .eq('studio_id', ctx.studioId)
         .select()
         .single();
@@ -158,20 +163,14 @@ export const portalRouter = router({
   studentProgressMarks: protectedProcedure.query(async ({ ctx }) => {
     const supabase = createServiceClient();
 
-    const { data: family } = await supabase
-      .from('families')
-      .select('id')
-      .eq('studio_id', ctx.studioId)
-      .eq('auth_user_id', ctx.userId)
-      .single();
-
-    if (!family) return [];
+    const familyId = await resolveFamilyId(supabase, ctx.studioId, ctx.userId, ctx.familyId);
+    if (!familyId) return [];
 
     // Get student IDs
     const { data: students } = await supabase
       .from('students')
       .select('id')
-      .eq('family_id', family.id)
+      .eq('family_id', familyId)
       .eq('studio_id', ctx.studioId)
       .eq('active', true);
 
@@ -194,20 +193,14 @@ export const portalRouter = router({
   studentAttendance: protectedProcedure.query(async ({ ctx }) => {
     const supabase = createServiceClient();
 
-    const { data: family } = await supabase
-      .from('families')
-      .select('id')
-      .eq('studio_id', ctx.studioId)
-      .eq('auth_user_id', ctx.userId)
-      .single();
-
-    if (!family) return [];
+    const familyId = await resolveFamilyId(supabase, ctx.studioId, ctx.userId, ctx.familyId);
+    if (!familyId) return [];
 
     // Get student IDs
     const { data: students } = await supabase
       .from('students')
       .select('id')
-      .eq('family_id', family.id)
+      .eq('family_id', familyId)
       .eq('studio_id', ctx.studioId)
       .eq('active', true);
 
@@ -231,19 +224,13 @@ export const portalRouter = router({
   listPayments: protectedProcedure.query(async ({ ctx }) => {
     const supabase = createServiceClient();
 
-    const { data: family } = await supabase
-      .from('families')
-      .select('id')
-      .eq('studio_id', ctx.studioId)
-      .eq('auth_user_id', ctx.userId)
-      .single();
-
-    if (!family) return [];
+    const familyId = await resolveFamilyId(supabase, ctx.studioId, ctx.userId, ctx.familyId);
+    if (!familyId) return [];
 
     const { data, error } = await supabase
       .from('payments')
       .select('*')
-      .eq('family_id', family.id)
+      .eq('family_id', familyId)
       .eq('studio_id', ctx.studioId)
       .order('created_at', { ascending: false })
       .limit(50);
@@ -262,22 +249,15 @@ export const portalRouter = router({
     .query(async ({ ctx, input }) => {
       const supabase = createServiceClient();
 
-      // Verify family ownership
-      const { data: family } = await supabase
-        .from('families')
-        .select('id')
-        .eq('studio_id', ctx.studioId)
-        .eq('auth_user_id', ctx.userId)
-        .single();
-
-      if (!family) throw new TRPCError({ code: 'NOT_FOUND', message: 'Family not found' });
+      const familyId = await resolveFamilyId(supabase, ctx.studioId, ctx.userId, ctx.familyId);
+      if (!familyId) throw new TRPCError({ code: 'NOT_FOUND', message: 'Family not found' });
 
       // Verify student belongs to family
       const { data: student } = await supabase
         .from('students')
         .select('id, first_name, last_name, date_of_birth')
         .eq('id', input.studentId)
-        .eq('family_id', family.id)
+        .eq('family_id', familyId)
         .eq('studio_id', ctx.studioId)
         .single();
 
@@ -349,11 +329,14 @@ export const portalRouter = router({
   getProfile: protectedProcedure.query(async ({ ctx }) => {
     const supabase = createServiceClient();
 
+    const familyId = await resolveFamilyId(supabase, ctx.studioId, ctx.userId, ctx.familyId);
+    if (!familyId) throw new TRPCError({ code: 'NOT_FOUND', message: 'Family not found' });
+
     const { data, error } = await supabase
       .from('families')
       .select('*')
+      .eq('id', familyId)
       .eq('studio_id', ctx.studioId)
-      .eq('auth_user_id', ctx.userId)
       .single();
 
     if (error) throw error;
@@ -378,11 +361,14 @@ export const portalRouter = router({
     .mutation(async ({ ctx, input }) => {
       const supabase = createServiceClient();
 
+      const familyId = await resolveFamilyId(supabase, ctx.studioId, ctx.userId, ctx.familyId);
+      if (!familyId) throw new TRPCError({ code: 'NOT_FOUND', message: 'Family not found' });
+
       const { data, error } = await supabase
         .from('families')
         .update(input)
+        .eq('id', familyId)
         .eq('studio_id', ctx.studioId)
-        .eq('auth_user_id', ctx.userId)
         .select()
         .single();
 

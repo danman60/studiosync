@@ -38,12 +38,12 @@ describe('INSTRUCTOR: Class Management', () => {
     const caller = instructorCaller();
     const roster = await caller.instructor.classRoster({ classId: ids.class });
     expect(roster.length).toBeGreaterThanOrEqual(1);
-    expect(roster[0]).toHaveProperty('first_name');
+    expect(roster[0]).toHaveProperty('students');
   });
 
   it('instructor.studentInfo — gets limited student details', async () => {
     const caller = instructorCaller();
-    const info = await caller.instructor.studentInfo({ studentId: ids.student });
+    const info = await caller.instructor.studentInfo({ studentId: ids.student, classId: ids.class });
     expect(info).toBeTruthy();
     expect(info.first_name).toBe('Emma');
   });
@@ -63,7 +63,7 @@ describe('INSTRUCTOR: Sessions & Attendance', () => {
   it('instructor.markAttendance — marks attendance for students', async () => {
     const caller = instructorCaller();
     const result = await caller.instructor.markAttendance({
-      classSessionId: ids.classSession,
+      sessionId: ids.classSession,
       records: [
         { studentId: ids.student, status: 'present', notes: 'On time' },
       ],
@@ -74,7 +74,7 @@ describe('INSTRUCTOR: Sessions & Attendance', () => {
   it('instructor.getAttendance — gets attendance for a session', async () => {
     const caller = instructorCaller();
     const attendance = await caller.instructor.getAttendance({
-      classSessionId: ids.classSession,
+      sessionId: ids.classSession,
     });
     expect(Array.isArray(attendance)).toBe(true);
   });
@@ -133,7 +133,7 @@ describe('INSTRUCTOR: Announcements', () => {
 describe('INSTRUCTOR: Media', () => {
   it('media.myClassMedia — views media for assigned classes', async () => {
     const caller = instructorCaller();
-    const media = await caller.media.myClassMedia();
+    const media = await caller.media.myClassMedia({ classId: ids.class });
     expect(Array.isArray(media)).toBe(true);
   });
 });
@@ -184,12 +184,10 @@ describe('INSTRUCTOR: Private Lessons', () => {
 
   it('privateLesson.setAvailability — sets availability slots', async () => {
     const caller = instructorCaller();
-    const result = await caller.privateLesson.setAvailability({
-      slots: [
-        { day_of_week: 2, start_time: '10:00', end_time: '12:00' },
-        { day_of_week: 4, start_time: '14:00', end_time: '16:00' },
-      ],
-    });
+    const result = await caller.privateLesson.setAvailability([
+      { day_of_week: 2, start_time: '10:00', end_time: '12:00' },
+      { day_of_week: 4, start_time: '14:00', end_time: '16:00' },
+    ]);
     expect(result).toBeTruthy();
   });
 });

@@ -24,7 +24,7 @@ import { seed, teardown, ids } from '../helpers/seed';
 
 beforeAll(async () => {
   await seed();
-  setTestFamily(ids.family, 'test-parent-user-id');
+  setTestFamily(ids.family);
 });
 afterAll(async () => { await teardown(); });
 
@@ -71,13 +71,13 @@ describe('PARENT: Student Management', () => {
 describe('PARENT: Progress & Attendance', () => {
   it('portal.studentProgressMarks — views progress marks', async () => {
     const caller = parentCaller();
-    const marks = await caller.portal.studentProgressMarks({ studentId: ids.student });
+    const marks = await caller.portal.studentProgressMarks();
     expect(Array.isArray(marks)).toBe(true);
   });
 
   it('portal.studentAttendance — views attendance records', async () => {
     const caller = parentCaller();
-    const attendance = await caller.portal.studentAttendance({ studentId: ids.student });
+    const attendance = await caller.portal.studentAttendance();
     expect(Array.isArray(attendance)).toBe(true);
   });
 

@@ -28,7 +28,7 @@ describe('PUBLIC: Catalog Browsing', () => {
 
   it('catalog.getClass — gets class detail by ID', async () => {
     const caller = publicCaller();
-    const cls = await caller.catalog.getClass({ id: ids.class });
+    const cls = await caller.catalog.getClass({ classId: ids.class });
     expect(cls).toBeTruthy();
     expect(cls.name).toBe('Beginner Ballet - Mon 4pm');
   });
@@ -97,14 +97,15 @@ describe('PUBLIC: Promo Codes', () => {
 
   it('promo.validate — rejects invalid code', async () => {
     const caller = publicCaller();
-    await expect(caller.promo.validate({ code: 'INVALID' })).rejects.toThrow();
+    const result = await caller.promo.validate({ code: 'INVALID' });
+    expect(result.valid).toBe(false);
   });
 });
 
 describe('PUBLIC: Waivers', () => {
   it('waiver.getForRegistration — gets active waivers', async () => {
     const caller = publicCaller();
-    const waivers = await caller.waiver.getForRegistration();
+    const waivers = await caller.waiver.getForRegistration({ classId: ids.class });
     expect(waivers.length).toBeGreaterThanOrEqual(1);
     expect(waivers[0].title).toBe('Liability Waiver');
   });

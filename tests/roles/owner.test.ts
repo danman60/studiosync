@@ -15,34 +15,34 @@ beforeAll(async () => { await seed(); });
 afterAll(async () => { await teardown(); });
 
 describe('OWNER: Studio Settings', () => {
-  it('studio.getStudio — gets studio details', async () => {
+  it('catalog.getStudio — gets studio details', async () => {
     const caller = ownerCaller();
-    const studio = await caller.studio.getStudio();
+    const studio = await caller.catalog.getStudio();
     expect(studio).toBeTruthy();
     expect(studio.slug).toBe('rhythm-grace');
   });
 
-  it('studio.updateStudio — updates studio settings', async () => {
+  it('admin.updateStudio — updates studio settings', async () => {
     const caller = ownerCaller();
-    const updated = await caller.studio.updateStudio({
+    const updated = await caller.admin.updateStudio({
       name: 'Rhythm & Grace Dance Studio Updated',
     });
     expect(updated).toBeTruthy();
     expect(updated.name).toBe('Rhythm & Grace Dance Studio Updated');
 
     // Restore original name
-    await caller.studio.updateStudio({
+    await caller.admin.updateStudio({
       name: 'Rhythm & Grace Dance Studio',
     });
   });
 });
 
 describe('OWNER: Stripe Connect', () => {
-  it('studio.stripeConnectUrl — generates onboarding URL', async () => {
+  it('admin.stripeConnectUrl — generates onboarding URL', async () => {
     const caller = ownerCaller();
     // This may throw if Stripe isn't configured, which is expected
     try {
-      const result = await caller.studio.stripeConnectUrl();
+      const result = await caller.admin.stripeConnectUrl();
       expect(result).toHaveProperty('url');
     } catch (err: unknown) {
       // Expected if no Stripe key configured in test env
