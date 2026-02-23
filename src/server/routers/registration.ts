@@ -252,7 +252,52 @@ export const registrationRouter = router({
         }
       }
 
-      // 8. Send magic link for account verification
+      // 8. Auto-apply sibling discount if family qualifies
+      try {
+        const { data: studio } = await supabase
+          .from('studios')
+          .select('settings')
+          .eq('id', ctx.studioId)
+          .single();
+
+        const settings = (studio?.settings ?? {}) as Record<string, unknown>;
+        if (settings.sibling_discount_enabled) {
+          const minStudents = Number(settings.sibling_discount_min_students ?? 2);
+
+          // Count students in this family (including the one just created)
+          const { count: studentCount } = await supabase
+            .from('students')
+            .select('id', { count: 'exact', head: true })
+            .eq('studio_id', ctx.studioId)
+            .eq('family_id', familyId);
+
+          if ((studentCount ?? 0) >= minStudents) {
+            // Record a discount application for this enrollment
+            const discountType = String(settings.sibling_discount_type ?? 'percent');
+            const discountValue = Number(settings.sibling_discount_value ?? 0);
+
+            if (discountValue > 0) {
+              await supabase.from('discount_applications').insert({
+                studio_id: ctx.studioId,
+                family_id: familyId,
+                enrollment_id: result.enrollment_id,
+                discount_amount: discountValue,
+                metadata: {
+                  type: 'sibling_discount',
+                  discount_type: discountType,
+                  discount_value: discountValue,
+                  student_count: studentCount,
+                },
+              });
+            }
+          }
+        }
+      } catch {
+        // Non-fatal: enrollment already succeeded
+        console.error('Sibling discount check failed');
+      }
+
+      // 9. Send magic link for account verification
       try {
         const { error: linkError } = await supabase.auth.admin.generateLink({
           type: 'magiclink',

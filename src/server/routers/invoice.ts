@@ -352,6 +352,93 @@ export const invoiceRouter = router({
       return { discountAmount, newTotal };
     }),
 
+  /** Auto-apply sibling discount to an invoice based on studio settings */
+  applySiblingDiscount: adminProcedure
+    .input(z.object({ invoice_id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const supabase = createServiceClient();
+
+      // Get invoice
+      const { data: invoice } = await supabase
+        .from('invoices')
+        .select('id, status, subtotal, total, family_id, discount_amount, promo_code_id')
+        .eq('id', input.invoice_id)
+        .eq('studio_id', ctx.studioId)
+        .single();
+
+      if (!invoice) throw new TRPCError({ code: 'NOT_FOUND', message: 'Invoice not found' });
+      if (!['draft', 'sent'].includes(invoice.status)) {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'Cannot apply discount to this invoice' });
+      }
+
+      // Get studio sibling discount settings
+      const { data: studio } = await supabase
+        .from('studios')
+        .select('settings')
+        .eq('id', ctx.studioId)
+        .single();
+
+      const settings = (studio?.settings ?? {}) as Record<string, unknown>;
+      if (!settings.sibling_discount_enabled) {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'Sibling discount is not enabled' });
+      }
+
+      const discountType = String(settings.sibling_discount_type ?? 'percent');
+      const discountValue = Number(settings.sibling_discount_value ?? 0);
+      const minStudents = Number(settings.sibling_discount_min_students ?? 2);
+
+      if (discountValue <= 0) {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'Sibling discount value is not configured' });
+      }
+
+      // Count active students in this family
+      const { count: studentCount } = await supabase
+        .from('students')
+        .select('id', { count: 'exact', head: true })
+        .eq('studio_id', ctx.studioId)
+        .eq('family_id', invoice.family_id);
+
+      if ((studentCount ?? 0) < minStudents) {
+        throw new TRPCError({
+          code: 'PRECONDITION_FAILED',
+          message: `Family needs at least ${minStudents} students for sibling discount (currently ${studentCount ?? 0})`,
+        });
+      }
+
+      // Calculate discount
+      let discountAmount = 0;
+      if (discountType === 'percent') {
+        discountAmount = Math.round(invoice.subtotal * (discountValue / 10000));
+      } else {
+        discountAmount = Math.min(discountValue, invoice.subtotal);
+      }
+
+      if (discountAmount <= 0) {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'Calculated discount is zero' });
+      }
+
+      // Add negative line item
+      await supabase.from('invoice_line_items').insert({
+        invoice_id: invoice.id,
+        studio_id: ctx.studioId,
+        description: 'Sibling Discount',
+        quantity: 1,
+        unit_price: -discountAmount,
+        total: -discountAmount,
+      });
+
+      // Update invoice totals
+      const newTotal = Math.max(0, invoice.total - discountAmount);
+      const newDiscountAmount = (invoice.discount_amount ?? 0) + discountAmount;
+      await supabase
+        .from('invoices')
+        .update({ discount_amount: newDiscountAmount, total: newTotal })
+        .eq('id', invoice.id)
+        .eq('studio_id', ctx.studioId);
+
+      return { discountAmount, newTotal };
+    }),
+
   // ── Stats ──────────────────────────────────────────────
 
   stats: adminProcedure.query(async ({ ctx }) => {

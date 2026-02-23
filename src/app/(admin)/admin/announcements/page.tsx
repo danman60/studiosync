@@ -12,6 +12,7 @@ import {
   BookOpen,
   Layers,
   GraduationCap,
+  Tag,
 } from 'lucide-react';
 import { Modal } from '@/components/admin/Modal';
 
@@ -20,6 +21,7 @@ const TARGET_ICON: Record<string, React.ReactNode> = {
   class: <BookOpen size={13} />,
   class_type: <Layers size={13} />,
   level: <GraduationCap size={13} />,
+  tag: <Tag size={13} />,
 };
 
 export default function AnnouncementsPage() {
@@ -36,6 +38,7 @@ export default function AnnouncementsPage() {
   const { data: classes } = trpc.admin.listClasses.useQuery();
   const { data: classTypes } = trpc.admin.getClassTypes.useQuery();
   const { data: levels } = trpc.admin.getLevels.useQuery();
+  const { data: allTags } = trpc.familyTag.allTags.useQuery();
 
   return (
     <div>
@@ -144,6 +147,7 @@ export default function AnnouncementsPage() {
           classes={classes ?? []}
           classTypes={classTypes ?? []}
           levels={levels ?? []}
+          tags={allTags ?? []}
         />
       )}
     </div>
@@ -157,15 +161,17 @@ function CreateAnnouncementModal({
   classes,
   classTypes,
   levels,
+  tags,
 }: {
   onClose: () => void;
-  onSubmit: (data: { title: string; body: string; target_type: 'all' | 'class' | 'level' | 'class_type'; target_id?: string; publish: boolean }) => void;
+  onSubmit: (data: { title: string; body: string; target_type: 'all' | 'class' | 'level' | 'class_type' | 'tag'; target_id?: string; target_tag?: string; publish: boolean }) => void;
   loading: boolean;
   classes: { id: string; name: string }[];
   classTypes: { id: string; name: string }[];
   levels: { id: string; name: string }[];
+  tags: string[];
 }) {
-  const [form, setForm] = useState({ title: '', body: '', target_type: 'all' as 'all' | 'class' | 'level' | 'class_type', target_id: '', publish: false });
+  const [form, setForm] = useState({ title: '', body: '', target_type: 'all' as 'all' | 'class' | 'level' | 'class_type' | 'tag', target_id: '', target_tag: '', publish: false });
 
   const targetOptions = form.target_type === 'class' ? classes : form.target_type === 'class_type' ? classTypes : form.target_type === 'level' ? levels : [];
 
@@ -179,6 +185,7 @@ function CreateAnnouncementModal({
             body: form.body,
             target_type: form.target_type,
             target_id: form.target_id || undefined,
+            target_tag: form.target_type === 'tag' ? form.target_tag || undefined : undefined,
             publish: form.publish,
           });
         }}
@@ -195,19 +202,19 @@ function CreateAnnouncementModal({
         <div>
           <label className="mb-1 block text-xs font-medium text-gray-600">Target Audience</label>
           <div className="flex gap-1.5">
-            {(['all', 'class', 'class_type', 'level'] as const).map((t) => (
+            {(['all', 'class', 'class_type', 'level', 'tag'] as const).map((t) => (
               <button
                 key={t}
                 type="button"
-                onClick={() => setForm({ ...form, target_type: t, target_id: '' })}
+                onClick={() => setForm({ ...form, target_type: t, target_id: '', target_tag: '' })}
                 className={`filter-chip ${form.target_type === t ? 'filter-chip-active' : ''}`}
               >
-                {TARGET_ICON[t]} {t === 'all' ? 'Everyone' : t === 'class_type' ? 'Class Type' : t.charAt(0).toUpperCase() + t.slice(1)}
+                {TARGET_ICON[t]} {t === 'all' ? 'Everyone' : t === 'class_type' ? 'Class Type' : t === 'tag' ? 'Tag' : t.charAt(0).toUpperCase() + t.slice(1)}
               </button>
             ))}
           </div>
         </div>
-        {form.target_type !== 'all' && targetOptions.length > 0 && (
+        {form.target_type !== 'all' && form.target_type !== 'tag' && targetOptions.length > 0 && (
           <div>
             <label className="mb-1 block text-xs font-medium text-gray-600">Select {form.target_type === 'class_type' ? 'Class Type' : form.target_type}</label>
             <select
@@ -219,6 +226,22 @@ function CreateAnnouncementModal({
               <option value="">Choose...</option>
               {targetOptions.map((opt) => (
                 <option key={opt.id} value={opt.id}>{opt.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
+        {form.target_type === 'tag' && tags.length > 0 && (
+          <div>
+            <label className="mb-1 block text-xs font-medium text-gray-600">Select Tag</label>
+            <select
+              value={form.target_tag}
+              onChange={(e) => setForm({ ...form, target_tag: e.target.value })}
+              required
+              className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow"
+            >
+              <option value="">Choose...</option>
+              {tags.map((tag) => (
+                <option key={tag} value={tag}>{tag}</option>
               ))}
             </select>
           </div>

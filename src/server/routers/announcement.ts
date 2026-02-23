@@ -33,8 +33,9 @@ export const announcementRouter = router({
     .input(z.object({
       title: z.string().min(1).max(200),
       body: z.string().min(1).max(10000),
-      target_type: z.enum(['all', 'class', 'level', 'class_type']).default('all'),
+      target_type: z.enum(['all', 'class', 'level', 'class_type', 'tag']).default('all'),
       target_id: z.string().uuid().optional(),
+      target_tag: z.string().optional(),
       publish: z.boolean().default(false),
     }))
     .mutation(async ({ ctx, input }) => {
@@ -48,6 +49,7 @@ export const announcementRouter = router({
           body: input.body,
           target_type: input.target_type,
           target_id: input.target_id ?? null,
+          target_tag: input.target_type === 'tag' ? input.target_tag ?? null : null,
           is_draft: !input.publish,
           published_at: input.publish ? new Date().toISOString() : null,
         })
@@ -63,8 +65,9 @@ export const announcementRouter = router({
       id: z.string().uuid(),
       title: z.string().min(1).max(200).optional(),
       body: z.string().min(1).max(10000).optional(),
-      target_type: z.enum(['all', 'class', 'level', 'class_type']).optional(),
+      target_type: z.enum(['all', 'class', 'level', 'class_type', 'tag']).optional(),
       target_id: z.string().uuid().nullable().optional(),
+      target_tag: z.string().nullable().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
       const { id, ...updates } = input;
@@ -114,6 +117,23 @@ export const announcementRouter = router({
           const familyIds = [...new Set(enrollments?.map(e => e.family_id) ?? [])];
           if (familyIds.length > 0) {
             familyQuery = familyQuery.in('id', familyIds);
+          }
+        }
+
+        // For tag-targeted announcements, only notify tagged families
+        if (data.target_type === 'tag' && data.target_tag) {
+          const { data: tagged } = await supabase
+            .from('family_tags')
+            .select('family_id')
+            .eq('studio_id', ctx.studioId)
+            .eq('tag', data.target_tag);
+
+          const familyIds = [...new Set(tagged?.map(t => t.family_id) ?? [])];
+          if (familyIds.length > 0) {
+            familyQuery = familyQuery.in('id', familyIds);
+          } else {
+            // No families with this tag — skip sending
+            return data;
           }
         }
 
@@ -237,8 +257,32 @@ export const announcementRouter = router({
       }
     }
 
+    // Get tag-targeted announcements for this family
+    let tagAnnouncements: typeof allAnnouncements = [];
+    if (ctx.familyId) {
+      const { data: familyTags } = await supabase
+        .from('family_tags')
+        .select('tag')
+        .eq('studio_id', ctx.studioId)
+        .eq('family_id', ctx.familyId);
+
+      const tags = (familyTags ?? []).map(t => t.tag);
+      if (tags.length > 0) {
+        const { data } = await supabase
+          .from('announcements')
+          .select('*, staff(display_name)')
+          .eq('studio_id', ctx.studioId)
+          .eq('is_draft', false)
+          .eq('target_type', 'tag')
+          .in('target_tag', tags)
+          .order('published_at', { ascending: false })
+          .limit(20);
+        tagAnnouncements = data ?? [];
+      }
+    }
+
     // Merge, dedupe, sort by published_at
-    const all = [...(allAnnouncements ?? []), ...(classAnnouncements ?? [])];
+    const all = [...(allAnnouncements ?? []), ...(classAnnouncements ?? []), ...(tagAnnouncements ?? [])];
     const seen = new Set<string>();
     const unique = all.filter((a) => {
       if (seen.has(a.id)) return false;
