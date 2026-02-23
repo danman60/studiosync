@@ -786,6 +786,70 @@ export interface Database {
         };
         Update: Partial<Database['studiosync']['Tables']['message_templates']['Insert']>;
       };
+      time_clock_entries: {
+        Row: {
+          id: string;
+          studio_id: string;
+          staff_id: string;
+          clock_in: string;
+          clock_out: string | null;
+          duration_minutes: number | null;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['time_clock_entries']['Row'], 'id' | 'created_at' | 'updated_at'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['studiosync']['Tables']['time_clock_entries']['Insert']>;
+      };
+      scheduled_messages: {
+        Row: {
+          id: string;
+          studio_id: string;
+          author_id: string;
+          subject: string;
+          body: string;
+          channel: string;
+          scheduled_at: string;
+          sent_at: string | null;
+          status: 'scheduled' | 'sent' | 'cancelled' | 'failed';
+          target_type: string;
+          target_id: string | null;
+          target_tag: string | null;
+          recipient_count: number | null;
+          template_id: string | null;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['scheduled_messages']['Row'], 'id' | 'created_at' | 'updated_at' | 'status' | 'channel' | 'target_type' | 'recipient_count'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          status?: 'scheduled' | 'sent' | 'cancelled' | 'failed';
+          channel?: string;
+          target_type?: string;
+          recipient_count?: number | null;
+        };
+        Update: Partial<Database['studiosync']['Tables']['scheduled_messages']['Insert']>;
+      };
+      family_tags: {
+        Row: {
+          id: string;
+          studio_id: string;
+          family_id: string;
+          tag: string;
+          created_at: string;
+        };
+        Insert: Omit<Database['studiosync']['Tables']['family_tags']['Row'], 'id' | 'created_at'> & {
+          id?: string;
+          created_at?: string;
+        };
+        Update: Partial<Database['studiosync']['Tables']['family_tags']['Insert']>;
+      };
     };
   };
 }
@@ -834,3 +898,6 @@ export type NotificationLog = Database['studiosync']['Tables']['notification_log
 export type PrivateLesson = Database['studiosync']['Tables']['private_lessons']['Row'];
 export type InstructorAvailability = Database['studiosync']['Tables']['instructor_availability']['Row'];
 export type MessageTemplate = Database['studiosync']['Tables']['message_templates']['Row'];
+export type TimeClockEntry = Database['studiosync']['Tables']['time_clock_entries']['Row'];
+export type ScheduledMessage = Database['studiosync']['Tables']['scheduled_messages']['Row'];
+export type FamilyTag = Database['studiosync']['Tables']['family_tags']['Row'];

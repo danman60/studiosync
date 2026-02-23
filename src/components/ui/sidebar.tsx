@@ -9,6 +9,7 @@ import {
   CheckSquare,
   ChevronLeft,
   ChevronRight,
+  Clock,
   CreditCard,
   FileText,
   FolderOpen,
@@ -21,6 +22,7 @@ import {
   Megaphone,
   Menu,
   MessageCircle,
+  Send,
   Settings,
   Tag,
   Ticket,
@@ -55,6 +57,8 @@ const adminNavItems: NavItem[] = [
   { label: 'Messages', href: '/admin/messages', icon: <MessageCircle size={18} />, section: 'admin' },
   { label: 'Report Cards', href: '/admin/reports', icon: <Award size={18} />, section: 'admin' },
   { label: 'Private Lessons', href: '/admin/private-lessons', icon: <GraduationCap size={18} />, section: 'admin' },
+  { label: 'Scheduled', href: '/admin/scheduled', icon: <Send size={18} />, section: 'admin' },
+  { label: 'Time Clock', href: '/admin/time-clock', icon: <Clock size={18} />, section: 'admin' },
   { label: 'Templates', href: '/admin/templates', icon: <FileText size={18} />, section: 'admin' },
   { label: 'Analytics', href: '/admin/analytics', icon: <BarChart3 size={18} />, section: 'admin' },
   { label: 'Settings', href: '/admin/settings', icon: <Settings size={18} />, section: 'admin' },
@@ -67,6 +71,7 @@ const instructorNavItems: NavItem[] = [
   { label: 'Progress', href: '/instructor/progress', icon: <Award size={18} />, section: 'instructor' },
   { label: 'Calendar', href: '/instructor/calendar', icon: <Calendar size={18} />, section: 'instructor' },
   { label: 'Announcements', href: '/instructor/announcements', icon: <Megaphone size={18} />, section: 'instructor' },
+  { label: 'Time Clock', href: '/instructor/time-clock', icon: <Clock size={18} />, section: 'instructor' },
 ];
 
 const portalNavItems: NavItem[] = [

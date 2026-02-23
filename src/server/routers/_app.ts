@@ -16,6 +16,9 @@ import { promoRouter } from './promo';
 import { notificationRouter } from './notification';
 import { privateLessonRouter } from './private-lesson';
 import { messageTemplateRouter } from './message-template';
+import { timeClockRouter } from './time-clock';
+import { familyTagRouter } from './family-tag';
+import { scheduledMessageRouter } from './scheduled-message';
 
 export const appRouter = router({
   catalog: catalogRouter,
@@ -35,6 +38,9 @@ export const appRouter = router({
   notification: notificationRouter,
   privateLesson: privateLessonRouter,
   messageTemplate: messageTemplateRouter,
+  timeClock: timeClockRouter,
+  familyTag: familyTagRouter,
+  scheduledMessage: scheduledMessageRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useStudio } from '@/contexts/StudioContext';
 import { trpc } from '@/lib/trpc';
-import { Save, Settings, Palette, CreditCard, ExternalLink, CheckCircle, Loader2, Clock, Award, Plus, X } from 'lucide-react';
+import { Save, Settings, Palette, CreditCard, ExternalLink, CheckCircle, Loader2, Clock, Award, Plus, X, Users } from 'lucide-react';
 
 export default function SettingsPage() {
   const { studio } = useStudio();
@@ -159,6 +159,9 @@ export default function SettingsPage() {
 
         {/* Late Fees */}
         <LateFeeSettings />
+
+        {/* Sibling Discounts */}
+        <SiblingDiscountSettings />
 
         {/* Assessment Config */}
         <AssessmentSettings />
@@ -455,6 +458,137 @@ function AssessmentSettings() {
           {updateSettings.isPending ? 'Saving...' : 'Save Assessment Config'}
         </button>
         {assessSaved && <span className="text-sm text-emerald-600 font-medium">Saved</span>}
+        {updateSettings.isError && <span className="text-sm text-red-600">{updateSettings.error.message}</span>}
+      </div>
+    </div>
+  );
+}
+
+function SiblingDiscountSettings() {
+  const settings = trpc.admin.getSettings.useQuery();
+  const utils = trpc.useUtils();
+  const updateSettings = trpc.admin.updateSettings.useMutation({
+    onSuccess: () => {
+      utils.admin.getSettings.invalidate();
+      setSibSaved(true);
+      setTimeout(() => setSibSaved(false), 2000);
+    },
+  });
+
+  const [sibSaved, setSibSaved] = useState(false);
+
+  const s = settings.data ?? {};
+  const [enabled, setEnabled] = useState(!!s.sibling_discount_enabled);
+  const [discountType, setDiscountType] = useState(String(s.sibling_discount_type ?? 'percent'));
+  const [discountValue, setDiscountValue] = useState(
+    String(Number(s.sibling_discount_value ?? 1000) / 100)
+  );
+  const [minStudents, setMinStudents] = useState(String(s.sibling_discount_min_students ?? 2));
+
+  // Sync when data loads
+  const [sibLoaded, setSibLoaded] = useState(false);
+  if (settings.data && !sibLoaded) {
+    setSibLoaded(true);
+    setEnabled(!!settings.data.sibling_discount_enabled);
+    setDiscountType(String(settings.data.sibling_discount_type ?? 'percent'));
+    setDiscountValue(String(Number(settings.data.sibling_discount_value ?? 1000) / 100));
+    setMinStudents(String(settings.data.sibling_discount_min_students ?? 2));
+  }
+
+  const handleSave = () => {
+    const valueBasis = Math.round(parseFloat(discountValue || '0') * 100);
+    updateSettings.mutate({
+      sibling_discount_enabled: enabled as unknown as string,
+      sibling_discount_type: discountType,
+      sibling_discount_value: valueBasis as unknown as string,
+      sibling_discount_min_students: parseInt(minStudents || '2', 10) as unknown as string,
+    });
+  };
+
+  const inputClass = 'h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-900 transition-shadow input-glow';
+
+  return (
+    <div className="glass-card-static rounded-2xl p-6 animate-fade-in-up stagger-3">
+      <h2 className="section-heading text-sm mb-4">
+        <Users size={16} className="text-indigo-500" /> Sibling Discounts
+      </h2>
+      <p className="text-xs text-gray-500 mb-4">
+        Automatically apply discounts when families enroll multiple students.
+      </p>
+
+      <div className="mb-4">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={enabled}
+            onChange={e => setEnabled(e.target.checked)}
+            className="h-4 w-4 rounded border-gray-300 text-indigo-600"
+          />
+          <span className="text-sm font-medium text-gray-700">Enable sibling discounts</span>
+        </label>
+      </div>
+
+      {enabled && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div>
+            <label className="mb-1 block text-xs font-medium text-gray-600">Discount Type</label>
+            <select
+              value={discountType}
+              onChange={e => setDiscountType(e.target.value)}
+              className={inputClass}
+            >
+              <option value="percent">Percentage (%)</option>
+              <option value="flat">Flat Amount ($)</option>
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-gray-600">
+              {discountType === 'percent' ? 'Discount Percentage' : 'Discount Amount'}
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+                {discountType === 'percent' ? '%' : '$'}
+              </span>
+              <input
+                type="number"
+                step={discountType === 'percent' ? '0.5' : '0.01'}
+                min="0"
+                value={discountValue}
+                onChange={e => setDiscountValue(e.target.value)}
+                className={`${inputClass} pl-7`}
+                placeholder="0"
+              />
+            </div>
+            <p className="mt-1 text-[10px] text-gray-400">
+              {discountType === 'percent' ? 'e.g. 10 = 10% off each additional student' : 'e.g. 25 = $25.00 off each additional student'}
+            </p>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-gray-600">Min Students</label>
+            <input
+              type="number"
+              min="2"
+              max="10"
+              value={minStudents}
+              onChange={e => setMinStudents(e.target.value)}
+              className={inputClass}
+            />
+            <p className="mt-1 text-[10px] text-gray-400">Discount applies from Nth student onwards</p>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-4 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={updateSettings.isPending}
+          className="btn-gradient inline-flex h-10 items-center gap-2 rounded-xl px-5 text-sm font-medium disabled:opacity-50"
+        >
+          <Save size={14} />
+          {updateSettings.isPending ? 'Saving...' : 'Save Discount Policy'}
+        </button>
+        {sibSaved && <span className="text-sm text-emerald-600 font-medium">Saved</span>}
         {updateSettings.isError && <span className="text-sm text-red-600">{updateSettings.error.message}</span>}
       </div>
     </div>
