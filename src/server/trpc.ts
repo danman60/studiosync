@@ -19,13 +19,22 @@ export async function createContext(opts: {
   const authHeader = opts.headers.get('authorization');
   const supabase = createServiceClient();
 
-  // Resolve slug → studioId
+  // Resolve slug → studioId (fallback to dev studio if slug doesn't match)
   let studioId: string | null = null;
   if (studioSlug) {
     const { data } = await supabase
       .from('studios')
       .select('id')
       .eq('slug', studioSlug)
+      .single();
+    studioId = data?.id ?? null;
+  }
+  // Fallback: if no studio found, use the first available studio (dev/preview support)
+  if (!studioId) {
+    const { data } = await supabase
+      .from('studios')
+      .select('id')
+      .limit(1)
       .single();
     studioId = data?.id ?? null;
   }
