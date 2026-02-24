@@ -42,11 +42,11 @@ export default function LoginPage() {
     try {
       // 1. Ensure dev user has a password
       const res = await fetch('/api/auth/dev-login', { method: 'POST' });
-      if (!res.ok) {
-        const body = await res.json();
-        throw new Error(body.error ?? 'Dev login setup failed');
+      const body = await res.json().catch(() => null);
+      if (!res.ok || !body) {
+        throw new Error(body?.error ?? `Dev login failed (${res.status})`);
       }
-      const { email: devEmail, password } = await res.json();
+      const { email: devEmail, password } = body;
 
       // 2. Sign in with password (creates proper browser session)
       const supabase = createClient();
