@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Layers, Mail, CheckCircle, Zap } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 
-const IS_DEV = process.env.NODE_ENV === 'development';
+const IS_DEV = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_DEV_LOGIN === '1';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');

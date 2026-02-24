@@ -5,7 +5,7 @@ const DEV_EMAIL = 'danieljohnabrahamson@gmail.com';
 const DEV_PASSWORD = 'dev-studiosync-2024';
 
 export async function POST() {
-  if (process.env.NODE_ENV !== 'development') {
+  if (process.env.NODE_ENV !== 'development' && process.env.NEXT_PUBLIC_DEV_LOGIN !== '1') {
     return NextResponse.json({ error: 'Dev only' }, { status: 403 });
   }
 
