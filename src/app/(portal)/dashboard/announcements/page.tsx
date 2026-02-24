@@ -9,8 +9,8 @@ export default function ParentAnnouncementsPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Announcements</h1>
-        <p className="mt-1 text-sm text-gray-500">News and updates from your studio.</p>
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Announcements</h1>
+        <p className="mt-1 text-sm text-stone-500">News and updates from your studio.</p>
       </div>
 
       {isLoading && (
@@ -36,13 +36,13 @@ export default function ParentAnnouncementsPage() {
                 className={`glass-card rounded-2xl p-5 animate-fade-in-up stagger-${Math.min(idx + 1, 8)}`}
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10">
-                    <Megaphone size={16} className="text-indigo-600" />
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-50">
+                    <Megaphone size={16} className="text-primary" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-sm font-semibold text-gray-900">{ann.title}</h3>
-                    <p className="mt-1 text-sm text-gray-600 whitespace-pre-line">{ann.body}</p>
-                    <div className="mt-2 flex items-center gap-2 text-xs text-gray-400">
+                    <h3 className="text-sm font-semibold text-stone-800">{ann.title}</h3>
+                    <p className="mt-1 text-sm text-stone-600 whitespace-pre-line">{ann.body}</p>
+                    <div className="mt-2 flex items-center gap-2 text-xs text-stone-400">
                       {author && <span>{author.display_name}</span>}
                       {ann.published_at && (
                         <>
@@ -61,11 +61,11 @@ export default function ParentAnnouncementsPage() {
 
       {!isLoading && (announcements ?? []).length === 0 && (
         <div className="empty-state">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
-            <Megaphone size={24} className="text-indigo-400" />
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50">
+            <Megaphone size={24} className="text-primary-light" />
           </div>
-          <p className="text-sm font-medium text-gray-600">No announcements</p>
-          <p className="mt-1 text-xs text-gray-400">Your studio has not posted any announcements yet.</p>
+          <p className="text-sm font-medium text-stone-600">No announcements</p>
+          <p className="mt-1 text-xs text-stone-400">Your studio has not posted any announcements yet.</p>
         </div>
       )}
     </div>

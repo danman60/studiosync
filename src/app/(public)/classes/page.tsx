@@ -13,24 +13,24 @@ export default async function ClassesPage() {
 
   if (!data) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-stone-50">
         <div className="glass-card rounded-2xl p-10 text-center animate-fade-in-up">
-          <p className="text-gray-500">Studio not found.</p>
+          <p className="text-stone-500">Studio not found.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-stone-50">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-white/60 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 shadow-sm">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-sm">
               <Layers size={18} className="text-white" />
             </div>
-            <span className="text-lg font-bold text-gray-900">
+            <span className="text-lg font-bold text-stone-800">
               {data.studio?.name ?? 'StudioSync'}
             </span>
           </Link>
@@ -47,10 +47,10 @@ export default async function ClassesPage() {
       <div className="mx-auto max-w-7xl px-6 py-8">
         {/* Page header */}
         <div className="mb-8 animate-fade-in-up">
-          <h1 className="text-[clamp(1.75rem,3vw,2.25rem)] font-bold text-gray-900">
+          <h1 className="text-[clamp(1.75rem,3vw,2.25rem)] font-bold text-stone-800">
             {data.currentSeason?.name ?? 'Class'} Catalog
           </h1>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-stone-600">
             Browse our classes and find the perfect fit. No account needed to explore.
           </p>
         </div>

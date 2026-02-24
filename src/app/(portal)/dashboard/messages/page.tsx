@@ -31,12 +31,12 @@ export default function ParentMessagesPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
       <div className="mb-4">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Messages</h1>
-        <p className="mt-1 text-sm text-gray-500">Send messages to your studio.</p>
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Messages</h1>
+        <p className="mt-1 text-sm text-stone-500">Send messages to your studio.</p>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto space-y-3 rounded-2xl border border-gray-100 bg-gray-50/50 p-4">
+      <div className="flex-1 overflow-y-auto space-y-3 rounded-2xl border border-stone-100 bg-stone-50/50 p-4">
         {messages.isLoading && (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
@@ -46,11 +46,11 @@ export default function ParentMessagesPage() {
         )}
         {!messages.isLoading && (messages.data?.length ?? 0) === 0 && (
           <div className="flex flex-col items-center justify-center py-16">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
-              <MessageCircle size={24} className="text-indigo-400" />
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50">
+              <MessageCircle size={24} className="text-primary-light" />
             </div>
-            <p className="text-sm font-medium text-gray-600">No messages yet</p>
-            <p className="mt-1 text-xs text-gray-400">Send a message to start a conversation with your studio.</p>
+            <p className="text-sm font-medium text-stone-600">No messages yet</p>
+            <p className="mt-1 text-xs text-stone-400">Send a message to start a conversation with your studio.</p>
           </div>
         )}
         {(messages.data ?? []).map((msg) => (
@@ -61,12 +61,12 @@ export default function ParentMessagesPage() {
             <div
               className={`max-w-[75%] rounded-2xl px-4 py-3 ${
                 msg.sender_type === 'parent'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-white border border-gray-200 text-gray-900'
+                  ? 'bg-primary text-white'
+                  : 'bg-white border border-stone-200 text-stone-800'
               }`}
             >
               <p className="text-sm whitespace-pre-wrap">{msg.body}</p>
-              <p className={`mt-1 text-[10px] ${msg.sender_type === 'parent' ? 'text-indigo-200' : 'text-gray-400'}`}>
+              <p className={`mt-1 text-[10px] ${msg.sender_type === 'parent' ? 'text-primary-200' : 'text-stone-400'}`}>
                 {new Date(msg.created_at).toLocaleString()}
               </p>
             </div>
@@ -81,7 +81,7 @@ export default function ParentMessagesPage() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type a message..."
-          className="h-11 flex-1 rounded-xl border border-gray-200 bg-white px-4 text-sm input-glow"
+          className="h-11 flex-1 rounded-xl border border-stone-200 bg-white px-4 text-sm input-glow"
         />
         <button
           type="submit"

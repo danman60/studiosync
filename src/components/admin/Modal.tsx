@@ -34,12 +34,12 @@ export function Modal({ open, onClose, title, children, wide }: ModalProps) {
       }}
     >
       <div
-        className={`relative mx-4 max-h-[90vh] overflow-y-auto rounded-2xl bg-white/95 backdrop-blur-xl shadow-2xl shadow-indigo-500/8 border border-white/80 animate-scale-in ${
+        className={`relative mx-4 max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl shadow-stone-900/8 border border-stone-100 animate-scale-in ${
           wide ? 'w-full max-w-2xl' : 'w-full max-w-lg'
         }`}
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-100/80 bg-white/92 backdrop-blur-md px-6 py-4 rounded-t-2xl">
-          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-stone-100 bg-white px-6 py-4 rounded-t-2xl">
+          <h2 className="text-lg font-semibold text-stone-800">{title}</h2>
           <button
             onClick={onClose}
             className="icon-btn"

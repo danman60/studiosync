@@ -95,8 +95,8 @@ export default function AdminTimeClockPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Time Clock</h1>
-          <p className="text-sm text-gray-500 mt-1">Track staff hours and attendance</p>
+          <h1 className="text-2xl font-bold text-stone-800">Time Clock</h1>
+          <p className="text-sm text-stone-500 mt-1">Track staff hours and attendance</p>
         </div>
         <div className="flex gap-2">
           <button onClick={showWeeklySummary} className="btn-secondary text-sm">
@@ -137,7 +137,7 @@ export default function AdminTimeClockPage() {
         {(staffFilter || startDate || endDate) && (
           <button
             onClick={() => { setStaffFilter(''); setStartDate(''); setEndDate(''); }}
-            className="text-sm text-indigo-600 hover:text-indigo-800"
+            className="text-sm text-primary hover:text-primary-dark"
           >
             Clear filters
           </button>
@@ -148,18 +148,18 @@ export default function AdminTimeClockPage() {
       {summaryRange && (
         <Modal open={!!summaryRange} onClose={() => setSummaryRange(null)} title="Weekly Hours Summary" wide>
           {summary.isLoading ? (
-            <p className="text-gray-500 text-sm">Loading...</p>
+            <p className="text-stone-500 text-sm">Loading...</p>
           ) : (
             <div className="space-y-3">
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-stone-500">
                 {summaryRange.start} to {summaryRange.end}
               </p>
               {(summary.data ?? []).length === 0 ? (
-                <p className="text-sm text-gray-400">No entries for this period.</p>
+                <p className="text-sm text-stone-400">No entries for this period.</p>
               ) : (
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b text-left text-gray-500">
+                    <tr className="border-b text-left text-stone-500">
                       <th className="pb-2">Staff</th>
                       <th className="pb-2">Entries</th>
                       <th className="pb-2 text-right">Total Hours</th>
@@ -167,10 +167,10 @@ export default function AdminTimeClockPage() {
                   </thead>
                   <tbody>
                     {(summary.data ?? []).map(s => (
-                      <tr key={s.staffId} className="border-b border-gray-50">
-                        <td className="py-2 font-medium text-gray-900">{s.displayName}</td>
-                        <td className="py-2 text-gray-600">{s.entryCount}</td>
-                        <td className="py-2 text-right text-gray-900">
+                      <tr key={s.staffId} className="border-b border-stone-50">
+                        <td className="py-2 font-medium text-stone-800">{s.displayName}</td>
+                        <td className="py-2 text-stone-600">{s.entryCount}</td>
+                        <td className="py-2 text-right text-stone-800">
                           {(s.totalMinutes / 60).toFixed(1)}h
                         </td>
                       </tr>
@@ -234,18 +234,18 @@ export default function AdminTimeClockPage() {
       </Modal>
 
       {/* Entries Table */}
-      <div className="rounded-2xl bg-white border border-gray-200/60 shadow-sm overflow-hidden">
+      <div className="rounded-2xl bg-white border border-stone-200/60 shadow-sm overflow-hidden">
         {entries.isLoading ? (
-          <div className="p-8 text-center text-gray-400">Loading...</div>
+          <div className="p-8 text-center text-stone-400">Loading...</div>
         ) : (entries.data ?? []).length === 0 ? (
           <div className="p-8 text-center">
-            <Clock size={32} className="mx-auto text-gray-300 mb-2" />
-            <p className="text-gray-400 text-sm">No time clock entries found.</p>
+            <Clock size={32} className="mx-auto text-stone-300 mb-2" />
+            <p className="text-stone-400 text-sm">No time clock entries found.</p>
           </div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-gray-50/50 text-left text-xs text-gray-500 uppercase tracking-wider">
+              <tr className="border-b bg-stone-50/50 text-left text-xs text-stone-500 uppercase tracking-wider">
                 <th className="px-4 py-3">Staff</th>
                 <th className="px-4 py-3">Clock In</th>
                 <th className="px-4 py-3">Clock Out</th>
@@ -258,13 +258,13 @@ export default function AdminTimeClockPage() {
               {(entries.data ?? []).map(entry => {
                 const staffInfo = entry.staff as unknown as { display_name: string; role: string } | null;
                 return (
-                  <tr key={entry.id} className="border-b border-gray-50 hover:bg-gray-50/50">
+                  <tr key={entry.id} className="border-b border-stone-50 hover:bg-stone-50/50">
                     <td className="px-4 py-3">
-                      <div className="font-medium text-gray-900">{staffInfo?.display_name ?? '—'}</div>
-                      <div className="text-xs text-gray-400">{staffInfo?.role ?? ''}</div>
+                      <div className="font-medium text-stone-800">{staffInfo?.display_name ?? '—'}</div>
+                      <div className="text-xs text-stone-400">{staffInfo?.role ?? ''}</div>
                     </td>
-                    <td className="px-4 py-3 text-gray-700">{formatDateTime(entry.clock_in)}</td>
-                    <td className="px-4 py-3 text-gray-700">
+                    <td className="px-4 py-3 text-stone-700">{formatDateTime(entry.clock_in)}</td>
+                    <td className="px-4 py-3 text-stone-700">
                       {entry.clock_out ? formatDateTime(entry.clock_out) : (
                         <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium">
                           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -272,8 +272,8 @@ export default function AdminTimeClockPage() {
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-gray-700">{formatDuration(entry.duration_minutes)}</td>
-                    <td className="px-4 py-3 text-gray-500 max-w-[200px] truncate">{entry.notes ?? '—'}</td>
+                    <td className="px-4 py-3 text-stone-700">{formatDuration(entry.duration_minutes)}</td>
+                    <td className="px-4 py-3 text-stone-500 max-w-[200px] truncate">{entry.notes ?? '—'}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end gap-1">
                         <button

@@ -10,8 +10,8 @@ export default function InstructorProgressOverviewPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Progress</h1>
-        <p className="mt-1 text-sm text-gray-500">Select a class to view and manage student progress marks.</p>
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Progress</h1>
+        <p className="mt-1 text-sm text-stone-500">Select a class to view and manage student progress marks.</p>
       </div>
 
       {isLoading && (
@@ -27,11 +27,11 @@ export default function InstructorProgressOverviewPage() {
 
       {!isLoading && (classes ?? []).length === 0 && (
         <div className="empty-state">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
-            <Award size={24} className="text-indigo-400" />
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50">
+            <Award size={24} className="text-primary-light" />
           </div>
-          <p className="text-sm font-medium text-gray-600">No classes assigned</p>
-          <p className="mt-1 text-xs text-gray-400">Progress marking will be available once you have classes.</p>
+          <p className="text-sm font-medium text-stone-600">No classes assigned</p>
+          <p className="mt-1 text-xs text-stone-400">Progress marking will be available once you have classes.</p>
         </div>
       )}
 
@@ -46,17 +46,17 @@ export default function InstructorProgressOverviewPage() {
                 className={`glass-card group rounded-2xl p-5 animate-fade-in-up stagger-${Math.min(idx + 1, 8)}`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary">
                     <BookOpen size={20} />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-sm font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                    <h3 className="text-sm font-semibold text-stone-800 group-hover:text-primary transition-colors">
                       {cls.name}
                     </h3>
                     <div className="flex items-center gap-2 mt-0.5">
                       {ct && (
                         <span
-                          className="rounded-full px-2 py-0.5 text-[11px] font-medium"
+                          className="rounded-full px-2 py-0.5 text-xs font-medium"
                           style={{ backgroundColor: `${ct.color}20`, color: ct.color, border: `1px solid ${ct.color}30` }}
                         >
                           {ct.name}
@@ -64,7 +64,7 @@ export default function InstructorProgressOverviewPage() {
                       )}
                     </div>
                   </div>
-                  <Award size={16} className="shrink-0 text-gray-300 group-hover:text-indigo-400 transition-colors" />
+                  <Award size={16} className="shrink-0 text-stone-300 group-hover:text-primary-light transition-colors" />
                 </div>
               </Link>
             );

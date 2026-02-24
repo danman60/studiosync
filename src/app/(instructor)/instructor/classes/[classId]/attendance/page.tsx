@@ -108,20 +108,20 @@ export default function AttendancePage() {
       <div className="mb-8">
         <Link
           href={`/instructor/classes/${classId}`}
-          className="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 transition-colors"
+          className="mb-4 inline-flex items-center gap-1.5 text-sm text-stone-500 hover:text-primary transition-colors"
         >
           <ArrowLeft size={16} /> Back to {cls?.name ?? 'Class'}
         </Link>
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">
           Attendance
         </h1>
-        <p className="mt-1 text-sm text-gray-500">{cls?.name ?? 'Loading...'}</p>
+        <p className="mt-1 text-sm text-stone-500">{cls?.name ?? 'Loading...'}</p>
       </div>
 
       {/* Date Picker + Quick Actions */}
       <div className="mb-6 flex flex-wrap items-center gap-4">
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">Date</label>
+          <label className="block text-xs font-medium text-stone-500 mb-1">Date</label>
           <input
             type="date"
             value={selectedDate}
@@ -130,7 +130,7 @@ export default function AttendancePage() {
               setOverrides({});
               setSaved(false);
             }}
-            className="h-11 rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 input-glow"
+            className="h-11 rounded-xl border border-stone-200 bg-white px-4 text-sm text-stone-800 input-glow"
           />
         </div>
 
@@ -150,7 +150,7 @@ export default function AttendancePage() {
         </div>
 
         {session.data?.status === 'completed' && (
-          <span className="rounded-full bg-emerald-500/15 border border-emerald-500/25 px-3 py-1 text-[11px] font-medium text-emerald-600">
+          <span className="rounded-full bg-emerald-500/15 border border-emerald-500/25 px-3 py-1 text-xs font-medium text-emerald-600">
             Session Completed
           </span>
         )}
@@ -158,18 +158,18 @@ export default function AttendancePage() {
 
       {/* Attendance Grid */}
       <div className="glass-card-static overflow-hidden rounded-2xl">
-        <table className="min-w-full divide-y divide-gray-100">
+        <table className="min-w-full divide-y divide-stone-100">
           <thead>
-            <tr className="bg-gray-50/60">
+            <tr className="bg-stone-50/60">
               <th className="table-header">Student</th>
               {STATUS_OPTIONS.map((opt) => (
-                <th key={opt.value} className="px-3 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <th key={opt.value} className="px-3 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-stone-400">
                   {opt.label}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-stone-50">
             {roster.isLoading && (
               <>
                 {[1, 2, 3].map((i) => (
@@ -184,7 +184,7 @@ export default function AttendancePage() {
             )}
             {!roster.isLoading && (roster.data?.length ?? 0) === 0 && (
               <tr>
-                <td colSpan={5} className="px-5 py-10 text-center text-sm text-gray-400">
+                <td colSpan={5} className="px-5 py-10 text-center text-sm text-stone-400">
                   No students enrolled
                 </td>
               </tr>
@@ -201,7 +201,7 @@ export default function AttendancePage() {
 
               return (
                 <tr key={enrollment.id} className="table-row-hover">
-                  <td className="table-cell font-medium text-gray-900">
+                  <td className="table-cell font-medium text-stone-800">
                     {student.first_name} {student.last_name}
                   </td>
                   {STATUS_OPTIONS.map((opt) => (
@@ -211,7 +211,7 @@ export default function AttendancePage() {
                         className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-all ${
                           currentStatus === opt.value
                             ? `${opt.bg} ${opt.color} shadow-sm`
-                            : 'border-gray-200 bg-white text-gray-300 hover:border-gray-300 hover:text-gray-500'
+                            : 'border-stone-200 bg-white text-stone-300 hover:border-stone-300 hover:text-stone-500'
                         }`}
                         title={opt.label}
                       >
@@ -247,13 +247,13 @@ export default function AttendancePage() {
       {/* Session Notes */}
       {session.data?.id && (
         <div className="mt-6 glass-card-static rounded-2xl p-5">
-          <h3 className="section-heading text-sm mb-3"><Save size={14} className="text-indigo-500" /> Session Notes</h3>
+          <h3 className="section-heading text-sm mb-3"><Save size={14} className="text-primary" /> Session Notes</h3>
           <textarea
             value={sessionNotes}
             onChange={(e) => setSessionNotes(e.target.value)}
             rows={3}
             placeholder="Add notes about this session (observations, reminders, things to follow up on...)"
-            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow resize-none"
+            className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-800 transition-shadow input-glow resize-none"
           />
           <div className="mt-3 flex items-center gap-3">
             <button

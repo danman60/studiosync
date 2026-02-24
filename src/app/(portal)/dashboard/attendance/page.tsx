@@ -27,8 +27,8 @@ export default function ParentAttendancePage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Attendance</h1>
-        <p className="mt-1 text-sm text-gray-500">View your students&apos; attendance records.</p>
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Attendance</h1>
+        <p className="mt-1 text-sm text-stone-500">View your students&apos; attendance records.</p>
       </div>
 
       {isLoading && (
@@ -44,11 +44,11 @@ export default function ParentAttendancePage() {
 
       {!isLoading && byStudent.size === 0 && (
         <div className="empty-state">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
-            <CheckSquare size={24} className="text-indigo-400" />
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50">
+            <CheckSquare size={24} className="text-primary-light" />
           </div>
-          <p className="text-sm font-medium text-gray-600">No attendance records yet</p>
-          <p className="mt-1 text-xs text-gray-400">Attendance will appear here once classes begin.</p>
+          <p className="text-sm font-medium text-stone-600">No attendance records yet</p>
+          <p className="mt-1 text-xs text-stone-400">Attendance will appear here once classes begin.</p>
         </div>
       )}
 
@@ -60,13 +60,13 @@ export default function ParentAttendancePage() {
               <div className="glass-card-static overflow-hidden rounded-2xl">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-gray-50/60">
+                    <tr className="bg-stone-50/60">
                       <th className="table-header">Date</th>
                       <th className="table-header">Class</th>
                       <th className="table-header text-center">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-stone-50">
                     {(records ?? []).map((rec) => {
                       const session = rec.class_sessions as unknown as {
                         session_date: string;
@@ -74,17 +74,17 @@ export default function ParentAttendancePage() {
                       } | null;
                       return (
                         <tr key={rec.id} className="table-row-hover">
-                          <td className="table-cell text-gray-700">
+                          <td className="table-cell text-stone-700">
                             <span className="inline-flex items-center gap-1">
-                              <Calendar size={12} className="text-gray-400" />
+                              <Calendar size={12} className="text-stone-400" />
                               {session?.session_date ?? '—'}
                             </span>
                           </td>
-                          <td className="table-cell text-gray-700">
+                          <td className="table-cell text-stone-700">
                             {session?.classes?.name ?? '—'}
                           </td>
                           <td className="table-cell text-center">
-                            <span className={`inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_COLORS[rec.status] ?? ''}`}>
+                            <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_COLORS[rec.status] ?? ''}`}>
                               {rec.status}
                             </span>
                           </td>

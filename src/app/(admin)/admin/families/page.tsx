@@ -20,7 +20,7 @@ const STATUS_BADGE: Record<string, string> = {
   active: 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25',
   pending: 'bg-amber-500/15 text-amber-600 border border-amber-500/25',
   waitlisted: 'bg-blue-500/15 text-blue-600 border border-blue-500/25',
-  dropped: 'bg-gray-500/15 text-gray-500 border border-gray-500/20',
+  dropped: 'bg-stone-500/15 text-stone-500 border border-stone-500/20',
   cancelled: 'bg-red-500/15 text-red-600 border border-red-500/25',
 };
 
@@ -58,26 +58,26 @@ export default function FamiliesPage() {
     });
   }
 
-  const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
+  const inputClass = 'mt-1 w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-800 transition-shadow input-glow';
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Families</h1>
-        <p className="mt-1 text-sm text-gray-500">View and manage registered families</p>
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Families</h1>
+        <p className="mt-1 text-sm text-stone-500">View and manage registered families</p>
       </div>
 
       <div className="glass-card-static overflow-hidden rounded-2xl">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-100">
+          <table className="min-w-full divide-y divide-stone-100">
             <thead>
-              <tr className="bg-gray-50/60">
+              <tr className="bg-stone-50/60">
                 {['Parent Name', 'Email', 'Phone', 'Students', ''].map((h) => (
                   <th key={h} className="table-header">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-stone-50">
               {families.isLoading && [1, 2].map((i) => (
                 <tr key={i}>
                   {[1, 2, 3, 4, 5].map((j) => (
@@ -86,19 +86,19 @@ export default function FamiliesPage() {
                 </tr>
               ))}
               {families.data?.length === 0 && (
-                <tr><td colSpan={5} className="table-cell text-center py-10 text-gray-400">No families yet.</td></tr>
+                <tr><td colSpan={5} className="table-cell text-center py-10 text-stone-400">No families yet.</td></tr>
               )}
               {families.data?.map((f) => {
                 const students = (f.students ?? []) as { id: string; first_name: string; last_name: string; active: boolean }[];
                 const activeStudents = students.filter((c) => c.active);
                 return (
                   <tr key={f.id} className="table-row-hover">
-                    <td className="table-cell font-medium text-gray-900">
+                    <td className="table-cell font-medium text-stone-800">
                       {f.parent_first_name} {f.parent_last_name}
                     </td>
-                    <td className="table-cell text-gray-600">{f.email}</td>
-                    <td className="table-cell text-gray-600">{f.phone ?? '—'}</td>
-                    <td className="table-cell text-gray-600">
+                    <td className="table-cell text-stone-600">{f.email}</td>
+                    <td className="table-cell text-stone-600">{f.phone ?? '—'}</td>
+                    <td className="table-cell text-stone-600">
                       {activeStudents.length > 0
                         ? activeStudents.map((c) => `${c.first_name} ${c.last_name}`).join(', ')
                         : '—'}
@@ -144,46 +144,46 @@ export default function FamiliesPage() {
           <form onSubmit={handleUpdate} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700">First Name *</label>
+                <label className="block text-sm font-medium text-stone-700">First Name *</label>
                 <input type="text" required value={editTarget.parent_first_name}
                   onChange={(e) => setEditTarget({ ...editTarget, parent_first_name: e.target.value })}
                   className={inputClass} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Last Name *</label>
+                <label className="block text-sm font-medium text-stone-700">Last Name *</label>
                 <input type="text" required value={editTarget.parent_last_name}
                   onChange={(e) => setEditTarget({ ...editTarget, parent_last_name: e.target.value })}
                   className={inputClass} />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Email *</label>
+              <label className="block text-sm font-medium text-stone-700">Email *</label>
               <input type="email" required value={editTarget.email}
                 onChange={(e) => setEditTarget({ ...editTarget, email: e.target.value })}
                 className={inputClass} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Phone</label>
+              <label className="block text-sm font-medium text-stone-700">Phone</label>
               <input type="tel" value={editTarget.phone}
                 onChange={(e) => setEditTarget({ ...editTarget, phone: e.target.value })}
                 className={inputClass} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Emergency Contact</label>
+                <label className="block text-sm font-medium text-stone-700">Emergency Contact</label>
                 <input type="text" value={editTarget.emergency_contact_name}
                   onChange={(e) => setEditTarget({ ...editTarget, emergency_contact_name: e.target.value })}
                   className={inputClass} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Emergency Phone</label>
+                <label className="block text-sm font-medium text-stone-700">Emergency Phone</label>
                 <input type="tel" value={editTarget.emergency_contact_phone}
                   onChange={(e) => setEditTarget({ ...editTarget, emergency_contact_phone: e.target.value })}
                   className={inputClass} />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Notes</label>
+              <label className="block text-sm font-medium text-stone-700">Notes</label>
               <textarea rows={2} value={editTarget.notes}
                 onChange={(e) => setEditTarget({ ...editTarget, notes: e.target.value })}
                 className={inputClass} />
@@ -191,7 +191,7 @@ export default function FamiliesPage() {
 
             {updateMutation.error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{updateMutation.error.message}</p>}
 
-            <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
+            <div className="flex justify-end gap-3 border-t border-stone-100 pt-4">
               <button type="button" onClick={() => setEditTarget(null)}
                 className="btn-outline h-11 rounded-xl px-5 text-sm font-medium">Cancel</button>
               <button type="submit" disabled={updateMutation.isPending}
@@ -219,34 +219,34 @@ export default function FamiliesPage() {
           }[];
           return (
             <div className="space-y-4">
-              <div className="rounded-xl bg-gradient-to-br from-indigo-50/80 to-purple-50/50 p-4">
-                <p className="font-medium text-gray-900">{f.parent_first_name} {f.parent_last_name}</p>
-                <p className="text-sm text-gray-600">{f.email}</p>
-                {f.phone && <p className="text-sm text-gray-600">{f.phone}</p>}
+              <div className="rounded-xl bg-primary-50 p-4">
+                <p className="font-medium text-stone-800">{f.parent_first_name} {f.parent_last_name}</p>
+                <p className="text-sm text-stone-600">{f.email}</p>
+                {f.phone && <p className="text-sm text-stone-600">{f.phone}</p>}
               </div>
 
               <h3 className="section-heading text-sm">
                 <Users size={16} /> Students
               </h3>
-              {students.length === 0 && <p className="text-sm text-gray-400">No students registered.</p>}
+              {students.length === 0 && <p className="text-sm text-stone-400">No students registered.</p>}
               {students.map((student) => (
                 <div key={student.id} className="glass-card rounded-xl p-4">
-                  <p className="font-medium text-gray-900">
+                  <p className="font-medium text-stone-800">
                     {student.first_name} {student.last_name}
-                    {student.date_of_birth && <span className="ml-2 text-sm font-normal text-gray-500">DOB: {student.date_of_birth}</span>}
-                    {!student.active && <span className="ml-2 rounded-full bg-gray-500/15 px-2 py-0.5 text-[11px] text-gray-500 border border-gray-500/20">Inactive</span>}
+                    {student.date_of_birth && <span className="ml-2 text-sm font-normal text-stone-500">DOB: {student.date_of_birth}</span>}
+                    {!student.active && <span className="ml-2 rounded-full bg-stone-500/15 px-2 py-0.5 text-xs text-stone-500 border border-stone-500/20">Inactive</span>}
                   </p>
                   {student.enrollments?.length > 0 && (
                     <div className="mt-2.5 space-y-1.5">
                       {student.enrollments.map((en) => (
-                        <div key={en.id} className="flex items-center gap-2 text-sm text-gray-600">
+                        <div key={en.id} className="flex items-center gap-2 text-sm text-stone-600">
                           {en.classes?.class_types && (
-                            <span className="rounded-full px-2 py-0.5 text-[11px] font-medium text-white" style={{ backgroundColor: en.classes.class_types.color }}>
+                            <span className="rounded-full px-2 py-0.5 text-xs font-medium text-white" style={{ backgroundColor: en.classes.class_types.color }}>
                               {en.classes.class_types.name}
                             </span>
                           )}
                           <span>{en.classes?.name ?? '—'}</span>
-                          <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_BADGE[en.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                          <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE[en.status] ?? 'bg-stone-100 text-stone-600'}`}>
                             {en.status}
                           </span>
                         </div>

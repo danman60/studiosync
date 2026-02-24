@@ -15,17 +15,17 @@ import {
 } from 'lucide-react';
 
 const TYPE_ICON: Record<string, React.ReactNode> = {
-  image: <Image size={18} className="text-indigo-500" />,
-  video: <Video size={18} className="text-purple-500" />,
+  image: <Image size={18} className="text-primary" />,
+  video: <Video size={18} className="text-primary" />,
   audio: <Music size={18} className="text-amber-500" />,
-  document: <FileText size={18} className="text-gray-500" />,
+  document: <FileText size={18} className="text-stone-500" />,
 };
 
 const TYPE_BADGE: Record<string, string> = {
-  image: 'bg-indigo-500/15 text-indigo-600 border border-indigo-500/25',
-  video: 'bg-purple-500/15 text-purple-600 border border-purple-500/25',
+  image: 'bg-primary/15 text-primary border border-primary/25',
+  video: 'bg-primary/15 text-primary border border-primary/25',
   audio: 'bg-amber-500/15 text-amber-600 border border-amber-500/25',
-  document: 'bg-gray-500/15 text-gray-600 border border-gray-500/20',
+  document: 'bg-stone-500/15 text-stone-600 border border-stone-500/20',
 };
 
 function formatFileSize(bytes: number | null) {
@@ -94,8 +94,8 @@ export default function MediaPage() {
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Media Library</h1>
-          <p className="mt-1 text-sm text-gray-500">Upload and manage photos, videos, and documents.</p>
+          <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Media Library</h1>
+          <p className="mt-1 text-sm text-stone-500">Upload and manage photos, videos, and documents.</p>
         </div>
         <div className="flex items-center gap-3">
           <input
@@ -152,7 +152,7 @@ export default function MediaPage() {
               className={`glass-card group relative rounded-2xl p-4 animate-fade-in-up stagger-${Math.min(idx + 1, 6)}`}
             >
               {/* Preview */}
-              <div className="mb-3 flex h-32 items-center justify-center rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+              <div className="mb-3 flex h-32 items-center justify-center rounded-xl bg-gradient-to-br from-stone-50 to-stone-100 overflow-hidden">
                 {item.type === 'image' && item.url ? (
                   <img
                     src={item.url}
@@ -160,7 +160,7 @@ export default function MediaPage() {
                     className="h-full w-full object-cover rounded-xl"
                   />
                 ) : (
-                  <div className="flex flex-col items-center gap-2 text-gray-400">
+                  <div className="flex flex-col items-center gap-2 text-stone-400">
                     {TYPE_ICON[item.type] ?? <FileText size={24} />}
                     <span className="text-xs">{item.type}</span>
                   </div>
@@ -170,15 +170,15 @@ export default function MediaPage() {
               {/* Info */}
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-gray-900">{item.title ?? item.file_name}</p>
+                  <p className="truncate text-sm font-medium text-stone-800">{item.title ?? item.file_name}</p>
                   <div className="mt-1 flex items-center gap-2">
                     <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${TYPE_BADGE[item.type]}`}>
                       {item.type}
                     </span>
-                    <span className="text-xs text-gray-400">{formatFileSize(item.file_size)}</span>
+                    <span className="text-xs text-stone-400">{formatFileSize(item.file_size)}</span>
                   </div>
                   {item.classes && (
-                    <p className="mt-1 truncate text-xs text-gray-400">
+                    <p className="mt-1 truncate text-xs text-stone-400">
                       {(item.classes as { name: string }).name}
                     </p>
                   )}
@@ -232,11 +232,11 @@ export default function MediaPage() {
       {/* Empty state */}
       {!isLoading && media && media.length === 0 && (
         <div className="empty-state">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
-            <Image size={24} className="text-indigo-400" />
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50">
+            <Image size={24} className="text-primary-light" />
           </div>
-          <p className="text-sm font-medium text-gray-600">No media files yet</p>
-          <p className="mt-1 text-xs text-gray-400">Upload photos, videos, or documents to get started.</p>
+          <p className="text-sm font-medium text-stone-600">No media files yet</p>
+          <p className="mt-1 text-xs text-stone-400">Upload photos, videos, or documents to get started.</p>
           <button
             onClick={() => fileInputRef.current?.click()}
             className="btn-gradient mt-4 inline-flex h-9 items-center gap-2 rounded-xl px-4 text-xs font-medium"

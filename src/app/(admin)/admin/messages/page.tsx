@@ -20,8 +20,8 @@ function ConversationList({ onSelect }: { onSelect: (id: string) => void }) {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Messages</h1>
-        <p className="mt-1 text-sm text-gray-500">Direct conversations with families.</p>
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Messages</h1>
+        <p className="mt-1 text-sm text-stone-500">Direct conversations with families.</p>
       </div>
 
       {conversations.isLoading && (
@@ -37,11 +37,11 @@ function ConversationList({ onSelect }: { onSelect: (id: string) => void }) {
 
       {!conversations.isLoading && (conversations.data?.length ?? 0) === 0 && (
         <div className="empty-state">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
-            <MessageCircle size={24} className="text-indigo-400" />
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50">
+            <MessageCircle size={24} className="text-primary-light" />
           </div>
-          <p className="text-sm font-medium text-gray-600">No messages yet</p>
-          <p className="mt-1 text-xs text-gray-400">When families send messages, they will appear here.</p>
+          <p className="text-sm font-medium text-stone-600">No messages yet</p>
+          <p className="mt-1 text-xs text-stone-400">When families send messages, they will appear here.</p>
         </div>
       )}
 
@@ -55,21 +55,21 @@ function ConversationList({ onSelect }: { onSelect: (id: string) => void }) {
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="font-medium text-gray-900">
+                  <p className="font-medium text-stone-800">
                     {conv.family?.parent_first_name} {conv.family?.parent_last_name}
                   </p>
                   {conv.unreadCount > 0 && (
-                    <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-600 px-1.5 text-[11px] font-bold text-white">
+                    <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-bold text-white">
                       {conv.unreadCount}
                     </span>
                   )}
                 </div>
-                <p className="mt-0.5 text-xs text-gray-400">{conv.family?.email}</p>
-                <p className="mt-1 truncate text-sm text-gray-500">
+                <p className="mt-0.5 text-xs text-stone-400">{conv.family?.email}</p>
+                <p className="mt-1 truncate text-sm text-stone-500">
                   {conv.lastSenderType === 'admin' ? 'You: ' : ''}{conv.lastMessage}
                 </p>
               </div>
-              <span className="ml-4 text-xs text-gray-400 whitespace-nowrap">
+              <span className="ml-4 text-xs text-stone-400 whitespace-nowrap">
                 {new Date(conv.lastMessageAt).toLocaleDateString()}
               </span>
             </button>
@@ -107,14 +107,14 @@ function ConversationView({ familyId, onBack }: { familyId: string; onBack: () =
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
       <div className="mb-4">
-        <button onClick={onBack} className="mb-2 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 transition-colors">
+        <button onClick={onBack} className="mb-2 inline-flex items-center gap-1.5 text-sm text-stone-500 hover:text-primary transition-colors">
           <ArrowLeft size={16} /> Back to Messages
         </button>
-        <h1 className="text-lg font-bold text-gray-900">Conversation</h1>
+        <h1 className="text-lg font-bold text-stone-800">Conversation</h1>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto space-y-3 rounded-2xl border border-gray-100 bg-gray-50/50 p-4">
+      <div className="flex-1 overflow-y-auto space-y-3 rounded-2xl border border-stone-100 bg-stone-50/50 p-4">
         {messages.isLoading && (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
@@ -130,12 +130,12 @@ function ConversationView({ familyId, onBack }: { familyId: string; onBack: () =
             <div
               className={`max-w-[75%] rounded-2xl px-4 py-3 ${
                 msg.sender_type === 'admin'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-white border border-gray-200 text-gray-900'
+                  ? 'bg-primary text-white'
+                  : 'bg-white border border-stone-200 text-stone-800'
               }`}
             >
               <p className="text-sm whitespace-pre-wrap">{msg.body}</p>
-              <p className={`mt-1 text-[10px] ${msg.sender_type === 'admin' ? 'text-indigo-200' : 'text-gray-400'}`}>
+              <p className={`mt-1 text-[10px] ${msg.sender_type === 'admin' ? 'text-primary-200' : 'text-stone-400'}`}>
                 {new Date(msg.created_at).toLocaleString()}
               </p>
             </div>
@@ -150,7 +150,7 @@ function ConversationView({ familyId, onBack }: { familyId: string; onBack: () =
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type a message..."
-          className="h-11 flex-1 rounded-xl border border-gray-200 bg-white px-4 text-sm input-glow"
+          className="h-11 flex-1 rounded-xl border border-stone-200 bg-white px-4 text-sm input-glow"
         />
         <button
           type="submit"

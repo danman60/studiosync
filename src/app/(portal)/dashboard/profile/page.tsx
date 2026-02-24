@@ -87,31 +87,31 @@ export default function ParentProfilePage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">My Profile</h1>
-        <p className="mt-1 text-sm text-gray-500">Update your contact information and notification preferences.</p>
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">My Profile</h1>
+        <p className="mt-1 text-sm text-stone-500">Update your contact information and notification preferences.</p>
       </div>
 
       <div className="space-y-8">
         <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
           {/* Name */}
           <div className="glass-card-static rounded-2xl p-6">
-            <h2 className="section-heading text-sm mb-4"><User size={16} className="text-indigo-500" /> Personal Information</h2>
+            <h2 className="section-heading text-sm mb-4"><User size={16} className="text-primary" /> Personal Information</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">First Name</label>
-                <input value={form.parent_first_name} onChange={(e) => setForm({ ...form, parent_first_name: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
+                <label className="mb-1 block text-xs font-medium text-stone-600">First Name</label>
+                <input value={form.parent_first_name} onChange={(e) => setForm({ ...form, parent_first_name: e.target.value })} className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm input-glow" />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Last Name</label>
-                <input value={form.parent_last_name} onChange={(e) => setForm({ ...form, parent_last_name: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
+                <label className="mb-1 block text-xs font-medium text-stone-600">Last Name</label>
+                <input value={form.parent_last_name} onChange={(e) => setForm({ ...form, parent_last_name: e.target.value })} className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm input-glow" />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Phone</label>
-                <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" placeholder="(555) 123-4567" />
+                <label className="mb-1 block text-xs font-medium text-stone-600">Phone</label>
+                <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm input-glow" placeholder="(555) 123-4567" />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Email</label>
-                <input readOnly value={profile?.email ?? ''} className="h-11 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-3 text-sm text-gray-500" />
+                <label className="mb-1 block text-xs font-medium text-stone-600">Email</label>
+                <input readOnly value={profile?.email ?? ''} className="h-11 w-full rounded-xl border border-stone-200 bg-stone-50/80 px-3 text-sm text-stone-500" />
               </div>
             </div>
           </div>
@@ -121,40 +121,40 @@ export default function ParentProfilePage() {
             <h2 className="section-heading text-sm mb-4"><Shield size={16} className="text-red-500" /> Emergency Contact</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Contact Name</label>
-                <input value={form.emergency_contact_name} onChange={(e) => setForm({ ...form, emergency_contact_name: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
+                <label className="mb-1 block text-xs font-medium text-stone-600">Contact Name</label>
+                <input value={form.emergency_contact_name} onChange={(e) => setForm({ ...form, emergency_contact_name: e.target.value })} className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm input-glow" />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Contact Phone</label>
-                <input value={form.emergency_contact_phone} onChange={(e) => setForm({ ...form, emergency_contact_phone: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
+                <label className="mb-1 block text-xs font-medium text-stone-600">Contact Phone</label>
+                <input value={form.emergency_contact_phone} onChange={(e) => setForm({ ...form, emergency_contact_phone: e.target.value })} className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm input-glow" />
               </div>
             </div>
           </div>
 
           {/* Address */}
           <div className="glass-card-static rounded-2xl p-6">
-            <h2 className="section-heading text-sm mb-4"><MapPin size={16} className="text-indigo-500" /> Address</h2>
+            <h2 className="section-heading text-sm mb-4"><MapPin size={16} className="text-primary" /> Address</h2>
             <div className="space-y-4">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Address Line 1</label>
-                <input value={form.address_line1} onChange={(e) => setForm({ ...form, address_line1: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
+                <label className="mb-1 block text-xs font-medium text-stone-600">Address Line 1</label>
+                <input value={form.address_line1} onChange={(e) => setForm({ ...form, address_line1: e.target.value })} className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm input-glow" />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Address Line 2</label>
-                <input value={form.address_line2} onChange={(e) => setForm({ ...form, address_line2: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
+                <label className="mb-1 block text-xs font-medium text-stone-600">Address Line 2</label>
+                <input value={form.address_line2} onChange={(e) => setForm({ ...form, address_line2: e.target.value })} className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm input-glow" />
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">City</label>
-                  <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
+                  <label className="mb-1 block text-xs font-medium text-stone-600">City</label>
+                  <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm input-glow" />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">State</label>
-                  <input value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
+                  <label className="mb-1 block text-xs font-medium text-stone-600">State</label>
+                  <input value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm input-glow" />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">ZIP</label>
-                  <input value={form.zip} onChange={(e) => setForm({ ...form, zip: e.target.value })} className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
+                  <label className="mb-1 block text-xs font-medium text-stone-600">ZIP</label>
+                  <input value={form.zip} onChange={(e) => setForm({ ...form, zip: e.target.value })} className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm input-glow" />
                 </div>
               </div>
             </div>
@@ -229,23 +229,23 @@ function NotificationSettings() {
       {/* Channels */}
       <div className="glass-card-static rounded-2xl p-6">
         <h2 className="section-heading text-sm mb-4">
-          <Bell size={16} className="text-indigo-500" /> Notification Channels
+          <Bell size={16} className="text-primary" /> Notification Channels
         </h2>
         <div className="space-y-3">
           {channels.map((ch) => (
-            <div key={ch.key} className="flex items-center justify-between rounded-xl bg-gray-50/80 px-4 py-3">
+            <div key={ch.key} className="flex items-center justify-between rounded-xl bg-stone-50/80 px-4 py-3">
               <div className="flex items-center gap-3">
-                <span className="text-gray-400">{ch.icon}</span>
+                <span className="text-stone-400">{ch.icon}</span>
                 <div>
-                  <p className="text-sm font-medium text-gray-700">{ch.label}</p>
-                  <p className="text-xs text-gray-400">{ch.desc}</p>
+                  <p className="text-sm font-medium text-stone-700">{ch.label}</p>
+                  <p className="text-xs text-stone-400">{ch.desc}</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => toggle(ch.key, !(prefs as Record<string, unknown>)?.[ch.key])}
                 className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
-                  (prefs as Record<string, unknown>)?.[ch.key] ? 'bg-indigo-500' : 'bg-gray-200'
+                  (prefs as Record<string, unknown>)?.[ch.key] ? 'bg-primary' : 'bg-stone-200'
                 }`}
               >
                 <span
@@ -261,12 +261,12 @@ function NotificationSettings() {
         {/* SMS phone number */}
         {prefs?.sms_enabled && (
           <div className="mt-3">
-            <label className="mb-1 block text-xs font-medium text-gray-600">SMS Phone Number</label>
+            <label className="mb-1 block text-xs font-medium text-stone-600">SMS Phone Number</label>
             <input
               type="tel"
               defaultValue={prefs?.phone_number ?? ''}
               placeholder="(555) 123-4567"
-              className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow"
+              className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm input-glow"
               onBlur={(e) => {
                 if (e.target.value !== (prefs?.phone_number ?? '')) {
                   updateMut.mutate({ phone_number: e.target.value || null });
@@ -280,20 +280,20 @@ function NotificationSettings() {
       {/* Notification Types */}
       <div className="glass-card-static rounded-2xl p-6">
         <h2 className="section-heading text-sm mb-4">
-          <MessageSquare size={16} className="text-indigo-500" /> Notification Types
+          <MessageSquare size={16} className="text-primary" /> Notification Types
         </h2>
         <div className="space-y-2">
           {types.map((t) => (
-            <div key={t.key} className="flex items-center justify-between rounded-xl bg-gray-50/80 px-4 py-3">
+            <div key={t.key} className="flex items-center justify-between rounded-xl bg-stone-50/80 px-4 py-3">
               <div>
-                <p className="text-sm font-medium text-gray-700">{t.label}</p>
-                <p className="text-xs text-gray-400">{t.desc}</p>
+                <p className="text-sm font-medium text-stone-700">{t.label}</p>
+                <p className="text-xs text-stone-400">{t.desc}</p>
               </div>
               <button
                 type="button"
                 onClick={() => toggle(t.key, !(prefs as Record<string, unknown>)?.[t.key])}
                 className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
-                  (prefs as Record<string, unknown>)?.[t.key] ? 'bg-indigo-500' : 'bg-gray-200'
+                  (prefs as Record<string, unknown>)?.[t.key] ? 'bg-primary' : 'bg-stone-200'
                 }`}
               >
                 <span

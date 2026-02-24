@@ -19,8 +19,8 @@ export default function InstructorClassesPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">My Classes</h1>
-        <p className="mt-1 text-sm text-gray-500">All classes assigned to you</p>
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">My Classes</h1>
+        <p className="mt-1 text-sm text-stone-500">All classes assigned to you</p>
       </div>
 
       {classes.isLoading && (
@@ -36,8 +36,8 @@ export default function InstructorClassesPage() {
 
       {!classes.isLoading && (classes.data?.length ?? 0) === 0 && (
         <div className="empty-state">
-          <p className="text-sm font-medium text-gray-600">No classes assigned to you yet.</p>
-          <p className="mt-1 text-xs text-gray-400">Contact your studio director to be assigned to classes.</p>
+          <p className="text-sm font-medium text-stone-600">No classes assigned to you yet.</p>
+          <p className="mt-1 text-xs text-stone-400">Contact your studio director to be assigned to classes.</p>
         </div>
       )}
 
@@ -46,7 +46,7 @@ export default function InstructorClassesPage() {
           .sort(([a], [b]) => Number(a) - Number(b))
           .map(([day, dayClasses]) => (
             <div key={day}>
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-400">
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-stone-400">
                 {DAY_NAMES[Number(day)]}
               </h2>
               <div className="space-y-3">
@@ -63,26 +63,26 @@ export default function InstructorClassesPage() {
                       <div className="flex items-center gap-4">
                         <div
                           className="h-12 w-1.5 rounded-full"
-                          style={{ backgroundColor: classType?.color ?? '#6366f1' }}
+                          style={{ backgroundColor: classType?.color ?? '#C2785C' }}
                         />
                         <div>
-                          <p className="font-medium text-gray-900">{cls.name}</p>
-                          <p className="text-sm text-gray-500">
+                          <p className="font-medium text-stone-800">{cls.name}</p>
+                          <p className="text-sm text-stone-500">
                             {classType?.name}{level ? ` - ${level.name}` : ''}
                           </p>
                           {season && (
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-stone-400">
                               {season.name} {season.is_current ? '(Current)' : ''}
                             </p>
                           )}
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-medium text-gray-900">
+                        <p className="text-sm font-medium text-stone-800">
                           {cls.start_time?.slice(0, 5)} - {cls.end_time?.slice(0, 5)}
                         </p>
-                        <p className="text-xs text-gray-500">{cls.room ?? 'No room'}</p>
-                        <p className="mt-1 text-xs text-gray-500">
+                        <p className="text-xs text-stone-500">{cls.room ?? 'No room'}</p>
+                        <p className="mt-1 text-xs text-stone-500">
                           {cls.enrolled_count}/{cls.capacity} enrolled
                         </p>
                       </div>

@@ -11,8 +11,8 @@ export default function ParentWaiversPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Waivers</h1>
-        <p className="mt-1 text-sm text-gray-500">View and sign studio waivers.</p>
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Waivers</h1>
+        <p className="mt-1 text-sm text-stone-500">View and sign studio waivers.</p>
       </div>
 
       {/* Pending Waivers */}
@@ -42,18 +42,18 @@ export default function ParentWaiversPage() {
       {/* Empty */}
       {!signed.isLoading && (signed.data?.length ?? 0) === 0 && (pending.data?.length ?? 0) === 0 && (
         <div className="empty-state">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
-            <FileText size={24} className="text-indigo-400" />
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50">
+            <FileText size={24} className="text-primary-light" />
           </div>
-          <p className="text-sm font-medium text-gray-600">No waivers</p>
-          <p className="mt-1 text-xs text-gray-400">Studio waivers will appear here when available.</p>
+          <p className="text-sm font-medium text-stone-600">No waivers</p>
+          <p className="mt-1 text-xs text-stone-400">Studio waivers will appear here when available.</p>
         </div>
       )}
 
       {/* Signed Waivers */}
       {(signed.data?.length ?? 0) > 0 && (
         <div>
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-3">Signed Waivers</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-400 mb-3">Signed Waivers</h2>
           <div className="space-y-3">
             {signed.data?.map((sig) => {
               const waiver = sig.waivers as { title: string; content: string; version: number } | null;
@@ -63,10 +63,10 @@ export default function ParentWaiversPage() {
                     <Check size={18} />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium text-gray-900">{waiver?.title ?? 'Waiver'}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="font-medium text-stone-800">{waiver?.title ?? 'Waiver'}</p>
+                    <p className="text-xs text-stone-500">
                       Signed by {sig.parent_name} on {new Date(sig.signed_at).toLocaleDateString()}
-                      <span className="ml-2 text-gray-400">v{sig.waiver_version}</span>
+                      <span className="ml-2 text-stone-400">v{sig.waiver_version}</span>
                     </p>
                   </div>
                 </div>
@@ -105,16 +105,16 @@ function PendingWaiverCard({ waiver }: { waiver: { id: string; title: string; co
             <Shield size={18} />
           </div>
           <div>
-            <p className="font-medium text-gray-900">{waiver.title}</p>
+            <p className="font-medium text-stone-800">{waiver.title}</p>
             <p className="text-xs text-amber-600 font-medium">Signature required</p>
           </div>
         </div>
-        {expanded ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
+        {expanded ? <ChevronUp size={16} className="text-stone-400" /> : <ChevronDown size={16} className="text-stone-400" />}
       </button>
 
       {expanded && (
-        <div className="border-t border-gray-100 p-5 space-y-4">
-          <div className="max-h-64 overflow-y-auto rounded-lg bg-gray-50 p-4 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+        <div className="border-t border-stone-100 p-5 space-y-4">
+          <div className="max-h-64 overflow-y-auto rounded-lg bg-stone-50 p-4 text-sm text-stone-700 leading-relaxed whitespace-pre-wrap">
             {waiver.content}
           </div>
 
@@ -123,21 +123,21 @@ function PendingWaiverCard({ waiver }: { waiver: { id: string; title: string; co
               type="checkbox"
               checked={accepted}
               onChange={(e) => setAccepted(e.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              className="mt-0.5 h-4 w-4 rounded border-stone-300 text-primary focus:ring-primary"
             />
-            <span className="text-sm text-gray-700">I have read and agree to the terms of this waiver.</span>
+            <span className="text-sm text-stone-700">I have read and agree to the terms of this waiver.</span>
           </label>
 
           {accepted && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-stone-700 mb-1">
                 Type your full name as electronic signature
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="form-input w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 italic"
+                className="form-input w-full rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm text-stone-800 focus:border-primary focus:ring-2 focus:ring-primary/20 italic"
                 placeholder="Your full name"
               />
             </div>

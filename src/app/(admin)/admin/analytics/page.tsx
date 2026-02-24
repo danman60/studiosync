@@ -27,8 +27,8 @@ export default function AnalyticsPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Analytics</h1>
-        <p className="mt-1 text-sm text-gray-500">Studio performance and enrollment insights.</p>
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Analytics</h1>
+        <p className="mt-1 text-sm text-stone-500">Studio performance and enrollment insights.</p>
       </div>
 
       {/* KPI Cards */}
@@ -47,8 +47,8 @@ export default function AnalyticsPage() {
             icon={<BookOpen size={20} />}
             label="Total Classes"
             value={String(overview.totalClasses)}
-            gradient="from-indigo-500/10 to-indigo-500/5"
-            iconColor="text-indigo-600"
+            gradient="from-primary/10 to-primary/5"
+            iconColor="text-primary"
             stagger={1}
           />
           <KpiCard
@@ -56,8 +56,8 @@ export default function AnalyticsPage() {
             label="Active Enrollments"
             value={String(overview.activeEnrollments)}
             subtitle={`${overview.waitlistedCount} waitlisted`}
-            gradient="from-purple-500/10 to-purple-500/5"
-            iconColor="text-purple-600"
+            gradient="from-primary/10 to-primary/5"
+            iconColor="text-primary"
             stagger={2}
           />
           <KpiCard
@@ -127,31 +127,31 @@ export default function AnalyticsPage() {
               {(popularity ?? []).map((cls) => {
                 const classType = cls.class_types as unknown as { name: string; color: string } | null;
                 const pct = cls.capacity > 0 ? Math.round((cls.enrolled_count / cls.capacity) * 100) : 0;
-                const color = classType?.color ?? '#6366f1';
+                const color = classType?.color ?? '#C2785C';
 
                 return (
                   <div key={cls.id} className="flex items-center gap-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between">
-                        <span className="truncate text-sm font-medium text-gray-700">{cls.name}</span>
-                        <span className="shrink-0 text-xs text-gray-400">
+                        <span className="truncate text-sm font-medium text-stone-700">{cls.name}</span>
+                        <span className="shrink-0 text-xs text-stone-400">
                           {cls.enrolled_count}/{cls.capacity}
                         </span>
                       </div>
-                      <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-gray-100">
+                      <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-stone-100">
                         <div
                           className="h-full rounded-full transition-all duration-500"
                           style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: color }}
                         />
                       </div>
                     </div>
-                    <span className="shrink-0 text-xs font-semibold text-gray-500 w-10 text-right">{pct}%</span>
+                    <span className="shrink-0 text-xs font-semibold text-stone-500 w-10 text-right">{pct}%</span>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <p className="text-sm text-gray-400">No class data available.</p>
+            <p className="text-sm text-stone-400">No class data available.</p>
           )}
         </div>
 
@@ -172,11 +172,11 @@ export default function AnalyticsPage() {
                             className="inline-block h-2.5 w-2.5 rounded-full"
                             style={{ backgroundColor: ct.color }}
                           />
-                          <span className="text-sm font-medium text-gray-700">{ct.name}</span>
+                          <span className="text-sm font-medium text-stone-700">{ct.name}</span>
                         </div>
-                        <span className="text-xs text-gray-400">{ct.count} enrolled</span>
+                        <span className="text-xs text-stone-400">{ct.count} enrolled</span>
                       </div>
-                      <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-gray-100">
+                      <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-stone-100">
                         <div
                           className="h-full rounded-full transition-all duration-500"
                           style={{ width: `${pct}%`, backgroundColor: ct.color }}
@@ -188,7 +188,7 @@ export default function AnalyticsPage() {
               })}
             </div>
           ) : (
-            <p className="text-sm text-gray-400">No enrollment data available.</p>
+            <p className="text-sm text-stone-400">No enrollment data available.</p>
           )}
         </div>
 
@@ -202,18 +202,18 @@ export default function AnalyticsPage() {
                 const pct = Math.round((r.amount / maxAmt) * 100);
                 return (
                   <div key={r.month} className="flex flex-1 flex-col items-center gap-1">
-                    <span className="text-[10px] text-gray-400">{formatCents(r.amount)}</span>
+                    <span className="text-[10px] text-stone-400">{formatCents(r.amount)}</span>
                     <div
-                      className="w-full rounded-t-lg bg-gradient-to-t from-indigo-500 to-purple-400 transition-all duration-500"
+                      className="w-full rounded-t-lg bg-gradient-to-t from-primary to-primary-light transition-all duration-500"
                       style={{ height: `${Math.max(pct, 4)}%` }}
                     />
-                    <span className="text-[10px] text-gray-500">{r.month.slice(5)}</span>
+                    <span className="text-[10px] text-stone-500">{r.month.slice(5)}</span>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <p className="text-sm text-gray-400">No revenue data yet.</p>
+            <p className="text-sm text-stone-400">No revenue data yet.</p>
           )}
         </div>
       </div>
@@ -244,10 +244,10 @@ function KpiCard({
         <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${gradient}`}>
           <span className={iconColor}>{icon}</span>
         </div>
-        <span className="text-xs font-medium text-gray-500">{label}</span>
+        <span className="text-xs font-medium text-stone-500">{label}</span>
       </div>
       <p className="stat-number">{value}</p>
-      {subtitle && <p className="mt-0.5 text-xs text-gray-400">{subtitle}</p>}
+      {subtitle && <p className="mt-0.5 text-xs text-stone-400">{subtitle}</p>}
     </div>
   );
 }

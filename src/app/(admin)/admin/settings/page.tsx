@@ -19,7 +19,7 @@ export default function SettingsPage() {
     city: studio?.city ?? '',
     state: studio?.state ?? '',
     zip: studio?.zip ?? '',
-    primary_color: studio?.primary_color ?? '#6366f1',
+    primary_color: studio?.primary_color ?? '#C2785C',
     secondary_color: studio?.secondary_color ?? '#818cf8',
   }), [studio]);
 
@@ -38,7 +38,7 @@ export default function SettingsPage() {
       city: studio.city ?? '',
       state: studio.state ?? '',
       zip: studio.zip ?? '',
-      primary_color: studio.primary_color ?? '#6366f1',
+      primary_color: studio.primary_color ?? '#C2785C',
       secondary_color: studio.secondary_color ?? '#818cf8',
     });
   }
@@ -67,57 +67,57 @@ export default function SettingsPage() {
     });
   };
 
-  const inputClass = 'h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-900 transition-shadow input-glow';
+  const inputClass = 'h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm text-stone-800 transition-shadow input-glow';
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Settings</h1>
-        <p className="mt-1 text-sm text-gray-500">Studio configuration and preferences.</p>
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Settings</h1>
+        <p className="mt-1 text-sm text-stone-500">Studio configuration and preferences.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
         {/* Studio Info */}
         <div className="glass-card-static rounded-2xl p-6 animate-fade-in-up stagger-1">
           <h2 className="section-heading text-sm mb-4">
-            <Settings size={16} className="text-indigo-500" /> Studio Information
+            <Settings size={16} className="text-primary" /> Studio Information
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">Studio Name</label>
+              <label className="mb-1 block text-xs font-medium text-stone-600">Studio Name</label>
               <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputClass} />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">Slug</label>
-              <input readOnly value={studio?.slug ?? ''} className="h-11 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-3 text-sm text-gray-500" />
+              <label className="mb-1 block text-xs font-medium text-stone-600">Slug</label>
+              <input readOnly value={studio?.slug ?? ''} className="h-11 w-full rounded-xl border border-stone-200 bg-stone-50/80 px-3 text-sm text-stone-500" />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">Email</label>
+              <label className="mb-1 block text-xs font-medium text-stone-600">Email</label>
               <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inputClass} />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">Phone</label>
+              <label className="mb-1 block text-xs font-medium text-stone-600">Phone</label>
               <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={inputClass} />
             </div>
             <div className="sm:col-span-2">
-              <label className="mb-1 block text-xs font-medium text-gray-600">Website</label>
+              <label className="mb-1 block text-xs font-medium text-stone-600">Website</label>
               <input value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} className={inputClass} placeholder="https://..." />
             </div>
             <div className="sm:col-span-2">
-              <label className="mb-1 block text-xs font-medium text-gray-600">Address</label>
+              <label className="mb-1 block text-xs font-medium text-stone-600">Address</label>
               <input value={form.address_line1} onChange={(e) => setForm({ ...form, address_line1: e.target.value })} className={inputClass} />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">City</label>
+              <label className="mb-1 block text-xs font-medium text-stone-600">City</label>
               <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className={inputClass} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">State</label>
+                <label className="mb-1 block text-xs font-medium text-stone-600">State</label>
                 <input value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className={inputClass} />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">ZIP</label>
+                <label className="mb-1 block text-xs font-medium text-stone-600">ZIP</label>
                 <input value={form.zip} onChange={(e) => setForm({ ...form, zip: e.target.value })} className={inputClass} />
               </div>
             </div>
@@ -127,31 +127,31 @@ export default function SettingsPage() {
         {/* Branding */}
         <div className="glass-card-static rounded-2xl p-6 animate-fade-in-up stagger-2">
           <h2 className="section-heading text-sm mb-4">
-            <Palette size={16} className="text-purple-500" /> Branding
+            <Palette size={16} className="text-primary" /> Branding
           </h2>
           <div className="flex items-center gap-8">
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">Primary Color</label>
+              <label className="mb-1 block text-xs font-medium text-stone-600">Primary Color</label>
               <div className="mt-1 flex items-center gap-2.5">
                 <input
                   type="color"
                   value={form.primary_color}
                   onChange={(e) => setForm({ ...form, primary_color: e.target.value })}
-                  className="h-9 w-9 cursor-pointer rounded-lg border border-gray-200"
+                  className="h-9 w-9 cursor-pointer rounded-lg border border-stone-200"
                 />
-                <span className="text-sm text-gray-600">{form.primary_color}</span>
+                <span className="text-sm text-stone-600">{form.primary_color}</span>
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">Secondary Color</label>
+              <label className="mb-1 block text-xs font-medium text-stone-600">Secondary Color</label>
               <div className="mt-1 flex items-center gap-2.5">
                 <input
                   type="color"
                   value={form.secondary_color}
                   onChange={(e) => setForm({ ...form, secondary_color: e.target.value })}
-                  className="h-9 w-9 cursor-pointer rounded-lg border border-gray-200"
+                  className="h-9 w-9 cursor-pointer rounded-lg border border-stone-200"
                 />
-                <span className="text-sm text-gray-600">{form.secondary_color}</span>
+                <span className="text-sm text-stone-600">{form.secondary_color}</span>
               </div>
             </div>
           </div>
@@ -223,20 +223,20 @@ function LateFeeSettings() {
     });
   };
 
-  const inputClass = 'h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-900 transition-shadow input-glow';
+  const inputClass = 'h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm text-stone-800 transition-shadow input-glow';
 
   return (
     <div className="glass-card-static rounded-2xl p-6 animate-fade-in-up stagger-3">
       <h2 className="section-heading text-sm mb-4">
         <Clock size={16} className="text-amber-500" /> Late Fee Policy
       </h2>
-      <p className="text-xs text-gray-500 mb-4">
+      <p className="text-xs text-stone-500 mb-4">
         Configure automatic late fees for overdue invoices. Fees are applied once per invoice.
       </p>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-600">Fee Type</label>
+          <label className="mb-1 block text-xs font-medium text-stone-600">Fee Type</label>
           <select
             value={feeType}
             onChange={(e) => setFeeType(e.target.value)}
@@ -247,11 +247,11 @@ function LateFeeSettings() {
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-600">
+          <label className="mb-1 block text-xs font-medium text-stone-600">
             {feeType === 'percent' ? 'Fee Percentage' : 'Fee Amount'}
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-stone-400">
               {feeType === 'percent' ? '%' : '$'}
             </span>
             <input
@@ -264,12 +264,12 @@ function LateFeeSettings() {
               placeholder="0"
             />
           </div>
-          <p className="mt-1 text-[10px] text-gray-400">
+          <p className="mt-1 text-[10px] text-stone-400">
             {feeType === 'percent' ? 'e.g. 5 = 5% of invoice total' : 'e.g. 25 = $25.00 flat fee'}
           </p>
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-600">Grace Period (days)</label>
+          <label className="mb-1 block text-xs font-medium text-stone-600">Grace Period (days)</label>
           <input
             type="number"
             min="0"
@@ -278,7 +278,7 @@ function LateFeeSettings() {
             className={inputClass}
             placeholder="0"
           />
-          <p className="mt-1 text-[10px] text-gray-400">Days after due date before fee applies</p>
+          <p className="mt-1 text-[10px] text-stone-400">Days after due date before fee applies</p>
         </div>
       </div>
 
@@ -296,7 +296,7 @@ function LateFeeSettings() {
         {updateSettings.isError && <span className="text-sm text-red-600">{updateSettings.error.message}</span>}
       </div>
 
-      <p className="mt-3 text-xs text-gray-400">
+      <p className="mt-3 text-xs text-stone-400">
         Set amount to $0 to disable late fees. Invoices are marked overdue and fees applied daily via automated processing.
       </p>
     </div>
@@ -364,29 +364,29 @@ function AssessmentSettings() {
     }
   };
 
-  const inputClass = 'h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-900 transition-shadow input-glow';
+  const inputClass = 'h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm text-stone-800 transition-shadow input-glow';
 
   return (
     <div className="glass-card-static rounded-2xl p-6 animate-fade-in-up stagger-3">
       <h2 className="section-heading text-sm mb-4">
-        <Award size={16} className="text-indigo-500" /> Assessment Configuration
+        <Award size={16} className="text-primary" /> Assessment Configuration
       </h2>
-      <p className="text-xs text-gray-500 mb-4">
+      <p className="text-xs text-stone-500 mb-4">
         Customize grading categories and reporting periods for progress reports.
       </p>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         {/* Categories */}
         <div>
-          <label className="mb-2 block text-xs font-medium text-gray-600">Grading Categories</label>
+          <label className="mb-2 block text-xs font-medium text-stone-600">Grading Categories</label>
           <div className="space-y-1.5 mb-2">
             {categories.map((cat) => (
-              <div key={cat} className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-1.5">
-                <span className="text-sm text-gray-700">{cat}</span>
+              <div key={cat} className="flex items-center justify-between rounded-lg bg-stone-50 px-3 py-1.5">
+                <span className="text-sm text-stone-700">{cat}</span>
                 <button
                   type="button"
                   onClick={() => setCategories(categories.filter((c) => c !== cat))}
-                  className="text-gray-400 hover:text-red-500"
+                  className="text-stone-400 hover:text-red-500"
                 >
                   <X size={14} />
                 </button>
@@ -404,7 +404,7 @@ function AssessmentSettings() {
             <button
               type="button"
               onClick={addCategory}
-              className="inline-flex h-11 items-center rounded-xl bg-gray-100 px-3 text-gray-600 hover:bg-gray-200"
+              className="inline-flex h-11 items-center rounded-xl bg-stone-100 px-3 text-stone-600 hover:bg-stone-200"
             >
               <Plus size={16} />
             </button>
@@ -413,15 +413,15 @@ function AssessmentSettings() {
 
         {/* Periods */}
         <div>
-          <label className="mb-2 block text-xs font-medium text-gray-600">Reporting Periods</label>
+          <label className="mb-2 block text-xs font-medium text-stone-600">Reporting Periods</label>
           <div className="space-y-1.5 mb-2">
             {periods.map((p) => (
-              <div key={p} className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-1.5">
-                <span className="text-sm text-gray-700">{p}</span>
+              <div key={p} className="flex items-center justify-between rounded-lg bg-stone-50 px-3 py-1.5">
+                <span className="text-sm text-stone-700">{p}</span>
                 <button
                   type="button"
                   onClick={() => setPeriods(periods.filter((x) => x !== p))}
-                  className="text-gray-400 hover:text-red-500"
+                  className="text-stone-400 hover:text-red-500"
                 >
                   <X size={14} />
                 </button>
@@ -439,7 +439,7 @@ function AssessmentSettings() {
             <button
               type="button"
               onClick={addPeriod}
-              className="inline-flex h-11 items-center rounded-xl bg-gray-100 px-3 text-gray-600 hover:bg-gray-200"
+              className="inline-flex h-11 items-center rounded-xl bg-stone-100 px-3 text-stone-600 hover:bg-stone-200"
             >
               <Plus size={16} />
             </button>
@@ -505,14 +505,14 @@ function SiblingDiscountSettings() {
     });
   };
 
-  const inputClass = 'h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-900 transition-shadow input-glow';
+  const inputClass = 'h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm text-stone-800 transition-shadow input-glow';
 
   return (
     <div className="glass-card-static rounded-2xl p-6 animate-fade-in-up stagger-3">
       <h2 className="section-heading text-sm mb-4">
-        <Users size={16} className="text-indigo-500" /> Sibling Discounts
+        <Users size={16} className="text-primary" /> Sibling Discounts
       </h2>
-      <p className="text-xs text-gray-500 mb-4">
+      <p className="text-xs text-stone-500 mb-4">
         Automatically apply discounts when families enroll multiple students.
       </p>
 
@@ -522,16 +522,16 @@ function SiblingDiscountSettings() {
             type="checkbox"
             checked={enabled}
             onChange={e => setEnabled(e.target.checked)}
-            className="h-4 w-4 rounded border-gray-300 text-indigo-600"
+            className="h-4 w-4 rounded border-stone-300 text-primary"
           />
-          <span className="text-sm font-medium text-gray-700">Enable sibling discounts</span>
+          <span className="text-sm font-medium text-stone-700">Enable sibling discounts</span>
         </label>
       </div>
 
       {enabled && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600">Discount Type</label>
+            <label className="mb-1 block text-xs font-medium text-stone-600">Discount Type</label>
             <select
               value={discountType}
               onChange={e => setDiscountType(e.target.value)}
@@ -542,11 +542,11 @@ function SiblingDiscountSettings() {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600">
+            <label className="mb-1 block text-xs font-medium text-stone-600">
               {discountType === 'percent' ? 'Discount Percentage' : 'Discount Amount'}
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-stone-400">
                 {discountType === 'percent' ? '%' : '$'}
               </span>
               <input
@@ -559,12 +559,12 @@ function SiblingDiscountSettings() {
                 placeholder="0"
               />
             </div>
-            <p className="mt-1 text-[10px] text-gray-400">
+            <p className="mt-1 text-[10px] text-stone-400">
               {discountType === 'percent' ? 'e.g. 10 = 10% off each additional student' : 'e.g. 25 = $25.00 off each additional student'}
             </p>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600">Min Students</label>
+            <label className="mb-1 block text-xs font-medium text-stone-600">Min Students</label>
             <input
               type="number"
               min="2"
@@ -573,7 +573,7 @@ function SiblingDiscountSettings() {
               onChange={e => setMinStudents(e.target.value)}
               className={inputClass}
             />
-            <p className="mt-1 text-[10px] text-gray-400">Discount applies from Nth student onwards</p>
+            <p className="mt-1 text-[10px] text-stone-400">Discount applies from Nth student onwards</p>
           </div>
         </div>
       )}
@@ -610,7 +610,7 @@ function StripeConnectSection() {
       </h2>
 
       {status.isLoading ? (
-        <div className="flex items-center gap-2 text-sm text-gray-400">
+        <div className="flex items-center gap-2 text-sm text-stone-400">
           <Loader2 size={16} className="animate-spin" /> Checking Stripe status...
         </div>
       ) : status.data?.connected ? (
@@ -619,20 +619,20 @@ function StripeConnectSection() {
             <CheckCircle size={18} className="text-emerald-500" />
             <span className="text-sm font-medium text-emerald-700">Stripe Connected</span>
           </div>
-          <div className="flex items-center gap-4 text-xs text-gray-500">
+          <div className="flex items-center gap-4 text-xs text-stone-500">
             <span className="flex items-center gap-1">
-              <span className={`h-2 w-2 rounded-full ${status.data.chargesEnabled ? 'bg-emerald-500' : 'bg-gray-300'}`} />
+              <span className={`h-2 w-2 rounded-full ${status.data.chargesEnabled ? 'bg-emerald-500' : 'bg-stone-300'}`} />
               Charges {status.data.chargesEnabled ? 'enabled' : 'disabled'}
             </span>
             <span className="flex items-center gap-1">
-              <span className={`h-2 w-2 rounded-full ${status.data.payoutsEnabled ? 'bg-emerald-500' : 'bg-gray-300'}`} />
+              <span className={`h-2 w-2 rounded-full ${status.data.payoutsEnabled ? 'bg-emerald-500' : 'bg-stone-300'}`} />
               Payouts {status.data.payoutsEnabled ? 'enabled' : 'disabled'}
             </span>
           </div>
         </div>
       ) : (
         <div className="space-y-3">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-stone-600">
             Connect your Stripe account to accept online payments from families.
           </p>
           <button

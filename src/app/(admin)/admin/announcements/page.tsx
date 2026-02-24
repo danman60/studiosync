@@ -44,8 +44,8 @@ export default function AnnouncementsPage() {
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Announcements</h1>
-          <p className="mt-1 text-sm text-gray-500">Send targeted messages to families and staff.</p>
+          <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Announcements</h1>
+          <p className="mt-1 text-sm text-stone-500">Send targeted messages to families and staff.</p>
         </div>
         <button onClick={() => setShowCreate(true)} className="btn-gradient inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-medium">
           <Plus size={16} /> New Announcement
@@ -78,15 +78,15 @@ export default function AnnouncementsPage() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold text-gray-900">{ann.title}</h3>
+                      <h3 className="text-sm font-semibold text-stone-800">{ann.title}</h3>
                       {ann.is_draft ? (
-                        <span className="rounded-full bg-gray-500/15 border border-gray-500/20 px-2 py-0.5 text-[11px] font-medium text-gray-500">Draft</span>
+                        <span className="rounded-full bg-stone-500/15 border border-stone-500/20 px-2 py-0.5 text-xs font-medium text-stone-500">Draft</span>
                       ) : (
-                        <span className="rounded-full bg-emerald-500/15 border border-emerald-500/25 px-2 py-0.5 text-[11px] font-medium text-emerald-600">Published</span>
+                        <span className="rounded-full bg-emerald-500/15 border border-emerald-500/25 px-2 py-0.5 text-xs font-medium text-emerald-600">Published</span>
                       )}
                     </div>
-                    <p className="mt-1 line-clamp-2 text-sm text-gray-600">{ann.body}</p>
-                    <div className="mt-2 flex items-center gap-3 text-xs text-gray-400">
+                    <p className="mt-1 line-clamp-2 text-sm text-stone-600">{ann.body}</p>
+                    <div className="mt-2 flex items-center gap-3 text-xs text-stone-400">
                       <span className="inline-flex items-center gap-1">
                         {TARGET_ICON[ann.target_type]} {ann.target_type === 'all' ? 'Everyone' : ann.target_type.replace('_', ' ')}
                       </span>
@@ -130,11 +130,11 @@ export default function AnnouncementsPage() {
       {/* Empty */}
       {!isLoading && (announcements ?? []).length === 0 && (
         <div className="empty-state">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
-            <Megaphone size={24} className="text-indigo-400" />
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50">
+            <Megaphone size={24} className="text-primary-light" />
           </div>
-          <p className="text-sm font-medium text-gray-600">No announcements yet</p>
-          <p className="mt-1 text-xs text-gray-400">Create your first announcement to communicate with families.</p>
+          <p className="text-sm font-medium text-stone-600">No announcements yet</p>
+          <p className="mt-1 text-xs text-stone-400">Create your first announcement to communicate with families.</p>
         </div>
       )}
 
@@ -192,15 +192,15 @@ function CreateAnnouncementModal({
         className="space-y-4"
       >
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-600">Title *</label>
-          <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow" />
+          <label className="mb-1 block text-xs font-medium text-stone-600">Title *</label>
+          <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm input-glow" />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-600">Message *</label>
-          <textarea value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} required rows={4} className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm input-glow" />
+          <label className="mb-1 block text-xs font-medium text-stone-600">Message *</label>
+          <textarea value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} required rows={4} className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm input-glow" />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-600">Target Audience</label>
+          <label className="mb-1 block text-xs font-medium text-stone-600">Target Audience</label>
           <div className="flex gap-1.5">
             {(['all', 'class', 'class_type', 'level', 'tag'] as const).map((t) => (
               <button
@@ -216,12 +216,12 @@ function CreateAnnouncementModal({
         </div>
         {form.target_type !== 'all' && form.target_type !== 'tag' && targetOptions.length > 0 && (
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600">Select {form.target_type === 'class_type' ? 'Class Type' : form.target_type}</label>
+            <label className="mb-1 block text-xs font-medium text-stone-600">Select {form.target_type === 'class_type' ? 'Class Type' : form.target_type}</label>
             <select
               value={form.target_id}
               onChange={(e) => setForm({ ...form, target_id: e.target.value })}
               required
-              className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow"
+              className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm input-glow"
             >
               <option value="">Choose...</option>
               {targetOptions.map((opt) => (
@@ -232,12 +232,12 @@ function CreateAnnouncementModal({
         )}
         {form.target_type === 'tag' && tags.length > 0 && (
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600">Select Tag</label>
+            <label className="mb-1 block text-xs font-medium text-stone-600">Select Tag</label>
             <select
               value={form.target_tag}
               onChange={(e) => setForm({ ...form, target_tag: e.target.value })}
               required
-              className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow"
+              className="h-11 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm input-glow"
             >
               <option value="">Choose...</option>
               {tags.map((tag) => (
@@ -247,8 +247,8 @@ function CreateAnnouncementModal({
           </div>
         )}
         <div className="flex items-center gap-2">
-          <input type="checkbox" id="publish" checked={form.publish} onChange={(e) => setForm({ ...form, publish: e.target.checked })} className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
-          <label htmlFor="publish" className="text-sm text-gray-600">Publish immediately</label>
+          <input type="checkbox" id="publish" checked={form.publish} onChange={(e) => setForm({ ...form, publish: e.target.checked })} className="h-4 w-4 rounded border-stone-300 text-primary focus:ring-primary" />
+          <label htmlFor="publish" className="text-sm text-stone-600">Publish immediately</label>
         </div>
         <div className="flex justify-end gap-2 pt-2">
           <button type="button" onClick={onClose} className="btn-outline h-11 rounded-xl px-4 text-sm font-medium">Cancel</button>

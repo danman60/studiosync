@@ -21,8 +21,8 @@ export function ConfirmationStep({ status, waitlistPosition, studentName, classN
             <CheckCircle size={32} className="text-emerald-600" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Registration Confirmed!</h2>
-            <p className="mt-2 text-gray-600">
+            <h2 className="text-xl font-bold text-stone-800">Registration Confirmed!</h2>
+            <p className="mt-2 text-stone-600">
               <span className="font-medium">{studentName}</span> has been registered for{' '}
               <span className="font-medium">{className}</span>.
             </p>
@@ -34,15 +34,15 @@ export function ConfirmationStep({ status, waitlistPosition, studentName, classN
             <Clock size={32} className="text-amber-600" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Added to Waitlist</h2>
-            <p className="mt-2 text-gray-600">
+            <h2 className="text-xl font-bold text-stone-800">Added to Waitlist</h2>
+            <p className="mt-2 text-stone-600">
               <span className="font-medium">{studentName}</span> is{' '}
               <span className="inline-flex items-center rounded-full bg-amber-500/15 px-2 py-0.5 text-sm font-semibold text-amber-700 border border-amber-500/25">
                 #{waitlistPosition}
               </span>{' '}
               on the waitlist for <span className="font-medium">{className}</span>.
             </p>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-stone-500">
               We&apos;ll notify you when a spot opens up.
             </p>
           </div>
@@ -60,7 +60,7 @@ export function ConfirmationStep({ status, waitlistPosition, studentName, classN
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
         <Link
           href="/classes"
-          className="flex h-11 items-center justify-center rounded-xl border border-gray-200 bg-white px-6 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          className="flex h-11 items-center justify-center rounded-xl border border-stone-200 bg-white px-6 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-50"
         >
           Register Another Student
         </Link>

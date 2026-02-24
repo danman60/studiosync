@@ -70,23 +70,23 @@ export default function InstructorTimeClockPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Time Clock</h1>
+      <h1 className="text-2xl font-bold text-stone-800 mb-6">Time Clock</h1>
 
       {/* Clock In/Out Card */}
-      <div className="rounded-2xl bg-white border border-gray-200/60 shadow-sm p-6 mb-6">
+      <div className="rounded-2xl bg-white border border-stone-200/60 shadow-sm p-6 mb-6">
         <div className="text-center mb-6">
           <div className={`inline-flex items-center justify-center h-20 w-20 rounded-full mb-3 ${
             isClockedIn
               ? 'bg-emerald-50 text-emerald-600'
-              : 'bg-gray-100 text-gray-400'
+              : 'bg-stone-100 text-stone-400'
           }`}>
             <Clock size={36} />
           </div>
 
           {isClockedIn ? (
             <>
-              <p className="text-lg font-semibold text-gray-900">Currently Clocked In</p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-lg font-semibold text-stone-800">Currently Clocked In</p>
+              <p className="text-sm text-stone-500 mt-1">
                 Since {formatDateTime(status.data!.clock_in)}
               </p>
               <p className="text-2xl font-bold text-emerald-600 mt-2">
@@ -95,8 +95,8 @@ export default function InstructorTimeClockPage() {
             </>
           ) : (
             <>
-              <p className="text-lg font-semibold text-gray-900">Not Clocked In</p>
-              <p className="text-sm text-gray-400 mt-1">Tap the button below to start</p>
+              <p className="text-lg font-semibold text-stone-800">Not Clocked In</p>
+              <p className="text-sm text-stone-400 mt-1">Tap the button below to start</p>
             </>
           )}
         </div>
@@ -139,42 +139,42 @@ export default function InstructorTimeClockPage() {
       </div>
 
       {/* This Week Summary */}
-      <div className="rounded-2xl bg-white border border-gray-200/60 shadow-sm p-4 mb-6">
+      <div className="rounded-2xl bg-white border border-stone-200/60 shadow-sm p-4 mb-6">
         <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-gray-500">This Week</span>
-          <span className="text-lg font-bold text-gray-900">
+          <span className="text-sm font-medium text-stone-500">This Week</span>
+          <span className="text-lg font-bold text-stone-800">
             {(weekTotal / 60).toFixed(1)}h
           </span>
         </div>
       </div>
 
       {/* Recent Entries */}
-      <div className="rounded-2xl bg-white border border-gray-200/60 shadow-sm overflow-hidden">
-        <div className="px-4 py-3 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-700">Recent Entries</h2>
+      <div className="rounded-2xl bg-white border border-stone-200/60 shadow-sm overflow-hidden">
+        <div className="px-4 py-3 border-b border-stone-100">
+          <h2 className="text-sm font-semibold text-stone-700">Recent Entries</h2>
         </div>
         {(entries.data ?? []).length === 0 ? (
-          <div className="p-6 text-center text-sm text-gray-400">No entries yet.</div>
+          <div className="p-6 text-center text-sm text-stone-400">No entries yet.</div>
         ) : (
-          <div className="divide-y divide-gray-50">
+          <div className="divide-y divide-stone-50">
             {(entries.data ?? []).slice(0, 20).map(entry => (
               <div key={entry.id} className="px-4 py-3 flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-stone-800">
                     {formatDateTime(entry.clock_in)}
                   </p>
                   {entry.clock_out && (
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-stone-400">
                       to {formatDateTime(entry.clock_out)}
                     </p>
                   )}
                   {entry.notes && (
-                    <p className="text-xs text-gray-400 mt-0.5">{entry.notes}</p>
+                    <p className="text-xs text-stone-400 mt-0.5">{entry.notes}</p>
                   )}
                 </div>
                 <div className="text-right">
                   {entry.clock_out ? (
-                    <span className="text-sm font-semibold text-gray-700">
+                    <span className="text-sm font-semibold text-stone-700">
                       {formatDuration(entry.duration_minutes)}
                     </span>
                   ) : (

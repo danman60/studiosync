@@ -21,8 +21,8 @@ export default function ParentEventsPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Upcoming Events</h1>
-        <p className="mt-1 text-sm text-gray-500">Performances, recitals, and showcases from your studio.</p>
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Upcoming Events</h1>
+        <p className="mt-1 text-sm text-stone-500">Performances, recitals, and showcases from your studio.</p>
       </div>
 
       {isLoading && (
@@ -48,25 +48,25 @@ export default function ParentEventsPage() {
                 key={evt.id}
                 className={`glass-card rounded-2xl p-5 animate-fade-in-up stagger-${Math.min(idx + 1, 8)}`}
               >
-                <h3 className="text-base font-semibold text-gray-900">{evt.name}</h3>
+                <h3 className="text-base font-semibold text-stone-800">{evt.name}</h3>
                 {evt.description && (
-                  <p className="mt-1 line-clamp-2 text-sm text-gray-500">{evt.description}</p>
+                  <p className="mt-1 line-clamp-2 text-sm text-stone-500">{evt.description}</p>
                 )}
-                <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-gray-500">
+                <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-stone-500">
                   <span className="inline-flex items-center gap-1"><Calendar size={12} /> {evt.event_date}</span>
                   {evt.event_time && <span className="inline-flex items-center gap-1"><Clock size={12} /> {formatTime(evt.event_time)}</span>}
                   {evt.location && <span className="inline-flex items-center gap-1"><MapPin size={12} /> {evt.location}</span>}
                 </div>
-                <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
-                  <span className="text-sm font-semibold text-gray-900">{formatCents(evt.ticket_price)}</span>
+                <div className="mt-3 flex items-center justify-between border-t border-stone-100 pt-3">
+                  <span className="text-sm font-semibold text-stone-800">{formatCents(evt.ticket_price)}</span>
                   {soldOut ? (
-                    <span className="rounded-full bg-red-500/15 border border-red-500/25 px-3 py-1 text-[11px] font-medium text-red-600">Sold Out</span>
+                    <span className="rounded-full bg-red-500/15 border border-red-500/25 px-3 py-1 text-xs font-medium text-red-600">Sold Out</span>
                   ) : (
                     <div className="flex items-center gap-2">
                       {available !== null && (
-                        <span className="text-xs text-gray-400">{available} left</span>
+                        <span className="text-xs text-stone-400">{available} left</span>
                       )}
-                      <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 text-[11px] font-medium text-indigo-600">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 border border-primary/20 px-3 py-1 text-xs font-medium text-primary">
                         <Ticket size={12} /> Available
                       </span>
                     </div>
@@ -80,11 +80,11 @@ export default function ParentEventsPage() {
 
       {!isLoading && (events ?? []).length === 0 && (
         <div className="empty-state">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
-            <Calendar size={24} className="text-indigo-400" />
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50">
+            <Calendar size={24} className="text-primary-light" />
           </div>
-          <p className="text-sm font-medium text-gray-600">No upcoming events</p>
-          <p className="mt-1 text-xs text-gray-400">Check back later for performances and recitals.</p>
+          <p className="text-sm font-medium text-stone-600">No upcoming events</p>
+          <p className="mt-1 text-xs text-stone-400">Check back later for performances and recitals.</p>
         </div>
       )}
     </div>

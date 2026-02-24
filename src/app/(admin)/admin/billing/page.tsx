@@ -21,13 +21,13 @@ import {
 } from 'lucide-react';
 
 const STATUS_BADGE: Record<string, string> = {
-  draft: 'bg-gray-500/15 text-gray-600 border border-gray-500/20',
+  draft: 'bg-stone-500/15 text-stone-600 border border-stone-500/20',
   sent: 'bg-blue-500/15 text-blue-600 border border-blue-500/25',
   paid: 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25',
   partial: 'bg-amber-500/15 text-amber-600 border border-amber-500/25',
   overdue: 'bg-red-500/15 text-red-600 border border-red-500/25',
-  void: 'bg-gray-500/15 text-gray-400 border border-gray-500/20',
-  cancelled: 'bg-gray-500/15 text-gray-400 border border-gray-500/20',
+  void: 'bg-stone-500/15 text-stone-400 border border-stone-500/20',
+  cancelled: 'bg-stone-500/15 text-stone-400 border border-stone-500/20',
   active: 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25',
   past_due: 'bg-red-500/15 text-red-600 border border-red-500/25',
   paused: 'bg-amber-500/15 text-amber-600 border border-amber-500/25',
@@ -47,8 +47,8 @@ export default function BillingPage() {
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Billing</h1>
-          <p className="mt-1 text-sm text-gray-500">Invoices and recurring tuition plans.</p>
+          <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Billing</h1>
+          <p className="mt-1 text-sm text-stone-500">Invoices and recurring tuition plans.</p>
         </div>
         {tab === 'invoices' && view === 'list' && (
           <button
@@ -62,11 +62,11 @@ export default function BillingPage() {
 
       {/* Tabs */}
       {view === 'list' && (
-        <div className="mb-6 flex items-center gap-1 rounded-xl bg-gray-100 p-1 w-fit">
+        <div className="mb-6 flex items-center gap-1 rounded-xl bg-stone-100 p-1 w-fit">
           <button
             onClick={() => setTab('invoices')}
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
-              tab === 'invoices' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              tab === 'invoices' ? 'bg-white text-stone-800 shadow-sm' : 'text-stone-500 hover:text-stone-700'
             }`}
           >
             <FileText size={14} className="mr-1.5 inline" /> Invoices
@@ -74,7 +74,7 @@ export default function BillingPage() {
           <button
             onClick={() => setTab('tuition')}
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
-              tab === 'tuition' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              tab === 'tuition' ? 'bg-white text-stone-800 shadow-sm' : 'text-stone-500 hover:text-stone-700'
             }`}
           >
             <RefreshCw size={14} className="mr-1.5 inline" /> Auto-Pay Plans
@@ -160,20 +160,20 @@ function TuitionPlansSection() {
     });
   };
 
-  const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
+  const inputClass = 'mt-1 w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-800 transition-shadow input-glow';
 
   return (
     <>
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
-        <div className="glass-card rounded-2xl bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 p-6 animate-fade-in-up stagger-1">
+        <div className="glass-card rounded-2xl bg-primary-50 p-6 animate-fade-in-up stagger-1">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-100 text-primary">
               <RefreshCw size={20} />
             </div>
             <div>
               <p className="stat-number">{stats.data?.activeCount ?? '—'}</p>
-              <p className="text-xs text-gray-500">Active Plans</p>
+              <p className="text-xs text-stone-500">Active Plans</p>
             </div>
           </div>
         </div>
@@ -184,7 +184,7 @@ function TuitionPlansSection() {
             </div>
             <div>
               <p className="stat-number">{stats.data ? formatCents(stats.data.monthlyRecurring) : '—'}</p>
-              <p className="text-xs text-gray-500">Monthly Recurring</p>
+              <p className="text-xs text-stone-500">Monthly Recurring</p>
             </div>
           </div>
         </div>
@@ -195,7 +195,7 @@ function TuitionPlansSection() {
             </div>
             <div>
               <p className="stat-number">{stats.data?.pastDueCount ?? '—'}</p>
-              <p className="text-xs text-gray-500">Past Due</p>
+              <p className="text-xs text-stone-500">Past Due</p>
             </div>
           </div>
         </div>
@@ -216,7 +216,7 @@ function TuitionPlansSection() {
           <h3 className="section-heading text-sm mb-4"><RefreshCw size={14} /> Create Auto-Pay Plan</h3>
           <form onSubmit={handleCreate} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Family *</label>
+              <label className="block text-sm font-medium text-stone-700">Family *</label>
               <select
                 value={form.family_id}
                 onChange={(e) => setForm((p) => ({ ...p, family_id: e.target.value }))}
@@ -232,7 +232,7 @@ function TuitionPlansSection() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Plan Name *</label>
+              <label className="block text-sm font-medium text-stone-700">Plan Name *</label>
               <input
                 value={form.name}
                 onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
@@ -242,7 +242,7 @@ function TuitionPlansSection() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Description</label>
+              <label className="block text-sm font-medium text-stone-700">Description</label>
               <input
                 value={form.description}
                 onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
@@ -252,7 +252,7 @@ function TuitionPlansSection() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Amount ($) *</label>
+                <label className="block text-sm font-medium text-stone-700">Amount ($) *</label>
                 <input
                   type="number"
                   step="0.01"
@@ -265,7 +265,7 @@ function TuitionPlansSection() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Billing Interval</label>
+                <label className="block text-sm font-medium text-stone-700">Billing Interval</label>
                 <select
                   value={form.interval}
                   onChange={(e) => setForm((p) => ({ ...p, interval: e.target.value as 'month' | 'year' }))}
@@ -287,7 +287,7 @@ function TuitionPlansSection() {
               <button
                 type="button"
                 onClick={() => setShowCreate(false)}
-                className="inline-flex h-11 items-center rounded-xl px-4 text-sm font-medium text-gray-500 hover:text-gray-700"
+                className="inline-flex h-11 items-center rounded-xl px-4 text-sm font-medium text-stone-500 hover:text-stone-700"
               >
                 Cancel
               </button>
@@ -302,15 +302,15 @@ function TuitionPlansSection() {
       {/* Plans Table */}
       <div className="glass-card-static overflow-hidden rounded-2xl">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-100">
+          <table className="min-w-full divide-y divide-stone-100">
             <thead>
-              <tr className="bg-gray-50/60">
+              <tr className="bg-stone-50/60">
                 {['Plan', 'Family', 'Amount', 'Interval', 'Status', 'Next Charge', ''].map((h) => (
                   <th key={h} className="table-header">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-stone-50">
               {plans.isLoading && [1, 2, 3].map((i) => (
                 <tr key={i}>
                   {[1, 2, 3, 4, 5, 6, 7].map((j) => (
@@ -321,9 +321,9 @@ function TuitionPlansSection() {
               {plans.data?.length === 0 && (
                 <tr>
                   <td colSpan={7} className="table-cell text-center py-14">
-                    <RefreshCw size={32} className="mx-auto text-gray-300" />
-                    <p className="mt-3 text-sm text-gray-400">No tuition plans yet</p>
-                    <p className="text-xs text-gray-400">Create a plan to start auto-billing families.</p>
+                    <RefreshCw size={32} className="mx-auto text-stone-300" />
+                    <p className="mt-3 text-sm text-stone-400">No tuition plans yet</p>
+                    <p className="text-xs text-stone-400">Create a plan to start auto-billing families.</p>
                   </td>
                 </tr>
               )}
@@ -332,16 +332,16 @@ function TuitionPlansSection() {
                 return (
                   <tr key={plan.id} className="table-row-hover">
                     <td className="table-cell">
-                      <p className="font-medium text-gray-900">{plan.name}</p>
-                      {plan.description && <p className="text-xs text-gray-400">{plan.description}</p>}
+                      <p className="font-medium text-stone-800">{plan.name}</p>
+                      {plan.description && <p className="text-xs text-stone-400">{plan.description}</p>}
                     </td>
-                    <td className="table-cell text-gray-600">
+                    <td className="table-cell text-stone-600">
                       {fam ? `${fam.parent_first_name} ${fam.parent_last_name}` : '—'}
                     </td>
-                    <td className="table-cell font-medium text-gray-900">{formatCents(plan.amount)}</td>
-                    <td className="table-cell text-gray-600 capitalize">{plan.interval}ly</td>
+                    <td className="table-cell font-medium text-stone-800">{formatCents(plan.amount)}</td>
+                    <td className="table-cell text-stone-600 capitalize">{plan.interval}ly</td>
                     <td className="table-cell">
-                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_BADGE[plan.status] ?? ''}`}>
+                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[plan.status] ?? ''}`}>
                         {plan.status.replace('_', ' ')}
                       </span>
                       {plan.cancel_at_period_end && (
@@ -350,7 +350,7 @@ function TuitionPlansSection() {
                         </span>
                       )}
                     </td>
-                    <td className="table-cell text-gray-600 text-xs">
+                    <td className="table-cell text-stone-600 text-xs">
                       {plan.current_period_end
                         ? new Date(plan.current_period_end).toLocaleDateString()
                         : '—'}
@@ -492,14 +492,14 @@ function InvoiceList({
 
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
-        <div className="glass-card rounded-2xl bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 p-6 animate-fade-in-up stagger-1">
+        <div className="glass-card rounded-2xl bg-primary-50 p-6 animate-fade-in-up stagger-1">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-100 text-primary">
               <FileText size={20} />
             </div>
             <div>
               <p className="stat-number">{stats.data?.totalInvoices ?? '—'}</p>
-              <p className="text-xs text-gray-500">Total Invoices</p>
+              <p className="text-xs text-stone-500">Total Invoices</p>
             </div>
           </div>
         </div>
@@ -510,7 +510,7 @@ function InvoiceList({
             </div>
             <div>
               <p className="stat-number">{stats.data ? formatCents(stats.data.outstanding) : '—'}</p>
-              <p className="text-xs text-gray-500">Outstanding</p>
+              <p className="text-xs text-stone-500">Outstanding</p>
             </div>
           </div>
         </div>
@@ -521,7 +521,7 @@ function InvoiceList({
             </div>
             <div>
               <p className="stat-number">{stats.data ? formatCents(stats.data.collected) : '—'}</p>
-              <p className="text-xs text-gray-500">Collected</p>
+              <p className="text-xs text-stone-500">Collected</p>
             </div>
           </div>
         </div>
@@ -543,15 +543,15 @@ function InvoiceList({
       {/* Table */}
       <div className="glass-card-static overflow-hidden rounded-2xl">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-100">
+          <table className="min-w-full divide-y divide-stone-100">
             <thead>
-              <tr className="bg-gray-50/60">
+              <tr className="bg-stone-50/60">
                 {['Invoice #', 'Family', 'Status', 'Due Date', 'Total', 'Paid', ''].map((h) => (
                   <th key={h} className="table-header">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-stone-50">
               {invoices.isLoading && [1, 2, 3].map((i) => (
                 <tr key={i}>
                   {[1, 2, 3, 4, 5, 6, 7].map((j) => (
@@ -562,8 +562,8 @@ function InvoiceList({
               {invoices.data?.length === 0 && (
                 <tr>
                   <td colSpan={7} className="table-cell text-center py-14">
-                    <FileText size={32} className="mx-auto text-gray-300" />
-                    <p className="mt-3 text-sm text-gray-400">No invoices yet</p>
+                    <FileText size={32} className="mx-auto text-stone-300" />
+                    <p className="mt-3 text-sm text-stone-400">No invoices yet</p>
                   </td>
                 </tr>
               )}
@@ -571,22 +571,22 @@ function InvoiceList({
                 const fam = inv.families as unknown as { parent_first_name: string; parent_last_name: string } | null;
                 return (
                   <tr key={inv.id} className="table-row-hover">
-                    <td className="table-cell font-medium text-indigo-600">{inv.invoice_number}</td>
-                    <td className="table-cell text-gray-600">
+                    <td className="table-cell font-medium text-primary">{inv.invoice_number}</td>
+                    <td className="table-cell text-stone-600">
                       {fam ? `${fam.parent_first_name} ${fam.parent_last_name}` : '—'}
                     </td>
                     <td className="table-cell">
-                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_BADGE[inv.status] ?? ''}`}>
+                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[inv.status] ?? ''}`}>
                         {inv.status}
                       </span>
                     </td>
-                    <td className="table-cell text-gray-600">{inv.due_date}</td>
-                    <td className="table-cell font-medium text-gray-900">{formatCents(inv.total)}</td>
-                    <td className="table-cell text-gray-600">{formatCents(inv.amount_paid)}</td>
+                    <td className="table-cell text-stone-600">{inv.due_date}</td>
+                    <td className="table-cell font-medium text-stone-800">{formatCents(inv.total)}</td>
+                    <td className="table-cell text-stone-600">{formatCents(inv.amount_paid)}</td>
                     <td className="table-cell text-right">
                       <button
                         onClick={() => onView(inv.id)}
-                        className="inline-flex h-9 items-center gap-1 rounded-lg px-3 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-50"
+                        className="inline-flex h-9 items-center gap-1 rounded-lg px-3 text-xs font-medium text-primary transition-colors hover:bg-primary-50"
                       >
                         <Eye size={14} /> View
                       </button>
@@ -621,7 +621,7 @@ function CreateInvoice({
   const [taxRate, setTaxRate] = useState('0');
   const [notes, setNotes] = useState('');
 
-  const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
+  const inputClass = 'mt-1 w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-800 transition-shadow input-glow';
 
   const create = trpc.invoice.create.useMutation({
     onSuccess: (data) => {
@@ -644,7 +644,7 @@ function CreateInvoice({
 
   return (
     <div>
-      <button onClick={onBack} className="mb-4 inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700">
+      <button onClick={onBack} className="mb-4 inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm text-stone-500 transition-colors hover:bg-stone-100 hover:text-stone-700">
         <ChevronLeft size={16} /> Back to Invoices
       </button>
 
@@ -652,7 +652,7 @@ function CreateInvoice({
         <h2 className="section-heading text-base mb-4"><FileText size={16} /> Create Invoice</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Family *</label>
+            <label className="block text-sm font-medium text-stone-700">Family *</label>
             <select
               value={familyId}
               onChange={(e) => setFamilyId(e.target.value)}
@@ -668,7 +668,7 @@ function CreateInvoice({
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Due Date *</label>
+            <label className="block text-sm font-medium text-stone-700">Due Date *</label>
             <input
               type="date"
               value={dueDate}
@@ -678,7 +678,7 @@ function CreateInvoice({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Tax Rate (%)</label>
+            <label className="block text-sm font-medium text-stone-700">Tax Rate (%)</label>
             <input
               type="number"
               step="0.01"
@@ -690,7 +690,7 @@ function CreateInvoice({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Notes (optional)</label>
+            <label className="block text-sm font-medium text-stone-700">Notes (optional)</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -802,7 +802,7 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
 
   return (
     <div>
-      <button onClick={onBack} className="mb-4 inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700">
+      <button onClick={onBack} className="mb-4 inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm text-stone-500 transition-colors hover:bg-stone-100 hover:text-stone-700">
         <ChevronLeft size={16} /> Back to Invoices
       </button>
 
@@ -810,17 +810,17 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
       <div className="glass-card rounded-2xl p-6 mb-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">{inv.invoice_number}</h2>
-            <p className="text-sm text-gray-500">
+            <h2 className="text-xl font-bold text-stone-800">{inv.invoice_number}</h2>
+            <p className="text-sm text-stone-500">
               {fam ? `${fam.parent_first_name} ${fam.parent_last_name} (${fam.email})` : '—'}
             </p>
-            <div className="mt-2 flex items-center gap-3 text-sm text-gray-600">
+            <div className="mt-2 flex items-center gap-3 text-sm text-stone-600">
               <span>Issued: {inv.issue_date}</span>
               <span>Due: {inv.due_date}</span>
             </div>
           </div>
           <div className="text-right">
-            <span className={`inline-block rounded-full px-3 py-1 text-[11px] font-medium ${STATUS_BADGE[inv.status] ?? ''}`}>
+            <span className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${STATUS_BADGE[inv.status] ?? ''}`}>
               {inv.status}
             </span>
             <p className="mt-2 stat-number">{formatCents(inv.total)}</p>
@@ -857,7 +857,7 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
             <button
               onClick={() => voidInv.mutate({ id })}
               disabled={voidInv.isPending}
-              className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-gray-200 px-4 text-xs font-medium text-gray-700 hover:bg-gray-300 disabled:opacity-50"
+              className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-stone-200 px-4 text-xs font-medium text-stone-700 hover:bg-stone-300 disabled:opacity-50"
             >
               <XCircle size={14} /> {voidInv.isPending ? 'Voiding...' : 'Void'}
             </button>
@@ -893,10 +893,10 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
               placeholder={`Full refund: ${formatCents(inv.amount_paid)}`}
               value={refundAmount}
               onChange={(e) => setRefundAmount(e.target.value)}
-              className="h-9 w-48 rounded-xl border border-gray-200 bg-white px-3 text-sm input-glow"
+              className="h-9 w-48 rounded-xl border border-stone-200 bg-white px-3 text-sm input-glow"
             />
-            <span className="text-xs text-gray-400">Leave empty for full refund</span>
-            <button onClick={() => { setShowRefundInput(false); setRefundAmount(''); }} className="text-xs text-gray-500 hover:text-gray-700">Cancel</button>
+            <span className="text-xs text-stone-400">Leave empty for full refund</span>
+            <button onClick={() => { setShowRefundInput(false); setRefundAmount(''); }} className="text-xs text-stone-500 hover:text-stone-700">Cancel</button>
           </div>
         )}
         {(sendInv.isError || markPaid.isError || voidInv.isError || refundInv.isError) && (
@@ -908,26 +908,26 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
 
       {/* Line Items */}
       <div className="glass-card-static overflow-hidden rounded-2xl mb-6">
-        <table className="min-w-full divide-y divide-gray-100">
+        <table className="min-w-full divide-y divide-stone-100">
           <thead>
-            <tr className="bg-gray-50/60">
+            <tr className="bg-stone-50/60">
               {['Description', 'Qty', 'Unit Price', 'Total', ''].map((h) => (
                 <th key={h} className="table-header">{h}</th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-stone-50">
             {items.length === 0 && (
               <tr>
-                <td colSpan={5} className="table-cell text-center py-8 text-gray-400">No line items yet</td>
+                <td colSpan={5} className="table-cell text-center py-8 text-stone-400">No line items yet</td>
               </tr>
             )}
             {items.map((item) => (
               <tr key={item.id} className="table-row-hover">
-                <td className="table-cell text-gray-900">{item.description}</td>
-                <td className="table-cell text-gray-600">{item.quantity}</td>
-                <td className="table-cell text-gray-600">{formatCents(item.unit_price)}</td>
-                <td className="table-cell font-medium text-gray-900">{formatCents(item.total)}</td>
+                <td className="table-cell text-stone-800">{item.description}</td>
+                <td className="table-cell text-stone-600">{item.quantity}</td>
+                <td className="table-cell text-stone-600">{formatCents(item.unit_price)}</td>
+                <td className="table-cell font-medium text-stone-800">{formatCents(item.total)}</td>
                 <td className="table-cell">
                   {canEdit && (
                     <button
@@ -941,21 +941,21 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
               </tr>
             ))}
             {/* Totals */}
-            <tr className="bg-gray-50/40">
-              <td colSpan={3} className="table-cell text-right text-xs font-medium text-gray-500">Subtotal</td>
-              <td className="table-cell font-medium text-gray-900">{formatCents(inv.subtotal)}</td>
+            <tr className="bg-stone-50/40">
+              <td colSpan={3} className="table-cell text-right text-xs font-medium text-stone-500">Subtotal</td>
+              <td className="table-cell font-medium text-stone-800">{formatCents(inv.subtotal)}</td>
               <td />
             </tr>
             {inv.tax_rate > 0 && (
-              <tr className="bg-gray-50/40">
-                <td colSpan={3} className="table-cell text-right text-xs font-medium text-gray-500">Tax ({(inv.tax_rate * 100).toFixed(2)}%)</td>
-                <td className="table-cell font-medium text-gray-900">{formatCents(inv.tax_amount)}</td>
+              <tr className="bg-stone-50/40">
+                <td colSpan={3} className="table-cell text-right text-xs font-medium text-stone-500">Tax ({(inv.tax_rate * 100).toFixed(2)}%)</td>
+                <td className="table-cell font-medium text-stone-800">{formatCents(inv.tax_amount)}</td>
                 <td />
               </tr>
             )}
-            <tr className="bg-gray-50/60">
-              <td colSpan={3} className="table-cell text-right text-sm font-semibold text-gray-900">Total</td>
-              <td className="table-cell font-bold text-gray-900">{formatCents(inv.total)}</td>
+            <tr className="bg-stone-50/60">
+              <td colSpan={3} className="table-cell text-right text-sm font-semibold text-stone-800">Total</td>
+              <td className="table-cell font-bold text-stone-800">{formatCents(inv.total)}</td>
               <td />
             </tr>
           </tbody>
@@ -968,27 +968,27 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
           <h3 className="section-heading text-sm mb-3"><Plus size={14} /> Add Line Item</h3>
           <form onSubmit={handleAddItem} className="flex flex-wrap items-end gap-3">
             <div className="flex-1 min-w-[200px]">
-              <label className="block text-xs text-gray-500 mb-1">Description</label>
+              <label className="block text-xs text-stone-500 mb-1">Description</label>
               <input
                 value={newItem.description}
                 onChange={(e) => setNewItem((p) => ({ ...p, description: e.target.value }))}
                 required
-                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm transition-shadow input-glow"
+                className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm transition-shadow input-glow"
                 placeholder="e.g. Monthly tuition - Ballet"
               />
             </div>
             <div className="w-20">
-              <label className="block text-xs text-gray-500 mb-1">Qty</label>
+              <label className="block text-xs text-stone-500 mb-1">Qty</label>
               <input
                 type="number"
                 min="1"
                 value={newItem.quantity}
                 onChange={(e) => setNewItem((p) => ({ ...p, quantity: e.target.value }))}
-                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm transition-shadow input-glow"
+                className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm transition-shadow input-glow"
               />
             </div>
             <div className="w-32">
-              <label className="block text-xs text-gray-500 mb-1">Price ($)</label>
+              <label className="block text-xs text-stone-500 mb-1">Price ($)</label>
               <input
                 type="number"
                 step="0.01"
@@ -997,13 +997,13 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
                 onChange={(e) => setNewItem((p) => ({ ...p, unit_price: e.target.value }))}
                 required
                 placeholder="0.00"
-                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm transition-shadow input-glow"
+                className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm transition-shadow input-glow"
               />
             </div>
             <button
               type="submit"
               disabled={addItem.isPending}
-              className="inline-flex h-10 items-center gap-1 rounded-xl bg-indigo-600 px-4 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+              className="inline-flex h-10 items-center gap-1 rounded-xl bg-primary px-4 text-xs font-medium text-white hover:bg-primary-dark disabled:opacity-50"
             >
               <Plus size={14} /> {addItem.isPending ? 'Adding...' : 'Add'}
             </button>
@@ -1016,7 +1016,7 @@ function InvoiceDetail({ id, onBack }: { id: string; onBack: () => void }) {
       {inv.notes && (
         <div className="mt-4 glass-card-static rounded-2xl p-5">
           <h3 className="section-heading text-sm mb-2"><FileText size={14} /> Notes</h3>
-          <p className="text-sm text-gray-600 whitespace-pre-wrap">{inv.notes}</p>
+          <p className="text-sm text-stone-600 whitespace-pre-wrap">{inv.notes}</p>
         </div>
       )}
     </div>

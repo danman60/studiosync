@@ -9,10 +9,10 @@ import {
 } from 'lucide-react';
 
 const TYPE_ICON: Record<string, React.ReactNode> = {
-  image: <Image size={18} className="text-indigo-500" />,
-  video: <Video size={18} className="text-purple-500" />,
+  image: <Image size={18} className="text-primary" />,
+  video: <Video size={18} className="text-primary" />,
   audio: <Music size={18} className="text-amber-500" />,
-  document: <FileText size={18} className="text-gray-500" />,
+  document: <FileText size={18} className="text-stone-500" />,
 };
 
 export default function ParentMediaPage() {
@@ -21,8 +21,8 @@ export default function ParentMediaPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Class Media</h1>
-        <p className="mt-1 text-sm text-gray-500">Photos, videos, and files shared by your classes.</p>
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Class Media</h1>
+        <p className="mt-1 text-sm text-stone-500">Photos, videos, and files shared by your classes.</p>
       </div>
 
       {/* Loading skeleton */}
@@ -50,7 +50,7 @@ export default function ParentMediaPage() {
               className={`glass-card group rounded-2xl p-4 animate-fade-in-up stagger-${Math.min(idx + 1, 6)}`}
             >
               {/* Preview */}
-              <div className="mb-3 flex h-36 items-center justify-center rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+              <div className="mb-3 flex h-36 items-center justify-center rounded-xl bg-gradient-to-br from-stone-50 to-stone-100 overflow-hidden">
                 {item.type === 'image' && item.url ? (
                   <img
                     src={item.url}
@@ -58,7 +58,7 @@ export default function ParentMediaPage() {
                     className="h-full w-full object-cover rounded-xl transition-transform duration-300 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="flex flex-col items-center gap-2 text-gray-400">
+                  <div className="flex flex-col items-center gap-2 text-stone-400">
                     {TYPE_ICON[item.type] ?? <FileText size={24} />}
                     <span className="text-xs">{item.type}</span>
                   </div>
@@ -66,19 +66,19 @@ export default function ParentMediaPage() {
               </div>
 
               {/* Info */}
-              <p className="truncate text-sm font-medium text-gray-900">{item.title ?? item.file_name}</p>
+              <p className="truncate text-sm font-medium text-stone-800">{item.title ?? item.file_name}</p>
               {item.classes && (
                 <div className="mt-1.5 flex items-center gap-2">
                   <span
                     className="inline-block h-2 w-2 rounded-full"
-                    style={{ backgroundColor: (item.classes as { class_types: { color: string } }).class_types?.color ?? '#6366f1' }}
+                    style={{ backgroundColor: (item.classes as { class_types: { color: string } }).class_types?.color ?? '#C2785C' }}
                   />
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-stone-500">
                     {(item.classes as { name: string }).name}
                   </span>
                 </div>
               )}
-              <p className="mt-1 text-xs text-gray-400">
+              <p className="mt-1 text-xs text-stone-400">
                 {new Date(item.created_at).toLocaleDateString()}
               </p>
             </a>
@@ -89,11 +89,11 @@ export default function ParentMediaPage() {
       {/* Empty state */}
       {!isLoading && media && media.length === 0 && (
         <div className="empty-state">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
-            <Image size={24} className="text-indigo-400" />
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50">
+            <Image size={24} className="text-primary-light" />
           </div>
-          <p className="text-sm font-medium text-gray-600">No media shared yet</p>
-          <p className="mt-1 text-xs text-gray-400">When your instructors share photos or videos, they will appear here.</p>
+          <p className="text-sm font-medium text-stone-600">No media shared yet</p>
+          <p className="mt-1 text-xs text-stone-400">When your instructors share photos or videos, they will appear here.</p>
         </div>
       )}
     </div>

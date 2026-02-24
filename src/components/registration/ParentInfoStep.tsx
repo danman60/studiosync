@@ -10,7 +10,7 @@ interface Props {
   onExistingFamily: (familyId: string | null) => void;
 }
 
-const inputClass = 'mt-1 block w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
+const inputClass = 'mt-1 block w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-800 transition-shadow input-glow';
 
 export function ParentInfoStep({ form, onExistingFamily }: Props) {
   const {
@@ -61,8 +61,8 @@ export function ParentInfoStep({ form, onExistingFamily }: Props) {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-lg font-semibold text-gray-900">Parent / Guardian Information</h2>
-        <p className="mt-1 text-sm text-gray-500">
+        <h2 className="text-lg font-semibold text-stone-800">Parent / Guardian Information</h2>
+        <p className="mt-1 text-sm text-stone-500">
           We&apos;ll use this to create your family account.
         </p>
       </div>
@@ -84,7 +84,7 @@ export function ParentInfoStep({ form, onExistingFamily }: Props) {
       )}
 
       <div>
-        <label htmlFor="parent.email" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="parent.email" className="block text-sm font-medium text-stone-700">
           Email <span className="text-red-500">*</span>
         </label>
         <input
@@ -101,7 +101,7 @@ export function ParentInfoStep({ form, onExistingFamily }: Props) {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="parent.firstName" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="parent.firstName" className="block text-sm font-medium text-stone-700">
             First Name <span className="text-red-500">*</span>
           </label>
           <input
@@ -116,7 +116,7 @@ export function ParentInfoStep({ form, onExistingFamily }: Props) {
         </div>
 
         <div>
-          <label htmlFor="parent.lastName" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="parent.lastName" className="block text-sm font-medium text-stone-700">
             Last Name <span className="text-red-500">*</span>
           </label>
           <input
@@ -132,8 +132,8 @@ export function ParentInfoStep({ form, onExistingFamily }: Props) {
       </div>
 
       <div>
-        <label htmlFor="parent.phone" className="block text-sm font-medium text-gray-700">
-          Phone <span className="text-gray-400">(optional)</span>
+        <label htmlFor="parent.phone" className="block text-sm font-medium text-stone-700">
+          Phone <span className="text-stone-400">(optional)</span>
         </label>
         <input
           id="parent.phone"
@@ -145,8 +145,8 @@ export function ParentInfoStep({ form, onExistingFamily }: Props) {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="parent.emergencyContactName" className="block text-sm font-medium text-gray-700">
-            Emergency Contact Name <span className="text-gray-400">(optional)</span>
+          <label htmlFor="parent.emergencyContactName" className="block text-sm font-medium text-stone-700">
+            Emergency Contact Name <span className="text-stone-400">(optional)</span>
           </label>
           <input
             id="parent.emergencyContactName"
@@ -157,8 +157,8 @@ export function ParentInfoStep({ form, onExistingFamily }: Props) {
         </div>
 
         <div>
-          <label htmlFor="parent.emergencyContactPhone" className="block text-sm font-medium text-gray-700">
-            Emergency Contact Phone <span className="text-gray-400">(optional)</span>
+          <label htmlFor="parent.emergencyContactPhone" className="block text-sm font-medium text-stone-700">
+            Emergency Contact Phone <span className="text-stone-400">(optional)</span>
           </label>
           <input
             id="parent.emergencyContactPhone"

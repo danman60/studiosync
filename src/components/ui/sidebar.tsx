@@ -111,16 +111,16 @@ export function Sidebar({
       {/* Mobile toggle */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="fixed top-4 left-4 z-50 flex h-11 w-11 items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm shadow-lg shadow-black/5 border border-white/60 lg:hidden"
+        className="fixed top-4 left-4 z-50 flex h-11 w-11 items-center justify-center rounded-xl bg-white shadow-sm border border-stone-200/60 lg:hidden"
         aria-label="Open menu"
       >
-        <Menu size={20} className="text-gray-700" />
+        <Menu size={20} className="text-stone-600" />
       </button>
 
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px] lg:hidden animate-fade-in"
+          className="fixed inset-0 z-40 bg-black/15 lg:hidden animate-fade-in"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -128,26 +128,26 @@ export function Sidebar({
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed left-0 top-0 z-50 flex h-full flex-col border-r border-gray-200/60 bg-white/95 backdrop-blur-xl transition-all duration-200',
+          'fixed left-0 top-0 z-50 flex h-full flex-col border-r border-stone-200/60 bg-white transition-all duration-200',
           collapsed ? 'w-[4.5rem]' : 'w-64',
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         )}
       >
         {/* Header */}
-        <div className="flex h-16 items-center justify-between border-b border-gray-200/60 px-4">
+        <div className="flex h-16 items-center justify-between border-b border-stone-100 px-4">
           {!collapsed && (
             <div className="flex items-center gap-2.5 overflow-hidden">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 shadow-md shadow-indigo-500/20">
-                <Layers size={18} className="text-white" />
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-white">
+                <Layers size={18} />
               </div>
-              <span className="truncate text-[15px] font-bold text-gray-900">
+              <span className="truncate text-[15px] font-semibold text-stone-800">
                 {studioName ?? 'StudioSync'}
               </span>
             </div>
           )}
           {collapsed && (
-            <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 shadow-md shadow-indigo-500/20">
-              <Layers size={18} className="text-white" />
+            <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white">
+              <Layers size={18} />
             </div>
           )}
 
@@ -185,21 +185,21 @@ export function Sidebar({
                     href={item.href}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
-                      'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all duration-150',
+                      'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-all duration-150',
                       isActive
-                        ? 'bg-gradient-to-r from-indigo-50/80 to-purple-50/60 text-indigo-700'
-                        : 'text-gray-500 hover:bg-gray-50/80 hover:text-gray-800',
+                        ? 'bg-primary-50 text-primary-dark'
+                        : 'text-stone-500 hover:bg-stone-50 hover:text-stone-700',
                       collapsed && 'justify-center px-2'
                     )}
                     title={collapsed ? item.label : undefined}
                   >
                     {/* Active indicator bar */}
                     {isActive && (
-                      <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-[3px] rounded-full bg-gradient-to-b from-indigo-500 to-purple-500" />
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-[3px] rounded-full bg-primary" />
                     )}
                     <span className={cn(
                       'shrink-0 transition-colors',
-                      isActive ? 'text-indigo-600' : 'text-gray-400 group-hover:text-gray-600'
+                      isActive ? 'text-primary' : 'text-stone-400 group-hover:text-stone-500'
                     )}>
                       {item.icon}
                     </span>
@@ -212,9 +212,9 @@ export function Sidebar({
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-gray-200/60 px-4 py-3">
+        <div className="border-t border-stone-100 px-4 py-3">
           {!collapsed && (
-            <p className="text-[11px] text-gray-400 tracking-wide">
+            <p className="text-xs text-stone-400">
               Powered by StudioSync
             </p>
           )}

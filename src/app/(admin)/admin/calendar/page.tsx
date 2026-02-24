@@ -32,8 +32,8 @@ export default function CalendarPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Weekly Calendar</h1>
-        <p className="mt-1 text-sm text-gray-500">All classes organized by day and time.</p>
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Weekly Calendar</h1>
+        <p className="mt-1 text-sm text-stone-500">All classes organized by day and time.</p>
       </div>
 
       {isLoading && (
@@ -59,11 +59,11 @@ export default function CalendarPage() {
             return (
               <div key={dayIdx} className="glass-card-static rounded-2xl p-5">
                 <div className="mb-4 flex items-center gap-2">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500/10 to-purple-500/10 text-xs font-bold text-indigo-600">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-50 text-xs font-bold text-primary">
                     {SHORT_DAYS[dayIdx]}
                   </span>
-                  <h2 className="text-sm font-semibold text-gray-900">{dayName}</h2>
-                  <span className="ml-auto rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500">
+                  <h2 className="text-sm font-semibold text-stone-800">{dayName}</h2>
+                  <span className="ml-auto rounded-full bg-stone-100 px-2 py-0.5 text-xs font-medium text-stone-500">
                     {dayClasses.length}
                   </span>
                 </div>
@@ -72,16 +72,16 @@ export default function CalendarPage() {
                   {dayClasses.map((cls) => {
                     const classType = cls.class_types as { name: string; color: string } | null;
                     const instructor = cls.staff as { id: string; display_name: string } | null;
-                    const color = classType?.color ?? '#6366f1';
+                    const color = classType?.color ?? '#C2785C';
 
                     return (
                       <div
                         key={cls.id}
-                        className="group rounded-xl border border-gray-100 p-3 transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md hover:shadow-indigo-500/5"
+                        className="group rounded-xl border border-stone-100 p-3 transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/5"
                         style={{ borderLeftWidth: 3, borderLeftColor: color }}
                       >
-                        <p className="text-sm font-medium text-gray-900">{cls.name}</p>
-                        <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                        <p className="text-sm font-medium text-stone-800">{cls.name}</p>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-500">
                           <span className="inline-flex items-center gap-1">
                             <Clock size={12} />
                             {formatTime(cls.start_time)} - {formatTime(cls.end_time)}
@@ -98,7 +98,7 @@ export default function CalendarPage() {
                           </span>
                         </div>
                         {instructor && (
-                          <p className="mt-1 text-xs text-gray-400">{instructor.display_name}</p>
+                          <p className="mt-1 text-xs text-stone-400">{instructor.display_name}</p>
                         )}
                         {classType && (
                           <span
@@ -124,9 +124,9 @@ export default function CalendarPage() {
 
       {!isLoading && (classes ?? []).length === 0 && (
         <div className="empty-state">
-          <Calendar size={24} className="mb-3 text-indigo-400" />
-          <p className="text-sm font-medium text-gray-600">No classes scheduled</p>
-          <p className="mt-1 text-xs text-gray-400">Create classes to see them on the calendar.</p>
+          <Calendar size={24} className="mb-3 text-primary-light" />
+          <p className="text-sm font-medium text-stone-600">No classes scheduled</p>
+          <p className="mt-1 text-xs text-stone-400">Create classes to see them on the calendar.</p>
         </div>
       )}
     </div>

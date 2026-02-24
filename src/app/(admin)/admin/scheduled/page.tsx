@@ -30,7 +30,7 @@ const emptyForm: MessageForm = {
 const STATUS_BADGE: Record<string, string> = {
   scheduled: 'bg-blue-500/15 text-blue-600 border border-blue-500/25',
   sent: 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25',
-  cancelled: 'bg-gray-500/15 text-gray-500 border border-gray-500/25',
+  cancelled: 'bg-stone-500/15 text-stone-500 border border-stone-500/25',
   failed: 'bg-red-500/15 text-red-600 border border-red-500/25',
 };
 
@@ -105,8 +105,8 @@ export default function ScheduledMessagesPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Scheduled Messages</h1>
-          <p className="text-sm text-gray-500 mt-1">Schedule messages to be sent automatically</p>
+          <h1 className="text-2xl font-bold text-stone-800">Scheduled Messages</h1>
+          <p className="text-sm text-stone-500 mt-1">Schedule messages to be sent automatically</p>
         </div>
         <button
           onClick={() => { setEditId(null); setForm(emptyForm); setCreateOpen(true); }}
@@ -124,8 +124,8 @@ export default function ScheduledMessagesPage() {
             onClick={() => setStatusFilter(s)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               statusFilter === s
-                ? 'bg-indigo-100 text-indigo-700'
-                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                ? 'bg-primary-100 text-primary-dark'
+                : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
             }`}
           >
             {s || 'All'}
@@ -265,18 +265,18 @@ export default function ScheduledMessagesPage() {
       </Modal>
 
       {/* Messages List */}
-      <div className="rounded-2xl bg-white border border-gray-200/60 shadow-sm overflow-hidden">
+      <div className="rounded-2xl bg-white border border-stone-200/60 shadow-sm overflow-hidden">
         {messages.isLoading ? (
-          <div className="p-8 text-center text-gray-400">Loading...</div>
+          <div className="p-8 text-center text-stone-400">Loading...</div>
         ) : (messages.data ?? []).length === 0 ? (
           <div className="p-8 text-center">
-            <Send size={32} className="mx-auto text-gray-300 mb-2" />
-            <p className="text-gray-400 text-sm">No scheduled messages yet.</p>
+            <Send size={32} className="mx-auto text-stone-300 mb-2" />
+            <p className="text-stone-400 text-sm">No scheduled messages yet.</p>
           </div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-gray-50/50 text-left text-xs text-gray-500 uppercase tracking-wider">
+              <tr className="border-b bg-stone-50/50 text-left text-xs text-stone-500 uppercase tracking-wider">
                 <th className="px-4 py-3">Subject</th>
                 <th className="px-4 py-3">Channel</th>
                 <th className="px-4 py-3">Target</th>
@@ -290,18 +290,18 @@ export default function ScheduledMessagesPage() {
               {(messages.data ?? []).map(msg => {
                 const authorInfo = msg.staff as unknown as { display_name: string } | null;
                 return (
-                  <tr key={msg.id} className="border-b border-gray-50 hover:bg-gray-50/50">
+                  <tr key={msg.id} className="border-b border-stone-50 hover:bg-stone-50/50">
                     <td className="px-4 py-3">
-                      <div className="font-medium text-gray-900 truncate max-w-[200px]">{msg.subject}</div>
+                      <div className="font-medium text-stone-800 truncate max-w-[200px]">{msg.subject}</div>
                       {authorInfo && (
-                        <div className="text-xs text-gray-400">by {authorInfo.display_name}</div>
+                        <div className="text-xs text-stone-400">by {authorInfo.display_name}</div>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-gray-600 capitalize">{msg.channel}</td>
-                    <td className="px-4 py-3 text-gray-600 capitalize">
+                    <td className="px-4 py-3 text-stone-600 capitalize">{msg.channel}</td>
+                    <td className="px-4 py-3 text-stone-600 capitalize">
                       {msg.target_type === 'tag' ? `Tag: ${msg.target_tag}` : msg.target_type}
                     </td>
-                    <td className="px-4 py-3 text-gray-600">
+                    <td className="px-4 py-3 text-stone-600">
                       {new Date(msg.scheduled_at).toLocaleString('en-US', {
                         month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
                       })}
@@ -311,7 +311,7 @@ export default function ScheduledMessagesPage() {
                         {msg.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-600">{msg.recipient_count ?? '—'}</td>
+                    <td className="px-4 py-3 text-stone-600">{msg.recipient_count ?? '—'}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end gap-1">
                         {msg.status === 'scheduled' && (

@@ -38,13 +38,13 @@ export function ClassFilters({
     <div className="space-y-5">
       {/* Filter header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-stone-400">
           Filters
         </h2>
         {hasActiveFilters && (
           <button
             onClick={onClearAll}
-            className="flex h-7 items-center gap-1 rounded-lg px-2 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-50"
+            className="flex h-7 items-center gap-1 rounded-lg px-2 text-xs font-medium text-primary transition-colors hover:bg-primary-50"
           >
             <X size={12} />
             Clear all
@@ -54,7 +54,7 @@ export function ClassFilters({
 
       {/* Class Type */}
       <div>
-        <h3 className="mb-2.5 text-sm font-medium text-gray-700">Style</h3>
+        <h3 className="mb-2.5 text-sm font-medium text-stone-700">Style</h3>
         <div className="flex flex-wrap gap-2">
           {classTypes.map((type) => (
             <button
@@ -66,11 +66,11 @@ export function ClassFilters({
                 'h-8 rounded-full px-3 text-xs font-medium transition-all',
                 selectedTypeId === type.id
                   ? 'text-white shadow-sm'
-                  : 'border border-gray-200 bg-white text-gray-700 hover:border-indigo-200 hover:bg-indigo-50/50'
+                  : 'border border-stone-200 bg-white text-stone-700 hover:border-primary-200 hover:bg-primary-50/50'
               )}
               style={
                 selectedTypeId === type.id
-                  ? { backgroundColor: type.color ?? '#6366f1' }
+                  ? { backgroundColor: type.color ?? '#C2785C' }
                   : undefined
               }
             >
@@ -82,7 +82,7 @@ export function ClassFilters({
 
       {/* Level */}
       <div>
-        <h3 className="mb-2.5 text-sm font-medium text-gray-700">Level</h3>
+        <h3 className="mb-2.5 text-sm font-medium text-stone-700">Level</h3>
         <div className="flex flex-wrap gap-2">
           {levels.map((level) => (
             <button
@@ -93,8 +93,8 @@ export function ClassFilters({
               className={cn(
                 'h-8 rounded-full px-3 text-xs font-medium transition-all',
                 selectedLevelId === level.id
-                  ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'border border-gray-200 bg-white text-gray-700 hover:border-indigo-200 hover:bg-indigo-50/50'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'border border-stone-200 bg-white text-stone-700 hover:border-primary-200 hover:bg-primary-50/50'
               )}
             >
               {level.name}
@@ -105,7 +105,7 @@ export function ClassFilters({
 
       {/* Day of Week */}
       <div>
-        <h3 className="mb-2.5 text-sm font-medium text-gray-700">Day</h3>
+        <h3 className="mb-2.5 text-sm font-medium text-stone-700">Day</h3>
         <div className="flex flex-wrap gap-2">
           {DAYS_OF_WEEK.map((day, i) => (
             <button
@@ -114,8 +114,8 @@ export function ClassFilters({
               className={cn(
                 'h-8 rounded-full px-3 text-xs font-medium transition-all',
                 selectedDay === i
-                  ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'border border-gray-200 bg-white text-gray-700 hover:border-indigo-200 hover:bg-indigo-50/50'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'border border-stone-200 bg-white text-stone-700 hover:border-primary-200 hover:bg-primary-50/50'
               )}
             >
               {day.slice(0, 3)}

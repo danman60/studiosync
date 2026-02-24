@@ -54,14 +54,14 @@ export default function BulkEnrollmentImportPage() {
     <div>
       <Link
         href="/admin/enrollments"
-        className="mb-4 inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+        className="mb-4 inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm text-stone-500 transition-colors hover:bg-stone-100 hover:text-stone-700"
       >
         <ChevronLeft size={16} /> Back to Enrollments
       </Link>
 
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Bulk Enrollment Import</h1>
-        <p className="mt-1 text-sm text-gray-500">Add multiple students to a class at once.</p>
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Bulk Enrollment Import</h1>
+        <p className="mt-1 text-sm text-stone-500">Add multiple students to a class at once.</p>
       </div>
 
       {result && (
@@ -85,12 +85,12 @@ export default function BulkEnrollmentImportPage() {
       <form onSubmit={handleSubmit} className="glass-card-static rounded-2xl p-6 space-y-6">
         {/* Class Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Class *</label>
+          <label className="block text-sm font-medium text-stone-700 mb-1">Class *</label>
           <select
             value={classId}
             onChange={(e) => { setClassId(e.target.value); setResult(null); }}
             required
-            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow"
+            className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-800 transition-shadow input-glow"
           >
             <option value="">Select a class...</option>
             {(classes.data ?? []).map((c) => (
@@ -103,14 +103,14 @@ export default function BulkEnrollmentImportPage() {
 
         {/* Student Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Add Students</label>
+          <label className="block text-sm font-medium text-stone-700 mb-1">Add Students</label>
           <select
             onChange={(e) => {
               const opt = studentOptions.find((o) => o.studentId === e.target.value);
               if (opt) addPair(opt.studentId, opt.familyId);
               e.target.value = '';
             }}
-            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow"
+            className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-800 transition-shadow input-glow"
           >
             <option value="">Select a student to add...</option>
             {studentOptions
@@ -126,7 +126,7 @@ export default function BulkEnrollmentImportPage() {
         {/* Selected Students */}
         {pairs.length > 0 && (
           <div>
-            <p className="text-xs font-medium text-gray-500 mb-2">
+            <p className="text-xs font-medium text-stone-500 mb-2">
               {pairs.length} student{pairs.length !== 1 ? 's' : ''} selected
             </p>
             <div className="space-y-2">
@@ -135,9 +135,9 @@ export default function BulkEnrollmentImportPage() {
                 return (
                   <div
                     key={p.studentId}
-                    className="flex items-center justify-between rounded-xl bg-indigo-50/60 border border-indigo-100 px-4 py-2.5"
+                    className="flex items-center justify-between rounded-xl bg-primary-50/60 border border-primary-100 px-4 py-2.5"
                   >
-                    <span className="text-sm text-gray-700">{opt?.label ?? p.studentId}</span>
+                    <span className="text-sm text-stone-700">{opt?.label ?? p.studentId}</span>
                     <button
                       type="button"
                       onClick={() => removePair(p.studentId)}

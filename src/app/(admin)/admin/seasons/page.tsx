@@ -90,22 +90,22 @@ export default function SeasonsPage() {
   }
 
   const isSaving = createMutation.isPending || updateMutation.isPending;
-  const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
+  const inputClass = 'mt-1 w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-800 transition-shadow input-glow';
 
   return (
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Seasons</h1>
-          <p className="mt-1 text-sm text-gray-500">Manage registration seasons and terms</p>
+          <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Seasons</h1>
+          <p className="mt-1 text-sm text-stone-500">Manage registration seasons and terms</p>
         </div>
         <div className="flex items-center gap-3">
-          <label className="flex items-center gap-2 text-sm text-gray-500">
+          <label className="flex items-center gap-2 text-sm text-stone-500">
             <input
               type="checkbox"
               checked={showArchived}
               onChange={(e) => setShowArchived(e.target.checked)}
-              className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500/30"
+              className="h-4 w-4 rounded border-stone-300 text-primary focus:ring-primary/30"
             />
             Show archived
           </label>
@@ -118,15 +118,15 @@ export default function SeasonsPage() {
 
       <div className="glass-card-static overflow-hidden rounded-2xl">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-100">
+          <table className="min-w-full divide-y divide-stone-100">
             <thead>
-              <tr className="bg-gray-50/60">
+              <tr className="bg-stone-50/60">
                 {['Name', 'Start', 'End', 'Registration Window', 'Status', ''].map((h) => (
                   <th key={h} className="table-header">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-stone-50">
               {seasons.isLoading && [1, 2].map((i) => (
                 <tr key={i}>
                   {[1, 2, 3, 4, 5, 6].map((j) => (
@@ -135,30 +135,30 @@ export default function SeasonsPage() {
                 </tr>
               ))}
               {seasons.data?.length === 0 && (
-                <tr><td colSpan={6} className="table-cell text-center py-10 text-gray-400">No seasons yet.</td></tr>
+                <tr><td colSpan={6} className="table-cell text-center py-10 text-stone-400">No seasons yet.</td></tr>
               )}
               {seasons.data?.map((s) => (
                 <tr key={s.id} className="table-row-hover">
-                  <td className="table-cell font-medium text-gray-900">
+                  <td className="table-cell font-medium text-stone-800">
                     <span className="flex items-center gap-1.5">
                       {s.name}
                       {s.is_current && <Star size={14} className="fill-amber-400 text-amber-400" />}
                     </span>
                   </td>
-                  <td className="table-cell text-gray-600">{s.start_date}</td>
-                  <td className="table-cell text-gray-600">{s.end_date}</td>
-                  <td className="table-cell text-gray-600">
+                  <td className="table-cell text-stone-600">{s.start_date}</td>
+                  <td className="table-cell text-stone-600">{s.end_date}</td>
+                  <td className="table-cell text-stone-600">
                     {s.registration_opens_at
                       ? `${new Date(s.registration_opens_at).toLocaleDateString()} — ${s.registration_closes_at ? new Date(s.registration_closes_at).toLocaleDateString() : 'Open'}`
                       : '—'}
                   </td>
                   <td className="table-cell">
                     {s.archived ? (
-                      <span className="inline-block rounded-full bg-gray-500/15 px-2.5 py-0.5 text-[11px] font-medium text-gray-400 border border-gray-500/20">Archived</span>
+                      <span className="inline-block rounded-full bg-stone-500/15 px-2.5 py-0.5 text-xs font-medium text-stone-400 border border-stone-500/20">Archived</span>
                     ) : s.is_current ? (
-                      <span className="inline-block rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-medium text-emerald-600 border border-emerald-500/25">Current</span>
+                      <span className="inline-block rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-medium text-emerald-600 border border-emerald-500/25">Current</span>
                     ) : (
-                      <span className="inline-block rounded-full bg-gray-500/15 px-2.5 py-0.5 text-[11px] font-medium text-gray-500 border border-gray-500/20">Inactive</span>
+                      <span className="inline-block rounded-full bg-stone-500/15 px-2.5 py-0.5 text-xs font-medium text-stone-500 border border-stone-500/20">Inactive</span>
                     )}
                   </td>
                   <td className="table-cell text-right">
@@ -191,37 +191,37 @@ export default function SeasonsPage() {
       <Modal open={modalOpen} onClose={closeModal} title={editingId ? 'Edit Season' : 'Add Season'}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Name *</label>
+            <label className="block text-sm font-medium text-stone-700">Name *</label>
             <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
               className={inputClass} placeholder="e.g. Fall 2026" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Start Date *</label>
+              <label className="block text-sm font-medium text-stone-700">Start Date *</label>
               <input type="date" required value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })}
                 className={inputClass} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">End Date *</label>
+              <label className="block text-sm font-medium text-stone-700">End Date *</label>
               <input type="date" required value={form.end_date} onChange={(e) => setForm({ ...form, end_date: e.target.value })}
                 className={inputClass} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Registration Opens</label>
+              <label className="block text-sm font-medium text-stone-700">Registration Opens</label>
               <input type="datetime-local" value={form.registration_opens_at} onChange={(e) => setForm({ ...form, registration_opens_at: e.target.value })}
                 className={inputClass} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Registration Closes</label>
+              <label className="block text-sm font-medium text-stone-700">Registration Closes</label>
               <input type="datetime-local" value={form.registration_closes_at} onChange={(e) => setForm({ ...form, registration_closes_at: e.target.value })}
                 className={inputClass} />
             </div>
           </div>
-          <label className="flex items-center gap-2.5 text-sm text-gray-700">
+          <label className="flex items-center gap-2.5 text-sm text-stone-700">
             <input type="checkbox" checked={form.is_current} onChange={(e) => setForm({ ...form, is_current: e.target.checked })}
-              className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500/30" />
+              className="h-4 w-4 rounded border-stone-300 text-primary focus:ring-primary/30" />
             Set as current season
           </label>
 
@@ -229,7 +229,7 @@ export default function SeasonsPage() {
             <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{createMutation.error?.message || updateMutation.error?.message}</p>
           )}
 
-          <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
+          <div className="flex justify-end gap-3 border-t border-stone-100 pt-4">
             <button type="button" onClick={closeModal}
               className="btn-outline h-11 rounded-xl px-5 text-sm font-medium">Cancel</button>
             <button type="submit" disabled={isSaving}
@@ -242,7 +242,7 @@ export default function SeasonsPage() {
 
       {/* Delete Confirmation */}
       <Modal open={!!deleteId} onClose={() => setDeleteId(null)} title="Delete Season">
-        <p className="text-sm text-gray-600">Are you sure? Seasons with classes cannot be deleted.</p>
+        <p className="text-sm text-stone-600">Are you sure? Seasons with classes cannot be deleted.</p>
         {deleteMutation.error && <p className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{deleteMutation.error.message}</p>}
         <div className="mt-6 flex justify-end gap-3">
           <button onClick={() => setDeleteId(null)}

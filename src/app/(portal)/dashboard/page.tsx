@@ -44,11 +44,11 @@ export default function ParentDashboardPage() {
   if (!d?.family) {
     return (
       <div className="glass-card flex flex-col items-center rounded-2xl p-10 text-center animate-fade-in-up">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-100 to-purple-100">
-          <Users size={32} className="text-indigo-600" />
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-100">
+          <Users size={32} className="text-primary" />
         </div>
-        <h2 className="mt-5 text-lg font-semibold text-gray-900">No family account found</h2>
-        <p className="mt-2 text-sm text-gray-600">
+        <h2 className="mt-5 text-lg font-semibold text-stone-800">No family account found</h2>
+        <p className="mt-2 text-sm text-stone-600">
           Register for a class to create your family profile.
         </p>
         <Link
@@ -64,44 +64,44 @@ export default function ParentDashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">
           Welcome, {d.family.parent_first_name}
         </h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-stone-500">
           Here&apos;s an overview of your family&apos;s activity.
         </p>
       </div>
 
       {/* Quick stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 p-6 animate-fade-in-up stagger-1">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+        <div className="glass-card flex items-center gap-4 rounded-2xl bg-primary-50 p-6 animate-fade-in-up stagger-1">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-100 text-primary">
             <Users size={20} />
           </div>
           <div>
             <p className="stat-number">{d.students.length}</p>
-            <p className="text-sm text-gray-500">Students</p>
+            <p className="text-sm text-stone-500">Students</p>
           </div>
         </div>
-        <div className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 p-6 animate-fade-in-up stagger-2">
+        <div className="glass-card flex items-center gap-4 rounded-2xl p-6 animate-fade-in-up stagger-2">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
             <BookOpen size={20} />
           </div>
           <div>
             <p className="stat-number">{d.enrollments.length}</p>
-            <p className="text-sm text-gray-500">Active Enrollments</p>
+            <p className="text-sm text-stone-500">Active Enrollments</p>
           </div>
         </div>
         <Link
           href="/classes"
-          className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-purple-600/5 p-6 animate-fade-in-up stagger-3"
+          className="glass-card flex items-center gap-4 rounded-2xl bg-primary-50 p-6 animate-fade-in-up stagger-3"
         >
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-purple-100 text-purple-600">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-100 text-primary">
             <BookOpen size={20} />
           </div>
           <div>
-            <p className="text-sm font-medium text-indigo-600">Browse Classes</p>
-            <p className="text-xs text-gray-500">Register for more</p>
+            <p className="text-sm font-medium text-primary">Browse Classes</p>
+            <p className="text-xs text-stone-500">Register for more</p>
           </div>
         </Link>
       </div>
@@ -111,7 +111,7 @@ export default function ParentDashboardPage() {
         <BookOpen size={16} /> Current Enrollments
       </h2>
       {d.enrollments.length === 0 ? (
-        <p className="mt-3 text-sm text-gray-400">No active enrollments.</p>
+        <p className="mt-3 text-sm text-stone-400">No active enrollments.</p>
       ) : (
         <div className="mt-3 space-y-3">
           {d.enrollments.map((en) => {
@@ -127,15 +127,15 @@ export default function ParentDashboardPage() {
                 <div className="flex items-center gap-4">
                   {cls?.class_types && (
                     <span
-                      className="rounded-full px-2.5 py-0.5 text-[11px] font-medium text-white"
+                      className="rounded-full px-2.5 py-0.5 text-xs font-medium text-white"
                       style={{ backgroundColor: cls.class_types.color }}
                     >
                       {cls.class_types.name}
                     </span>
                   )}
                   <div>
-                    <p className="font-medium text-gray-900">{cls?.name ?? '—'}</p>
-                    <p className="flex items-center gap-1 text-xs text-gray-500">
+                    <p className="font-medium text-stone-800">{cls?.name ?? '—'}</p>
+                    <p className="flex items-center gap-1 text-xs text-stone-500">
                       <Clock size={12} />
                       {cls ? `${DAYS[cls.day_of_week]} ${formatTime(cls.start_time)}–${formatTime(cls.end_time)}` : '—'}
                       {cls?.room && ` / ${cls.room}`}
@@ -144,10 +144,10 @@ export default function ParentDashboardPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-stone-600">
                     {student ? `${student.first_name} ${student.last_name}` : '—'}
                   </span>
-                  <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_BADGE[en.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                  <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[en.status] ?? 'bg-stone-100 text-stone-600'}`}>
                     {en.status}
                   </span>
                 </div>

@@ -44,14 +44,14 @@ export default function AdminAttendanceReportPage() {
     URL.revokeObjectURL(url);
   }
 
-  const inputClass = 'h-11 rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 transition-shadow input-glow';
+  const inputClass = 'h-11 rounded-xl border border-stone-200 bg-white px-4 text-sm text-stone-800 transition-shadow input-glow';
 
   return (
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Attendance Reports</h1>
-          <p className="mt-1 text-sm text-gray-500">Attendance breakdown by class and absentee tracking.</p>
+          <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Attendance Reports</h1>
+          <p className="mt-1 text-sm text-stone-500">Attendance breakdown by class and absentee tracking.</p>
         </div>
         <button
           onClick={exportAttendanceCSV}
@@ -65,11 +65,11 @@ export default function AdminAttendanceReportPage() {
       {/* Date Range */}
       <div className="mb-6 flex flex-wrap items-center gap-4">
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">From</label>
+          <label className="block text-xs font-medium text-stone-500 mb-1">From</label>
           <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={inputClass} />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">To</label>
+          <label className="block text-xs font-medium text-stone-500 mb-1">To</label>
           <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className={inputClass} />
         </div>
       </div>
@@ -89,19 +89,19 @@ export default function AdminAttendanceReportPage() {
         <div className="space-y-6">
           {/* Attendance by Class */}
           <div className="glass-card-static overflow-hidden rounded-2xl">
-            <div className="px-5 py-4 border-b border-gray-100">
+            <div className="px-5 py-4 border-b border-stone-100">
               <h2 className="section-heading text-sm"><BarChart3 size={16} /> Attendance by Class</h2>
             </div>
 
             {data.attendanceByClass.length === 0 && (
-              <p className="text-sm text-gray-400 text-center py-8">No attendance data for this period.</p>
+              <p className="text-sm text-stone-400 text-center py-8">No attendance data for this period.</p>
             )}
 
             {data.attendanceByClass.length > 0 && (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-100">
+                <table className="min-w-full divide-y divide-stone-100">
                   <thead>
-                    <tr className="bg-gray-50/60">
+                    <tr className="bg-stone-50/60">
                       <th className="table-header">Class</th>
                       <th className="table-header text-center text-emerald-600">Present</th>
                       <th className="table-header text-center text-red-600">Absent</th>
@@ -110,18 +110,18 @@ export default function AdminAttendanceReportPage() {
                       <th className="table-header text-center">Rate</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-stone-50">
                     {data.attendanceByClass.map((cls) => {
                       const rate = cls.total > 0 ? Math.round(((cls.present + cls.late) / cls.total) * 100) : 0;
                       return (
                         <tr key={cls.classId} className="table-row-hover">
-                          <td className="table-cell font-medium text-gray-900">{cls.name}</td>
+                          <td className="table-cell font-medium text-stone-800">{cls.name}</td>
                           <td className="table-cell text-center text-emerald-600 font-medium">{cls.present}</td>
                           <td className="table-cell text-center text-red-600 font-medium">{cls.absent}</td>
                           <td className="table-cell text-center text-amber-600 font-medium">{cls.late}</td>
                           <td className="table-cell text-center text-blue-600 font-medium">{cls.excused}</td>
                           <td className="table-cell text-center">
-                            <span className={`inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+                            <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
                               rate >= 90
                                 ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25'
                                 : rate >= 70
@@ -142,36 +142,36 @@ export default function AdminAttendanceReportPage() {
 
           {/* Absentee Report */}
           <div className="glass-card-static overflow-hidden rounded-2xl">
-            <div className="px-5 py-4 border-b border-gray-100">
+            <div className="px-5 py-4 border-b border-stone-100">
               <h2 className="section-heading text-sm"><AlertTriangle size={16} className="text-amber-500" /> Chronic Absentees (&gt;30% absent)</h2>
             </div>
 
             {data.absenteeReport.length === 0 && (
               <div className="flex flex-col items-center py-8">
                 <CheckSquare size={24} className="mb-2 text-emerald-400" />
-                <p className="text-sm text-gray-400">No chronic absentees in this period.</p>
+                <p className="text-sm text-stone-400">No chronic absentees in this period.</p>
               </div>
             )}
 
             {data.absenteeReport.length > 0 && (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-100">
+                <table className="min-w-full divide-y divide-stone-100">
                   <thead>
-                    <tr className="bg-gray-50/60">
+                    <tr className="bg-stone-50/60">
                       <th className="table-header">Student</th>
                       <th className="table-header text-center">Absences</th>
                       <th className="table-header text-center">Total Records</th>
                       <th className="table-header text-center">Absence Rate</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-stone-50">
                     {data.absenteeReport.map((student) => (
                       <tr key={student.studentId} className="table-row-hover">
-                        <td className="table-cell font-medium text-gray-900">{student.name}</td>
+                        <td className="table-cell font-medium text-stone-800">{student.name}</td>
                         <td className="table-cell text-center text-red-600 font-medium">{student.absent}</td>
-                        <td className="table-cell text-center text-gray-600">{student.total}</td>
+                        <td className="table-cell text-center text-stone-600">{student.total}</td>
                         <td className="table-cell text-center">
-                          <span className="inline-flex rounded-full bg-red-500/15 px-2.5 py-0.5 text-[11px] font-medium text-red-600 border border-red-500/25">
+                          <span className="inline-flex rounded-full bg-red-500/15 px-2.5 py-0.5 text-xs font-medium text-red-600 border border-red-500/25">
                             {student.rate}%
                           </span>
                         </td>

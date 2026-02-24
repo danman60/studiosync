@@ -16,10 +16,10 @@ export default function InstructorDashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">
           Instructor Dashboard
         </h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-stone-500">
           {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
         </p>
       </div>
@@ -28,9 +28,9 @@ export default function InstructorDashboardPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Link
           href="/instructor/classes"
-          className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 p-6 animate-fade-in-up stagger-1"
+          className="glass-card flex items-center gap-4 rounded-2xl bg-primary-50 p-6 animate-fade-in-up stagger-1"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary">
             <BookOpen size={22} />
           </div>
           <div>
@@ -39,11 +39,11 @@ export default function InstructorDashboardPage() {
             ) : (
               <p className="stat-number">{classes.data?.length ?? 0}</p>
             )}
-            <p className="text-sm text-gray-500">My Classes</p>
+            <p className="text-sm text-stone-500">My Classes</p>
           </div>
         </Link>
 
-        <div className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 p-6 animate-fade-in-up stagger-2">
+        <div className="glass-card flex items-center gap-4 rounded-2xl p-6 animate-fade-in-up stagger-2">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
             <Users size={22} />
           </div>
@@ -53,11 +53,11 @@ export default function InstructorDashboardPage() {
             ) : (
               <p className="stat-number">{totalStudents}</p>
             )}
-            <p className="text-sm text-gray-500">Total Students</p>
+            <p className="text-sm text-stone-500">Total Students</p>
           </div>
         </div>
 
-        <div className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-600/5 p-6 animate-fade-in-up stagger-3">
+        <div className="glass-card flex items-center gap-4 rounded-2xl p-6 animate-fade-in-up stagger-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
             <CheckSquare size={22} />
           </div>
@@ -67,7 +67,7 @@ export default function InstructorDashboardPage() {
             ) : (
               <p className="stat-number">{todayClasses.length}</p>
             )}
-            <p className="text-sm text-gray-500">Today&apos;s Classes</p>
+            <p className="text-sm text-stone-500">Today&apos;s Classes</p>
           </div>
         </div>
       </div>
@@ -83,7 +83,7 @@ export default function InstructorDashboardPage() {
             </div>
           )}
           {!classes.isLoading && todayClasses.length === 0 && (
-            <div className="glass-card-static rounded-2xl p-6 text-center text-sm text-gray-400">
+            <div className="glass-card-static rounded-2xl p-6 text-center text-sm text-stone-400">
               No classes scheduled today
             </div>
           )}
@@ -99,20 +99,20 @@ export default function InstructorDashboardPage() {
                 <div className="flex items-center gap-4">
                   <div
                     className="h-10 w-1.5 rounded-full"
-                    style={{ backgroundColor: classType?.color ?? '#6366f1' }}
+                    style={{ backgroundColor: classType?.color ?? '#C2785C' }}
                   />
                   <div>
-                    <p className="font-medium text-gray-900">{cls.name}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="font-medium text-stone-800">{cls.name}</p>
+                    <p className="text-sm text-stone-500">
                       {classType?.name}{level ? ` - ${level.name}` : ''} | {cls.room ?? 'No room'}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-stone-800">
                     {cls.start_time?.slice(0, 5)} - {cls.end_time?.slice(0, 5)}
                   </p>
-                  <p className="text-xs text-gray-500">{cls.enrolled_count} students</p>
+                  <p className="text-xs text-stone-500">{cls.enrolled_count} students</p>
                 </div>
               </Link>
             );
@@ -125,9 +125,9 @@ export default function InstructorDashboardPage() {
         <div className="mt-8">
           <h2 className="section-heading text-sm"><BookOpen size={16} /> Weekly Schedule</h2>
           <div className="mt-3 glass-card-static overflow-hidden rounded-2xl">
-            <table className="min-w-full divide-y divide-gray-100">
+            <table className="min-w-full divide-y divide-stone-100">
               <thead>
-                <tr className="bg-gray-50/60">
+                <tr className="bg-stone-50/60">
                   <th className="table-header">Class</th>
                   <th className="table-header">Day</th>
                   <th className="table-header">Time</th>
@@ -135,23 +135,23 @@ export default function InstructorDashboardPage() {
                   <th className="table-header text-center">Students</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-stone-50">
                 {(classes.data ?? []).map((cls) => {
                   const classType = cls.class_types as unknown as { name: string; color: string } | null;
                   return (
                     <tr key={cls.id} className="table-row-hover">
                       <td className="table-cell">
-                        <Link href={`/instructor/classes/${cls.id}`} className="text-sm font-medium text-indigo-600 hover:text-indigo-800">
+                        <Link href={`/instructor/classes/${cls.id}`} className="text-sm font-medium text-primary hover:text-primary-dark">
                           {cls.name}
                         </Link>
-                        <p className="text-xs text-gray-500">{classType?.name}</p>
+                        <p className="text-xs text-stone-500">{classType?.name}</p>
                       </td>
-                      <td className="table-cell text-gray-600">{DAY_NAMES[cls.day_of_week]}</td>
-                      <td className="table-cell text-gray-600">
+                      <td className="table-cell text-stone-600">{DAY_NAMES[cls.day_of_week]}</td>
+                      <td className="table-cell text-stone-600">
                         {cls.start_time?.slice(0, 5)} - {cls.end_time?.slice(0, 5)}
                       </td>
-                      <td className="table-cell text-gray-600">{cls.room ?? '—'}</td>
-                      <td className="table-cell text-center text-gray-600">{cls.enrolled_count}/{cls.capacity}</td>
+                      <td className="table-cell text-stone-600">{cls.room ?? '—'}</td>
+                      <td className="table-cell text-center text-stone-600">{cls.enrolled_count}/{cls.capacity}</td>
                     </tr>
                   );
                 })}

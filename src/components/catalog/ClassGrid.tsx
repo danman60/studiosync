@@ -44,7 +44,7 @@ export function ClassGrid({ classes, isLoading }: ClassGridProps) {
             <div className="skeleton h-4 w-full mb-1" />
             <div className="skeleton h-4 w-2/3 mb-4" />
             <div className="skeleton h-4 w-40 mb-4" />
-            <div className="border-t border-gray-100 pt-4 flex justify-between">
+            <div className="border-t border-stone-100 pt-4 flex justify-between">
               <div className="skeleton h-6 w-16" />
               <div className="skeleton h-6 w-24 rounded-full" />
             </div>
@@ -57,11 +57,11 @@ export function ClassGrid({ classes, isLoading }: ClassGridProps) {
   if (classes.length === 0) {
     return (
       <div className="glass-card flex flex-col items-center rounded-2xl py-16 text-center animate-fade-in-up">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-100 to-purple-100">
-          <BookOpen size={24} className="text-indigo-600" />
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-100">
+          <BookOpen size={24} className="text-primary" />
         </div>
-        <p className="mt-4 text-lg font-medium text-gray-900">No classes found</p>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-4 text-lg font-medium text-stone-800">No classes found</p>
+        <p className="mt-1 text-sm text-stone-500">
           Try adjusting your filters to see more results.
         </p>
       </div>

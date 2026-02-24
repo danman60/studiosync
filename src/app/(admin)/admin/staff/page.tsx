@@ -14,8 +14,8 @@ const ROLE_LABELS: Record<StaffRole, string> = {
 };
 
 const ROLE_BADGE: Record<StaffRole, string> = {
-  owner: 'bg-purple-500/15 text-purple-600 border border-purple-500/25',
-  admin: 'bg-indigo-500/15 text-indigo-600 border border-indigo-500/25',
+  owner: 'bg-primary/15 text-primary border border-primary/25',
+  admin: 'bg-primary/15 text-primary border border-primary/25',
   instructor: 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25',
   front_desk: 'bg-amber-500/15 text-amber-600 border border-amber-500/25',
 };
@@ -85,14 +85,14 @@ export default function StaffPage() {
     });
   }
 
-  const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
+  const inputClass = 'mt-1 w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-800 transition-shadow input-glow';
 
   return (
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Staff</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Staff</h1>
+          <p className="mt-1 text-sm text-stone-500">
             Manage instructors, admins, and front desk staff
           </p>
         </div>
@@ -107,15 +107,15 @@ export default function StaffPage() {
       {/* Table */}
       <div className="glass-card-static overflow-hidden rounded-2xl">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-100">
+          <table className="min-w-full divide-y divide-stone-100">
             <thead>
-              <tr className="bg-gray-50/60">
+              <tr className="bg-stone-50/60">
                 {['Name', 'Email', 'Role', 'Status', ''].map((h) => (
                   <th key={h} className="table-header">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-stone-50">
               {staff.isLoading && [1, 2].map((i) => (
                 <tr key={i}>
                   {[1, 2, 3, 4, 5].map((j) => (
@@ -125,27 +125,27 @@ export default function StaffPage() {
               ))}
               {staff.data?.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="table-cell text-center py-10 text-gray-400">
+                  <td colSpan={5} className="table-cell text-center py-10 text-stone-400">
                     No staff members yet.
                   </td>
                 </tr>
               )}
               {staff.data?.map((s) => (
                 <tr key={s.id} className="table-row-hover">
-                  <td className="table-cell font-medium text-gray-900">{s.display_name}</td>
-                  <td className="table-cell text-gray-600">{s.email}</td>
+                  <td className="table-cell font-medium text-stone-800">{s.display_name}</td>
+                  <td className="table-cell text-stone-600">{s.email}</td>
                   <td className="table-cell">
-                    <span className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${ROLE_BADGE[s.role as StaffRole]}`}>
+                    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${ROLE_BADGE[s.role as StaffRole]}`}>
                       {ROLE_LABELS[s.role as StaffRole]}
                     </span>
                   </td>
                   <td className="table-cell">
                     {s.active ? (
-                      <span className="inline-block rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-medium text-emerald-600 border border-emerald-500/25">
+                      <span className="inline-block rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-medium text-emerald-600 border border-emerald-500/25">
                         Active
                       </span>
                     ) : (
-                      <span className="inline-block rounded-full bg-gray-500/15 px-2.5 py-0.5 text-[11px] font-medium text-gray-500 border border-gray-500/20">
+                      <span className="inline-block rounded-full bg-stone-500/15 px-2.5 py-0.5 text-xs font-medium text-stone-500 border border-stone-500/20">
                         Inactive
                       </span>
                     )}
@@ -200,19 +200,19 @@ export default function StaffPage() {
       <Modal open={inviteOpen} onClose={() => setInviteOpen(false)} title="Invite Staff Member">
         <form onSubmit={handleInvite} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Name *</label>
+            <label className="block text-sm font-medium text-stone-700">Name *</label>
             <input type="text" required value={inviteForm.display_name}
               onChange={(e) => setInviteForm({ ...inviteForm, display_name: e.target.value })}
               className={inputClass} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email *</label>
+            <label className="block text-sm font-medium text-stone-700">Email *</label>
             <input type="email" required value={inviteForm.email}
               onChange={(e) => setInviteForm({ ...inviteForm, email: e.target.value })}
               className={inputClass} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Role *</label>
+            <label className="block text-sm font-medium text-stone-700">Role *</label>
             <select required value={inviteForm.role}
               onChange={(e) => setInviteForm({ ...inviteForm, role: e.target.value as 'admin' | 'instructor' | 'front_desk' })}
               className={inputClass}>
@@ -226,7 +226,7 @@ export default function StaffPage() {
             <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{inviteMutation.error.message}</p>
           )}
 
-          <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
+          <div className="flex justify-end gap-3 border-t border-stone-100 pt-4">
             <button type="button" onClick={() => setInviteOpen(false)}
               className="btn-outline h-11 rounded-xl px-5 text-sm font-medium">
               Cancel
@@ -244,13 +244,13 @@ export default function StaffPage() {
         {editTarget && (
           <form onSubmit={handleUpdate} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Name *</label>
+              <label className="block text-sm font-medium text-stone-700">Name *</label>
               <input type="text" required value={editTarget.display_name}
                 onChange={(e) => setEditTarget({ ...editTarget, display_name: e.target.value })}
                 className={inputClass} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Role *</label>
+              <label className="block text-sm font-medium text-stone-700">Role *</label>
               <select required value={editTarget.role}
                 onChange={(e) => setEditTarget({ ...editTarget, role: e.target.value as 'admin' | 'instructor' | 'front_desk' })}
                 className={inputClass}>
@@ -260,7 +260,7 @@ export default function StaffPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Phone</label>
+              <label className="block text-sm font-medium text-stone-700">Phone</label>
               <input type="tel" value={editTarget.phone}
                 onChange={(e) => setEditTarget({ ...editTarget, phone: e.target.value })}
                 className={inputClass} />
@@ -270,7 +270,7 @@ export default function StaffPage() {
               <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{updateMutation.error.message}</p>
             )}
 
-            <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
+            <div className="flex justify-end gap-3 border-t border-stone-100 pt-4">
               <button type="button" onClick={() => setEditTarget(null)}
                 className="btn-outline h-11 rounded-xl px-5 text-sm font-medium">
                 Cancel

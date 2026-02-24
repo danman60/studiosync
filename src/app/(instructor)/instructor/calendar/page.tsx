@@ -35,8 +35,8 @@ export default function InstructorCalendarPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">My Calendar</h1>
-        <p className="mt-1 text-sm text-gray-500">Weekly class schedule overview.</p>
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">My Calendar</h1>
+        <p className="mt-1 text-sm text-stone-500">Weekly class schedule overview.</p>
       </div>
 
       {isLoading && (
@@ -52,11 +52,11 @@ export default function InstructorCalendarPage() {
 
       {!isLoading && activeDays.length === 0 && (
         <div className="empty-state">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
-            <Calendar size={24} className="text-indigo-400" />
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50">
+            <Calendar size={24} className="text-primary-light" />
           </div>
-          <p className="text-sm font-medium text-gray-600">No classes assigned</p>
-          <p className="mt-1 text-xs text-gray-400">Your class schedule will appear here.</p>
+          <p className="text-sm font-medium text-stone-600">No classes assigned</p>
+          <p className="mt-1 text-xs text-stone-400">Your class schedule will appear here.</p>
         </div>
       )}
 
@@ -64,7 +64,7 @@ export default function InstructorCalendarPage() {
         <div className="space-y-6">
           {activeDays.map((day) => (
             <div key={day}>
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-400">
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-stone-400">
                 {DAYS[day]}
               </h2>
               <div className="space-y-2">
@@ -79,17 +79,17 @@ export default function InstructorCalendarPage() {
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <h3 className="text-sm font-semibold text-gray-900">{cls.name}</h3>
+                            <h3 className="text-sm font-semibold text-stone-800">{cls.name}</h3>
                             {ct && (
                               <span
-                                className="rounded-full px-2 py-0.5 text-[11px] font-medium"
+                                className="rounded-full px-2 py-0.5 text-xs font-medium"
                                 style={{ backgroundColor: `${ct.color}20`, color: ct.color, border: `1px solid ${ct.color}30` }}
                               >
                                 {ct.name}
                               </span>
                             )}
                           </div>
-                          <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-gray-500">
+                          <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-stone-500">
                             <span className="inline-flex items-center gap-1">
                               <Clock size={12} />
                               {formatTime(cls.start_time)} – {formatTime(cls.end_time)}
@@ -102,10 +102,10 @@ export default function InstructorCalendarPage() {
                           </div>
                         </div>
                         {season && (
-                          <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+                          <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${
                             season.is_current
                               ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25'
-                              : 'bg-gray-500/15 text-gray-500 border border-gray-500/20'
+                              : 'bg-stone-500/15 text-stone-500 border border-stone-500/20'
                           }`}>
                             {season.name}
                           </span>

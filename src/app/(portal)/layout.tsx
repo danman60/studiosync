@@ -11,7 +11,7 @@ export default function PortalLayout({
   const { studio } = useStudio();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-stone-50/50">
       <Sidebar variant="portal" studioName={studio?.name} />
       <main className="lg:pl-64 transition-all duration-200">
         <div className="px-6 py-8">{children}</div>

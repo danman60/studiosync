@@ -46,12 +46,12 @@ export function ClassCard({
   return (
     <Link
       href={`/classes/${id}`}
-      className="group block glass-card rounded-2xl transition-all hover:shadow-lg hover:shadow-indigo-500/8"
+      className="group block glass-card rounded-2xl transition-all hover:shadow-lg hover:shadow-stone-300/30"
     >
       {/* Color accent bar */}
       <div
         className="h-1.5 rounded-t-2xl"
-        style={{ backgroundColor: classType?.color ?? '#6366f1' }}
+        style={{ backgroundColor: classType?.color ?? '#C2785C' }}
       />
 
       <div className="p-5">
@@ -66,38 +66,38 @@ export function ClassCard({
             </span>
           )}
           {level && (
-            <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-gray-700">
+            <span className="inline-flex items-center rounded-full border border-stone-200 bg-stone-50 px-2.5 py-0.5 text-xs font-medium text-stone-700">
               {level.name}
             </span>
           )}
           {(minAge || maxAge) && (
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-stone-400">
               Ages {minAge ?? '?'}–{maxAge ?? '?'}
             </span>
           )}
         </div>
 
         {/* Title */}
-        <h3 className="text-base font-semibold text-gray-900 transition-colors group-hover:text-indigo-600">
+        <h3 className="text-base font-semibold text-stone-800 transition-colors group-hover:text-primary">
           {name}
         </h3>
 
         {/* Description */}
         {description && (
-          <p className="mt-1.5 line-clamp-2 text-sm text-gray-500">
+          <p className="mt-1.5 line-clamp-2 text-sm text-stone-500">
             {description}
           </p>
         )}
 
         {/* Schedule row */}
-        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-600">
+        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-stone-600">
           <span className="flex items-center gap-1.5">
-            <Clock size={14} className="text-indigo-400" />
+            <Clock size={14} className="text-primary-light" />
             {DAYS_OF_WEEK[dayOfWeek]}s {formatTime(startTime)}–{formatTime(endTime)}
           </span>
           {room && (
             <span className="flex items-center gap-1.5">
-              <MapPin size={14} className="text-indigo-400" />
+              <MapPin size={14} className="text-primary-light" />
               {room}
             </span>
           )}
@@ -105,20 +105,20 @@ export function ClassCard({
 
         {/* Instructor */}
         {instructor && (
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-stone-500">
             with {instructor.display_name}
           </p>
         )}
 
         {/* Footer: price + availability */}
-        <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
+        <div className="mt-4 flex items-center justify-between border-t border-stone-100 pt-4">
           {monthlyPrice != null ? (
-            <span className="text-lg font-bold text-gray-900">
+            <span className="text-lg font-bold text-stone-800">
               ${monthlyPrice}
-              <span className="text-sm font-normal text-gray-500">/mo</span>
+              <span className="text-sm font-normal text-stone-500">/mo</span>
             </span>
           ) : (
-            <span className="text-sm text-gray-400">Price TBD</span>
+            <span className="text-sm text-stone-400">Price TBD</span>
           )}
 
           <span

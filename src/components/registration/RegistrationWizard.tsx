@@ -260,17 +260,17 @@ export function RegistrationWizard({ classId }: Props) {
               </span>
             )}
             {levels && (
-              <span className="inline-flex rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-gray-700">
+              <span className="inline-flex rounded-full border border-stone-200 bg-stone-50 px-2.5 py-0.5 text-xs font-medium text-stone-700">
                 {levels.name}
               </span>
             )}
           </div>
-          <h3 className="mt-2 font-semibold text-gray-900">{cls.name}</h3>
-          <p className="mt-1 text-sm text-gray-600">
+          <h3 className="mt-2 font-semibold text-stone-800">{cls.name}</h3>
+          <p className="mt-1 text-sm text-stone-600">
             {DAYS_OF_WEEK[cls.day_of_week]}s, {formatTime(cls.start_time)} – {formatTime(cls.end_time)}
           </p>
           {seasons && (
-            <p className="text-sm text-gray-500">{seasons.name}</p>
+            <p className="text-sm text-stone-500">{seasons.name}</p>
           )}
           <div className="mt-3 flex items-center gap-2.5">
             <div
@@ -278,7 +278,7 @@ export function RegistrationWizard({ classId }: Props) {
                 isFull ? 'bg-red-500' : spotsLeft <= 3 ? 'bg-amber-500' : 'bg-emerald-500'
               }`}
             />
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-stone-600">
               {isFull ? 'Waitlist only' : `${spotsLeft} spots left`}
             </span>
           </div>
@@ -295,22 +295,22 @@ export function RegistrationWizard({ classId }: Props) {
                 <div
                   className={`flex h-8 w-8 items-center justify-center rounded-xl text-xs font-medium transition-all ${
                     i === step
-                      ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-sm'
+                      ? 'bg-primary text-white shadow-sm'
                       : i < step
-                        ? 'bg-indigo-100 text-indigo-700'
-                        : 'bg-gray-100 text-gray-400'
+                        ? 'bg-primary-100 text-primary-dark'
+                        : 'bg-stone-100 text-stone-400'
                   }`}
                 >
                   {i + 1}
                 </div>
                 <span
                   className={`hidden text-sm sm:inline ${
-                    i === step ? 'font-medium text-gray-900' : 'text-gray-400'
+                    i === step ? 'font-medium text-stone-800' : 'text-stone-400'
                   }`}
                 >
                   {label}
                 </span>
-                {i < stepCountForIndicator - 1 && <div className="mx-1 h-px w-6 bg-gray-200" />}
+                {i < stepCountForIndicator - 1 && <div className="mx-1 h-px w-6 bg-stone-200" />}
               </div>
             ))}
           </div>
@@ -385,7 +385,7 @@ export function RegistrationWizard({ classId }: Props) {
                 <button
                   type="button"
                   onClick={handleBack}
-                  className="flex h-11 items-center rounded-xl border border-gray-200 bg-white px-5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                  className="flex h-11 items-center rounded-xl border border-stone-200 bg-white px-5 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-50"
                 >
                   Back
                 </button>
@@ -408,7 +408,7 @@ export function RegistrationWizard({ classId }: Props) {
               <button
                 type="button"
                 onClick={handleBack}
-                className="flex h-10 items-center rounded-xl px-3 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700"
+                className="flex h-10 items-center rounded-xl px-3 text-sm font-medium text-stone-500 transition-colors hover:bg-stone-50 hover:text-stone-700"
               >
                 &larr; Go back and edit
               </button>

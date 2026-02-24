@@ -16,8 +16,8 @@ export default function AdminWaiversPage() {
     <div>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Waivers & E-Signatures</h1>
-          <p className="mt-1 text-sm text-gray-500">Create liability waivers and track parent signatures.</p>
+          <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Waivers & E-Signatures</h1>
+          <p className="mt-1 text-sm text-stone-500">Create liability waivers and track parent signatures.</p>
         </div>
         {tab === 'templates' && (
           <button
@@ -30,15 +30,15 @@ export default function AdminWaiversPage() {
       </div>
 
       {/* Tabs */}
-      <div className="mb-6 flex gap-1 rounded-xl bg-gray-100 p-1 w-fit">
+      <div className="mb-6 flex gap-1 rounded-xl bg-stone-100 p-1 w-fit">
         {(['templates', 'signatures'] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
               tab === t
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-white text-stone-800 shadow-sm'
+                : 'text-stone-500 hover:text-stone-700'
             }`}
           >
             {t === 'templates' ? 'Waiver Templates' : 'Signatures'}
@@ -118,16 +118,16 @@ function WaiverTemplatesList({
       {/* Stats */}
       {stats.data && (
         <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="glass-card rounded-2xl p-5 bg-gradient-to-br from-indigo-500/5 to-purple-500/5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Total Waivers</p>
+          <div className="glass-card rounded-2xl p-5 bg-primary-50">
+            <p className="text-xs font-semibold uppercase tracking-wider text-stone-400">Total Waivers</p>
             <p className="mt-1 stat-number">{stats.data.totalWaivers}</p>
           </div>
           <div className="glass-card rounded-2xl p-5 bg-gradient-to-br from-emerald-500/5 to-teal-500/5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Active</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-stone-400">Active</p>
             <p className="mt-1 stat-number">{stats.data.activeWaivers}</p>
           </div>
           <div className="glass-card rounded-2xl p-5 bg-gradient-to-br from-amber-500/5 to-orange-500/5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Signatures</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-stone-400">Signatures</p>
             <p className="mt-1 stat-number">{stats.data.totalSignatures}</p>
           </div>
         </div>
@@ -135,11 +135,11 @@ function WaiverTemplatesList({
 
       {(waivers.data?.length ?? 0) === 0 ? (
         <div className="empty-state">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
-            <FileText size={24} className="text-indigo-400" />
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50">
+            <FileText size={24} className="text-primary-light" />
           </div>
-          <p className="text-sm font-medium text-gray-600">No waivers yet</p>
-          <p className="mt-1 text-xs text-gray-400">Create a waiver template to get started.</p>
+          <p className="text-sm font-medium text-stone-600">No waivers yet</p>
+          <p className="mt-1 text-xs text-stone-400">Create a waiver template to get started.</p>
           <button onClick={onCreate} className="btn-gradient mt-4 inline-flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-medium">
             <Plus size={14} /> Create Waiver
           </button>
@@ -151,16 +151,16 @@ function WaiverTemplatesList({
             return (
               <div key={w.id} className="glass-card rounded-2xl p-5 flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 min-w-0">
-                  <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${w.is_active ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-400'}`}>
+                  <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${w.is_active ? 'bg-primary-100 text-primary' : 'bg-stone-100 text-stone-400'}`}>
                     <Shield size={18} />
                   </div>
                   <div className="min-w-0">
-                    <p className="font-medium text-gray-900 truncate">{w.title}</p>
+                    <p className="font-medium text-stone-800 truncate">{w.title}</p>
                     <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
                       <span className={`inline-block rounded-full px-2.5 py-0.5 font-medium ${
                         w.is_active
                           ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25'
-                          : 'bg-gray-500/15 text-gray-500 border border-gray-500/25'
+                          : 'bg-stone-500/15 text-stone-500 border border-stone-500/25'
                       }`}>
                         {w.is_active ? 'Active' : 'Inactive'}
                       </span>
@@ -169,29 +169,29 @@ function WaiverTemplatesList({
                           Required
                         </span>
                       )}
-                      <span className="text-gray-400">v{w.version}</span>
-                      {seasons && <span className="text-gray-400">{seasons.name}</span>}
+                      <span className="text-stone-400">v{w.version}</span>
+                      {seasons && <span className="text-stone-400">{seasons.name}</span>}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <button
                     onClick={() => onViewSignatures(w.id)}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-stone-400 hover:bg-primary-50 hover:text-primary transition-colors"
                     title="View signatures"
                   >
                     <Eye size={16} />
                   </button>
                   <button
                     onClick={() => toggleActive.mutate({ id: w.id, is_active: !w.is_active })}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-stone-400 hover:bg-primary-50 hover:text-primary transition-colors"
                     title={w.is_active ? 'Deactivate' : 'Activate'}
                   >
                     {w.is_active ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
                   </button>
                   <button
                     onClick={() => onEdit(w.id)}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-stone-400 hover:bg-primary-50 hover:text-primary transition-colors"
                     title="Edit"
                   >
                     <Edit3 size={16} />
@@ -202,7 +202,7 @@ function WaiverTemplatesList({
                         deleteWaiver.mutate({ id: w.id });
                       }
                     }}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-stone-400 hover:bg-red-50 hover:text-red-600 transition-colors"
                     title="Delete"
                   >
                     <Trash2 size={16} />
@@ -268,32 +268,32 @@ function WaiverForm({ editId, onClose }: { editId: string | null; onClose: () =>
 
   return (
     <div>
-      <button onClick={onClose} className="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 transition-colors">
+      <button onClick={onClose} className="mb-4 inline-flex items-center gap-1.5 text-sm text-stone-500 hover:text-primary transition-colors">
         <ChevronLeft size={16} /> Back to Waivers
       </button>
 
       <div className="glass-card-static rounded-2xl p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-5">
+        <h2 className="text-lg font-semibold text-stone-800 mb-5">
           {editId ? 'Edit Waiver' : 'New Waiver Template'}
         </h2>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+            <label className="block text-sm font-medium text-stone-700 mb-1">Title</label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="form-input w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+              className="form-input w-full rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm text-stone-800 focus:border-primary focus:ring-2 focus:ring-primary/20"
               placeholder="e.g. Liability Waiver 2025-2026"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Season (optional)</label>
+            <label className="block text-sm font-medium text-stone-700 mb-1">Season (optional)</label>
             <select
               value={seasonId}
               onChange={(e) => setSeasonId(e.target.value)}
-              className="form-input w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+              className="form-input w-full rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm text-stone-800 focus:border-primary focus:ring-2 focus:ring-primary/20"
             >
               <option value="">All Seasons (studio-wide)</option>
               {(seasons.data ?? []).map((s) => (
@@ -303,17 +303,17 @@ function WaiverForm({ editId, onClose }: { editId: string | null; onClose: () =>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-stone-700 mb-1">
               Waiver Content
             </label>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={12}
-              className="form-input w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 leading-relaxed"
+              className="form-input w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-800 focus:border-primary focus:ring-2 focus:ring-primary/20 leading-relaxed"
               placeholder="Enter the full text of your waiver/liability form..."
             />
-            <p className="mt-1 text-xs text-gray-400">Plain text. Supports basic formatting with paragraphs.</p>
+            <p className="mt-1 text-xs text-stone-400">Plain text. Supports basic formatting with paragraphs.</p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -322,9 +322,9 @@ function WaiverForm({ editId, onClose }: { editId: string | null; onClose: () =>
                 type="checkbox"
                 checked={isRequired}
                 onChange={(e) => setIsRequired(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                className="h-4 w-4 rounded border-stone-300 text-primary focus:ring-primary"
               />
-              <span className="text-sm text-gray-700">Required for registration</span>
+              <span className="text-sm text-stone-700">Required for registration</span>
             </label>
           </div>
 
@@ -344,7 +344,7 @@ function WaiverForm({ editId, onClose }: { editId: string | null; onClose: () =>
             </button>
             <button
               onClick={onClose}
-              className="inline-flex h-11 items-center rounded-xl border border-gray-200 bg-white px-5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="inline-flex h-11 items-center rounded-xl border border-stone-200 bg-white px-5 text-sm font-medium text-stone-700 hover:bg-stone-50"
             >
               Cancel
             </button>
@@ -362,14 +362,14 @@ function WaiverSignaturesList({ waiverId, onBack }: { waiverId: string; onBack: 
 
   return (
     <div>
-      <button onClick={onBack} className="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 transition-colors">
+      <button onClick={onBack} className="mb-4 inline-flex items-center gap-1.5 text-sm text-stone-500 hover:text-primary transition-colors">
         <ChevronLeft size={16} /> Back to Waivers
       </button>
 
       <div className="glass-card-static overflow-hidden rounded-2xl">
-        <table className="min-w-full divide-y divide-gray-100">
+        <table className="min-w-full divide-y divide-stone-100">
           <thead>
-            <tr className="bg-gray-50/60">
+            <tr className="bg-stone-50/60">
               <th className="table-header">Signed By</th>
               <th className="table-header">Email</th>
               <th className="table-header">Student</th>
@@ -377,24 +377,24 @@ function WaiverSignaturesList({ waiverId, onBack }: { waiverId: string; onBack: 
               <th className="table-header text-right">Date</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-stone-50">
             {sigs.isLoading && (
               <tr><td colSpan={5} className="px-5 py-4"><div className="skeleton h-4 w-full" /></td></tr>
             )}
             {!sigs.isLoading && (sigs.data?.length ?? 0) === 0 && (
-              <tr><td colSpan={5} className="px-5 py-8 text-center text-sm text-gray-400">No signatures yet</td></tr>
+              <tr><td colSpan={5} className="px-5 py-8 text-center text-sm text-stone-400">No signatures yet</td></tr>
             )}
             {sigs.data?.map((sig) => {
               const student = sig.students as { first_name: string; last_name: string } | null;
               return (
                 <tr key={sig.id} className="table-row-hover">
-                  <td className="table-cell font-medium text-gray-900">{sig.parent_name}</td>
-                  <td className="table-cell text-gray-600">{sig.parent_email}</td>
-                  <td className="table-cell text-gray-600">
+                  <td className="table-cell font-medium text-stone-800">{sig.parent_name}</td>
+                  <td className="table-cell text-stone-600">{sig.parent_email}</td>
+                  <td className="table-cell text-stone-600">
                     {student ? `${student.first_name} ${student.last_name}` : '—'}
                   </td>
-                  <td className="table-cell text-center text-gray-600">v{sig.waiver_version}</td>
-                  <td className="table-cell text-right text-gray-600">
+                  <td className="table-cell text-center text-stone-600">v{sig.waiver_version}</td>
+                  <td className="table-cell text-right text-stone-600">
                     {new Date(sig.signed_at).toLocaleDateString()}
                   </td>
                 </tr>
@@ -428,20 +428,20 @@ function AllSignatures() {
   if ((sigs.data?.length ?? 0) === 0) {
     return (
       <div className="empty-state">
-        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50">
-          <PenTool size={24} className="text-indigo-400" />
+        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50">
+          <PenTool size={24} className="text-primary-light" />
         </div>
-        <p className="text-sm font-medium text-gray-600">No signatures yet</p>
-        <p className="mt-1 text-xs text-gray-400">Signatures will appear here as parents sign waivers.</p>
+        <p className="text-sm font-medium text-stone-600">No signatures yet</p>
+        <p className="mt-1 text-xs text-stone-400">Signatures will appear here as parents sign waivers.</p>
       </div>
     );
   }
 
   return (
     <div className="glass-card-static overflow-hidden rounded-2xl">
-      <table className="min-w-full divide-y divide-gray-100">
+      <table className="min-w-full divide-y divide-stone-100">
         <thead>
-          <tr className="bg-gray-50/60">
+          <tr className="bg-stone-50/60">
             <th className="table-header">Waiver</th>
             <th className="table-header">Signed By</th>
             <th className="table-header">Family</th>
@@ -449,19 +449,19 @@ function AllSignatures() {
             <th className="table-header text-right">Date</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-50">
+        <tbody className="divide-y divide-stone-50">
           {sigs.data?.map((sig) => {
             const waiver = sig.waivers as { title: string; version: number } | null;
             const family = sig.families as { parent_first_name: string; parent_last_name: string } | null;
             return (
               <tr key={sig.id} className="table-row-hover">
-                <td className="table-cell font-medium text-gray-900">{waiver?.title ?? '—'}</td>
-                <td className="table-cell text-gray-600">{sig.parent_name}</td>
-                <td className="table-cell text-gray-600">
+                <td className="table-cell font-medium text-stone-800">{waiver?.title ?? '—'}</td>
+                <td className="table-cell text-stone-600">{sig.parent_name}</td>
+                <td className="table-cell text-stone-600">
                   {family ? `${family.parent_first_name} ${family.parent_last_name}` : sig.parent_email}
                 </td>
-                <td className="table-cell text-center text-gray-600">v{sig.waiver_version}</td>
-                <td className="table-cell text-right text-gray-600">
+                <td className="table-cell text-center text-stone-600">v{sig.waiver_version}</td>
+                <td className="table-cell text-right text-stone-600">
                   {new Date(sig.signed_at).toLocaleDateString()}
                 </td>
               </tr>

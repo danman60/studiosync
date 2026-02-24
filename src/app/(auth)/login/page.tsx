@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Layers, Mail, CheckCircle } from 'lucide-react';
+import { Layers, Mail, CheckCircle, Zap } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
+
+const IS_DEV = process.env.NODE_ENV === 'development';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'sent' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'sent' | 'error' | 'dev-loading'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,24 +35,54 @@ export default function LoginPage() {
     }
   };
 
+  const handleDevLogin = async () => {
+    setStatus('dev-loading');
+    setErrorMessage('');
+
+    try {
+      // 1. Ensure dev user has a password
+      const res = await fetch('/api/auth/dev-login', { method: 'POST' });
+      if (!res.ok) {
+        const body = await res.json();
+        throw new Error(body.error ?? 'Dev login setup failed');
+      }
+      const { email: devEmail, password } = await res.json();
+
+      // 2. Sign in with password (creates proper browser session)
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({
+        email: devEmail,
+        password,
+      });
+      if (error) throw new Error(error.message);
+
+      // 3. Set role cookie and redirect to admin
+      document.cookie = 'user-role=owner; path=/; max-age=2592000';
+      window.location.href = '/admin';
+    } catch (err) {
+      setStatus('error');
+      setErrorMessage(err instanceof Error ? err.message : 'Dev login failed');
+    }
+  };
+
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-gray-50 px-6">
+    <div className="relative flex min-h-screen flex-col items-center justify-center px-6" style={{ backgroundColor: '#FAF9F7' }}>
       {/* Background decoration */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -right-40 top-1/4 h-80 w-80 rounded-full bg-gradient-to-br from-indigo-200/30 to-purple-200/20 blur-3xl" />
-        <div className="absolute -left-32 bottom-1/4 h-64 w-64 rounded-full bg-gradient-to-tr from-purple-200/20 to-indigo-100/20 blur-3xl" />
+        <div className="absolute -right-40 top-1/4 h-80 w-80 rounded-full bg-primary-100/30 blur-3xl" />
+        <div className="absolute -left-32 bottom-1/4 h-64 w-64 rounded-full bg-primary-100/20 blur-3xl" />
       </div>
 
       <Link href="/" className="relative mb-8 flex items-center gap-2.5 animate-fade-in-up">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 shadow-sm">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
           <Layers size={20} className="text-white" />
         </div>
-        <span className="text-xl font-bold text-gray-900">StudioSync</span>
+        <span className="text-xl font-bold text-stone-800">StudioSync</span>
       </Link>
 
       <div className="relative w-full max-w-sm glass-card rounded-2xl p-8 animate-fade-in-up stagger-1">
-        <h1 className="text-[clamp(1.5rem,2.5vw,1.75rem)] font-bold text-gray-900">Sign In</h1>
-        <p className="mt-2 text-sm text-gray-500">
+        <h1 className="font-display text-[clamp(1.5rem,2.5vw,1.75rem)] italic text-stone-800">Sign In</h1>
+        <p className="mt-2 text-sm text-stone-500">
           Enter your email to receive a magic sign-in link.
         </p>
 
@@ -65,12 +97,12 @@ export default function LoginPage() {
         ) : (
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium text-stone-700">
                 Email address
               </label>
               <div className="relative mt-1">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <Mail size={16} className="text-gray-400" />
+                  <Mail size={16} className="text-stone-400" />
                 </div>
                 <input
                   id="email"
@@ -79,7 +111,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   required
-                  className="block w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-3 text-sm text-gray-900 transition-shadow placeholder:text-gray-400 input-glow"
+                  className="block w-full rounded-xl border border-stone-200 bg-white py-2.5 pl-10 pr-3 text-sm text-stone-800 transition-shadow placeholder:text-stone-400 input-glow"
                 />
               </div>
             </div>
@@ -92,7 +124,7 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              disabled={status === 'loading'}
+              disabled={status === 'loading' || status === 'dev-loading'}
               className="btn-gradient flex h-11 w-full items-center justify-center rounded-xl text-sm font-semibold"
             >
               {status === 'loading' ? (
@@ -104,9 +136,27 @@ export default function LoginPage() {
           </form>
         )}
 
-        <p className="mt-6 text-center text-sm text-gray-500">
+        {/* Dev quick-login */}
+        {IS_DEV && status !== 'sent' && (
+          <button
+            onClick={handleDevLogin}
+            disabled={status === 'dev-loading'}
+            className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-amber-300 bg-amber-50 text-sm font-semibold text-amber-700 transition-colors hover:bg-amber-100"
+          >
+            {status === 'dev-loading' ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-amber-400/30 border-t-amber-600" />
+            ) : (
+              <>
+                <Zap size={16} />
+                Dev Login (Owner)
+              </>
+            )}
+          </button>
+        )}
+
+        <p className="mt-6 text-center text-sm text-stone-500">
           Don&apos;t have an account?{' '}
-          <Link href="/classes" className="font-medium text-indigo-600 transition-colors hover:text-indigo-500">
+          <Link href="/classes" className="font-medium text-primary transition-colors hover:text-primary-dark">
             Browse classes
           </Link>{' '}
           to register.

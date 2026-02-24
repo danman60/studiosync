@@ -9,7 +9,7 @@ const STATUS_BADGE: Record<string, string> = {
   active: 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25',
   pending: 'bg-amber-500/15 text-amber-600 border border-amber-500/25',
   waitlisted: 'bg-blue-500/15 text-blue-600 border border-blue-500/25',
-  dropped: 'bg-gray-500/15 text-gray-500 border border-gray-500/20',
+  dropped: 'bg-stone-500/15 text-stone-500 border border-stone-500/20',
   cancelled: 'bg-red-500/15 text-red-600 border border-red-500/25',
 };
 
@@ -70,14 +70,14 @@ export default function MyStudentsPage() {
     });
   }
 
-  const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
+  const inputClass = 'mt-1 w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-800 transition-shadow input-glow';
 
   return (
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">My Students</h1>
-          <p className="mt-1 text-sm text-gray-500">Manage your students&apos; profiles and view their enrollments.</p>
+          <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">My Students</h1>
+          <p className="mt-1 text-sm text-stone-500">Manage your students&apos; profiles and view their enrollments.</p>
         </div>
         <button
           onClick={() => setShowAdd(true)}
@@ -101,9 +101,9 @@ export default function MyStudentsPage() {
 
       {students.data?.length === 0 && !students.isLoading && (
         <div className="empty-state">
-          <Users size={24} className="mb-3 text-indigo-400" />
-          <p className="text-sm font-medium text-gray-600">No students yet</p>
-          <p className="mt-1 text-xs text-gray-400">Add your first student to get started.</p>
+          <Users size={24} className="mb-3 text-primary-light" />
+          <p className="text-sm font-medium text-stone-600">No students yet</p>
+          <p className="mt-1 text-xs text-stone-400">Add your first student to get started.</p>
         </div>
       )}
 
@@ -118,14 +118,14 @@ export default function MyStudentsPage() {
             <div key={student.id} className={`glass-card rounded-2xl p-6 animate-fade-in-up stagger-${Math.min(i + 1, 4)}`}>
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-stone-800">
                     {student.first_name} {student.last_name}
                   </h3>
-                  <div className="mt-1 flex items-center gap-3 text-sm text-gray-500">
+                  <div className="mt-1 flex items-center gap-3 text-sm text-stone-500">
                     {student.date_of_birth && <span>DOB: {student.date_of_birth}</span>}
                     {student.gender && <span>{student.gender}</span>}
                     {!student.active && (
-                      <span className="rounded-full bg-gray-500/15 px-2 py-0.5 text-[11px] font-medium text-gray-500 border border-gray-500/20">Inactive</span>
+                      <span className="rounded-full bg-stone-500/15 px-2 py-0.5 text-xs font-medium text-stone-500 border border-stone-500/20">Inactive</span>
                     )}
                   </div>
                 </div>
@@ -148,27 +148,27 @@ export default function MyStudentsPage() {
               </div>
 
               {student.medical_notes && (
-                <p className="mt-3 text-sm text-gray-600">
+                <p className="mt-3 text-sm text-stone-600">
                   <span className="font-medium">Medical notes:</span> {student.medical_notes}
                 </p>
               )}
 
               {enrollments.length > 0 && (
-                <div className="mt-4 border-t border-gray-100 pt-4">
-                  <p className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-gray-400">Enrollments</p>
+                <div className="mt-4 border-t border-stone-100 pt-4">
+                  <p className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-stone-400">Enrollments</p>
                   <div className="space-y-2">
                     {enrollments.map((en) => (
                       <div key={en.id} className="flex items-center gap-2.5 text-sm">
                         {en.classes?.class_types && (
                           <span
-                            className="rounded-full px-2.5 py-0.5 text-[11px] font-medium text-white"
+                            className="rounded-full px-2.5 py-0.5 text-xs font-medium text-white"
                             style={{ backgroundColor: en.classes.class_types.color }}
                           >
                             {en.classes.class_types.name}
                           </span>
                         )}
-                        <span className="text-gray-700">{en.classes?.name ?? '—'}</span>
-                        <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_BADGE[en.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                        <span className="text-stone-700">{en.classes?.name ?? '—'}</span>
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE[en.status] ?? 'bg-stone-100 text-stone-600'}`}>
                           {en.status}
                         </span>
                       </div>
@@ -186,13 +186,13 @@ export default function MyStudentsPage() {
         <form onSubmit={handleAdd} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700">First Name *</label>
+              <label className="block text-sm font-medium text-stone-700">First Name *</label>
               <input type="text" required value={addForm.first_name}
                 onChange={(e) => setAddForm({ ...addForm, first_name: e.target.value })}
                 className={inputClass} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Last Name *</label>
+              <label className="block text-sm font-medium text-stone-700">Last Name *</label>
               <input type="text" required value={addForm.last_name}
                 onChange={(e) => setAddForm({ ...addForm, last_name: e.target.value })}
                 className={inputClass} />
@@ -200,13 +200,13 @@ export default function MyStudentsPage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+              <label className="block text-sm font-medium text-stone-700">Date of Birth</label>
               <input type="date" value={addForm.date_of_birth}
                 onChange={(e) => setAddForm({ ...addForm, date_of_birth: e.target.value })}
                 className={inputClass} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Gender</label>
+              <label className="block text-sm font-medium text-stone-700">Gender</label>
               <select value={addForm.gender}
                 onChange={(e) => setAddForm({ ...addForm, gender: e.target.value })}
                 className={inputClass}>
@@ -219,14 +219,14 @@ export default function MyStudentsPage() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Medical Notes</label>
+            <label className="block text-sm font-medium text-stone-700">Medical Notes</label>
             <textarea rows={3} value={addForm.medical_notes}
               onChange={(e) => setAddForm({ ...addForm, medical_notes: e.target.value })}
               className={inputClass}
               placeholder="Allergies, conditions, or other notes for instructors" />
           </div>
           {addMutation.error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{addMutation.error.message}</p>}
-          <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
+          <div className="flex justify-end gap-3 border-t border-stone-100 pt-4">
             <button type="button" onClick={() => setShowAdd(false)}
               className="btn-outline h-11 rounded-xl px-5 text-sm font-medium">Cancel</button>
             <button type="submit" disabled={addMutation.isPending}
@@ -243,13 +243,13 @@ export default function MyStudentsPage() {
           <form onSubmit={handleUpdate} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700">First Name *</label>
+                <label className="block text-sm font-medium text-stone-700">First Name *</label>
                 <input type="text" required value={editTarget.first_name}
                   onChange={(e) => setEditTarget({ ...editTarget, first_name: e.target.value })}
                   className={inputClass} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Last Name *</label>
+                <label className="block text-sm font-medium text-stone-700">Last Name *</label>
                 <input type="text" required value={editTarget.last_name}
                   onChange={(e) => setEditTarget({ ...editTarget, last_name: e.target.value })}
                   className={inputClass} />
@@ -257,13 +257,13 @@ export default function MyStudentsPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+                <label className="block text-sm font-medium text-stone-700">Date of Birth</label>
                 <input type="date" value={editTarget.date_of_birth}
                   onChange={(e) => setEditTarget({ ...editTarget, date_of_birth: e.target.value })}
                   className={inputClass} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Gender</label>
+                <label className="block text-sm font-medium text-stone-700">Gender</label>
                 <select value={editTarget.gender}
                   onChange={(e) => setEditTarget({ ...editTarget, gender: e.target.value })}
                   className={inputClass}>
@@ -276,7 +276,7 @@ export default function MyStudentsPage() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Medical Notes</label>
+              <label className="block text-sm font-medium text-stone-700">Medical Notes</label>
               <textarea rows={3} value={editTarget.medical_notes}
                 onChange={(e) => setEditTarget({ ...editTarget, medical_notes: e.target.value })}
                 className={inputClass}
@@ -285,7 +285,7 @@ export default function MyStudentsPage() {
 
             {updateMutation.error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{updateMutation.error.message}</p>}
 
-            <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
+            <div className="flex justify-end gap-3 border-t border-stone-100 pt-4">
               <button type="button" onClick={() => setEditTarget(null)}
                 className="btn-outline h-11 rounded-xl px-5 text-sm font-medium">Cancel</button>
               <button type="submit" disabled={updateMutation.isPending}

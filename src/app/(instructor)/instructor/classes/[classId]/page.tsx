@@ -32,13 +32,13 @@ export default function InstructorClassDetailPage() {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <Link href="/instructor/classes" className="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 transition-colors">
+        <Link href="/instructor/classes" className="mb-4 inline-flex items-center gap-1.5 text-sm text-stone-500 hover:text-primary transition-colors">
           <ArrowLeft size={16} /> Back to My Classes
         </Link>
         {cls ? (
           <>
-            <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">{cls.name}</h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">{cls.name}</h1>
+            <p className="mt-1 text-sm text-stone-500">
               {classType?.name}{level ? ` - ${level.name}` : ''} | {DAY_NAMES[cls.day_of_week]} {cls.start_time?.slice(0, 5)} - {cls.end_time?.slice(0, 5)} | {cls.room ?? 'No room'}
             </p>
           </>
@@ -56,14 +56,14 @@ export default function InstructorClassDetailPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-8">
         <Link
           href={`/instructor/classes/${classId}/attendance`}
-          className="glass-card flex items-center gap-4 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 p-6 animate-fade-in-up stagger-1"
+          className="glass-card flex items-center gap-4 rounded-2xl bg-primary-50 p-6 animate-fade-in-up stagger-1"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary">
             <CheckSquare size={22} />
           </div>
           <div>
-            <p className="font-medium text-gray-900">Take Attendance</p>
-            <p className="text-sm text-gray-500">Mark today&apos;s attendance</p>
+            <p className="font-medium text-stone-800">Take Attendance</p>
+            <p className="text-sm text-stone-500">Mark today&apos;s attendance</p>
           </div>
         </Link>
 
@@ -72,8 +72,8 @@ export default function InstructorClassDetailPage() {
             <Users size={22} />
           </div>
           <div>
-            <p className="font-medium text-gray-900">{roster.data?.length ?? '—'} Students</p>
-            <p className="text-sm text-gray-500">
+            <p className="font-medium text-stone-800">{roster.data?.length ?? '—'} Students</p>
+            <p className="text-sm text-stone-500">
               {summary.data ? `${summary.data.completedSessions} sessions completed` : '—'}
             </p>
           </div>
@@ -97,7 +97,7 @@ export default function InstructorClassDetailPage() {
                 return (
                   <div key={status} className="text-center">
                     <p className={`stat-number ${colors[status]}`}>{count}</p>
-                    <p className="text-xs text-gray-500 capitalize">{status}</p>
+                    <p className="text-xs text-stone-500 capitalize">{status}</p>
                   </div>
                 );
               })}
@@ -110,16 +110,16 @@ export default function InstructorClassDetailPage() {
       <div>
         <h2 className="section-heading text-sm mb-3"><Users size={16} /> Class Roster</h2>
         <div className="glass-card-static overflow-hidden rounded-2xl">
-          <table className="min-w-full divide-y divide-gray-100">
+          <table className="min-w-full divide-y divide-stone-100">
             <thead>
-              <tr className="bg-gray-50/60">
+              <tr className="bg-stone-50/60">
                 <th className="table-header">Student</th>
                 <th className="table-header">Age</th>
                 <th className="table-header">Medical Notes</th>
                 <th className="table-header text-center">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-stone-50">
               {roster.isLoading && (
                 <>
                   {[1, 2, 3].map((i) => (
@@ -133,7 +133,7 @@ export default function InstructorClassDetailPage() {
               )}
               {!roster.isLoading && (roster.data?.length ?? 0) === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-5 py-10 text-center text-sm text-gray-400">No students enrolled</td>
+                  <td colSpan={4} className="px-5 py-10 text-center text-sm text-stone-400">No students enrolled</td>
                 </tr>
               )}
               {(roster.data ?? []).map((enrollment) => {
@@ -152,26 +152,26 @@ export default function InstructorClassDetailPage() {
 
                 return (
                   <tr key={enrollment.id} className="table-row-hover">
-                    <td className="table-cell font-medium text-gray-900">
+                    <td className="table-cell font-medium text-stone-800">
                       {student.first_name} {student.last_name}
                     </td>
-                    <td className="table-cell text-gray-600">
+                    <td className="table-cell text-stone-600">
                       {age !== null ? `${age} yrs` : '—'}
                     </td>
-                    <td className="table-cell text-gray-600">
+                    <td className="table-cell text-stone-600">
                       {student.medical_notes ? (
                         <span className="text-amber-600">{student.medical_notes}</span>
                       ) : (
-                        <span className="text-gray-400">None</span>
+                        <span className="text-stone-400">None</span>
                       )}
                     </td>
                     <td className="table-cell text-center">
-                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${
                         enrollment.status === 'active'
                           ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/25'
                           : enrollment.status === 'pending'
                             ? 'bg-amber-500/15 text-amber-600 border border-amber-500/25'
-                            : 'bg-gray-100 text-gray-600'
+                            : 'bg-stone-100 text-stone-600'
                       }`}>
                         {enrollment.status}
                       </span>

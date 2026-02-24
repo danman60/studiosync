@@ -86,18 +86,18 @@ export function CatalogView({ classes, classTypes, levels }: CatalogViewProps) {
       <div className="flex-1">
         {/* Mobile filter toggle + result count */}
         <div className="mb-4 flex items-center justify-between animate-fade-in-up">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-stone-600">
             {filteredClasses.length} class{filteredClasses.length !== 1 ? 'es' : ''}
             {hasActiveFilters ? ' (filtered)' : ''}
           </p>
           <button
             onClick={() => setMobileFiltersOpen(true)}
-            className="flex h-10 items-center gap-2 rounded-xl border border-gray-200 bg-white/80 px-4 text-sm font-medium text-gray-700 backdrop-blur-sm transition-colors hover:border-indigo-200 hover:bg-indigo-50/50 lg:hidden"
+            className="flex h-10 items-center gap-2 rounded-xl border border-stone-200 bg-white/80 px-4 text-sm font-medium text-stone-700 backdrop-blur-sm transition-colors hover:border-primary-200 hover:bg-primary-50/50 lg:hidden"
           >
             <SlidersHorizontal size={16} />
             Filters
             {hasActiveFilters && (
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-xs text-white">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-white">
                 !
               </span>
             )}
@@ -121,10 +121,10 @@ export function CatalogView({ classes, classTypes, levels }: CatalogViewProps) {
             )}
           >
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+              <h2 className="text-lg font-semibold text-stone-800">Filters</h2>
               <button
                 onClick={() => setMobileFiltersOpen(false)}
-                className="flex h-10 w-10 items-center justify-center rounded-xl text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                className="flex h-10 w-10 items-center justify-center rounded-xl text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-600"
               >
                 <X size={20} />
               </button>

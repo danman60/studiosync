@@ -150,15 +150,15 @@ export default function ClassesPage() {
   }
 
   const isSaving = createMutation.isPending || updateMutation.isPending;
-  const inputClass = 'mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition-shadow input-glow';
+  const inputClass = 'mt-1 w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-800 transition-shadow input-glow';
   const selectClass = inputClass;
 
   return (
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-[clamp(1.5rem,2.5vw,2rem)] font-bold text-gray-900">Classes</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="font-display text-[clamp(1.5rem,2.5vw,2rem)] italic text-stone-800">Classes</h1>
+          <p className="mt-1 text-sm text-stone-500">
             Manage your studio&apos;s class schedule
           </p>
         </div>
@@ -173,9 +173,9 @@ export default function ClassesPage() {
       {/* Table */}
       <div className="glass-card-static overflow-hidden rounded-2xl">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-100">
+          <table className="min-w-full divide-y divide-stone-100">
             <thead>
-              <tr className="bg-gray-50/60">
+              <tr className="bg-stone-50/60">
                 {['Name', 'Type', 'Level', 'Day / Time', 'Instructor', 'Enrolled', 'Season', ''].map(
                   (h) => (
                     <th key={h} className="table-header">{h}</th>
@@ -183,7 +183,7 @@ export default function ClassesPage() {
                 )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-stone-50">
               {classes.isLoading && [1, 2, 3].map((i) => (
                 <tr key={i}>
                   {[1, 2, 3, 4, 5, 6, 7, 8].map((j) => (
@@ -193,34 +193,34 @@ export default function ClassesPage() {
               ))}
               {classes.data?.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="table-cell text-center py-10 text-gray-400">
+                  <td colSpan={8} className="table-cell text-center py-10 text-stone-400">
                     No classes yet. Click &quot;Add Class&quot; to create one.
                   </td>
                 </tr>
               )}
               {classes.data?.map((cls) => (
                 <tr key={cls.id} className="table-row-hover">
-                  <td className="table-cell font-medium text-gray-900">{cls.name}</td>
+                  <td className="table-cell font-medium text-stone-800">{cls.name}</td>
                   <td className="table-cell">
                     <span
-                      className="inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium text-white"
-                      style={{ backgroundColor: cls.class_types?.color ?? '#6366f1' }}
+                      className="inline-block rounded-full px-2.5 py-0.5 text-xs font-medium text-white"
+                      style={{ backgroundColor: cls.class_types?.color ?? '#C2785C' }}
                     >
                       {cls.class_types?.name ?? '—'}
                     </span>
                   </td>
-                  <td className="table-cell text-gray-600">{cls.levels?.name ?? '—'}</td>
-                  <td className="table-cell text-gray-600">
+                  <td className="table-cell text-stone-600">{cls.levels?.name ?? '—'}</td>
+                  <td className="table-cell text-stone-600">
                     {DAYS[cls.day_of_week]} {formatTime(cls.start_time)}–{formatTime(cls.end_time)}
                   </td>
-                  <td className="table-cell text-gray-600">
+                  <td className="table-cell text-stone-600">
                     {cls.staff?.display_name ?? '—'}
                   </td>
-                  <td className="table-cell text-gray-600">
-                    <span className="font-medium text-gray-900">{cls.enrolled_count}</span>
-                    <span className="text-gray-400">/{cls.capacity}</span>
+                  <td className="table-cell text-stone-600">
+                    <span className="font-medium text-stone-800">{cls.enrolled_count}</span>
+                    <span className="text-stone-400">/{cls.capacity}</span>
                   </td>
-                  <td className="table-cell text-gray-600">
+                  <td className="table-cell text-stone-600">
                     {cls.seasons?.name ?? '—'}
                   </td>
                   <td className="table-cell text-right">
@@ -252,7 +252,7 @@ export default function ClassesPage() {
       <Modal open={modalOpen} onClose={closeModal} title={editingId ? 'Edit Class' : 'Add Class'} wide>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Name *</label>
+            <label className="block text-sm font-medium text-stone-700">Name *</label>
             <input type="text" required value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               className={inputClass} />
@@ -260,7 +260,7 @@ export default function ClassesPage() {
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Season *</label>
+              <label className="block text-sm font-medium text-stone-700">Season *</label>
               <select required value={form.season_id}
                 onChange={(e) => setForm({ ...form, season_id: e.target.value })}
                 className={selectClass}>
@@ -271,7 +271,7 @@ export default function ClassesPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Type *</label>
+              <label className="block text-sm font-medium text-stone-700">Type *</label>
               <select required value={form.class_type_id}
                 onChange={(e) => setForm({ ...form, class_type_id: e.target.value })}
                 className={selectClass}>
@@ -282,7 +282,7 @@ export default function ClassesPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Level</label>
+              <label className="block text-sm font-medium text-stone-700">Level</label>
               <select value={form.level_id}
                 onChange={(e) => setForm({ ...form, level_id: e.target.value })}
                 className={selectClass}>
@@ -296,7 +296,7 @@ export default function ClassesPage() {
 
           <div className="grid grid-cols-4 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Instructor</label>
+              <label className="block text-sm font-medium text-stone-700">Instructor</label>
               <select value={form.instructor_id}
                 onChange={(e) => setForm({ ...form, instructor_id: e.target.value })}
                 className={selectClass}>
@@ -307,7 +307,7 @@ export default function ClassesPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Day *</label>
+              <label className="block text-sm font-medium text-stone-700">Day *</label>
               <select required value={form.day_of_week}
                 onChange={(e) => setForm({ ...form, day_of_week: Number(e.target.value) })}
                 className={selectClass}>
@@ -317,13 +317,13 @@ export default function ClassesPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Start *</label>
+              <label className="block text-sm font-medium text-stone-700">Start *</label>
               <input type="time" required value={form.start_time}
                 onChange={(e) => setForm({ ...form, start_time: e.target.value })}
                 className={inputClass} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">End *</label>
+              <label className="block text-sm font-medium text-stone-700">End *</label>
               <input type="time" required value={form.end_time}
                 onChange={(e) => setForm({ ...form, end_time: e.target.value })}
                 className={inputClass} />
@@ -332,13 +332,13 @@ export default function ClassesPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Room</label>
+              <label className="block text-sm font-medium text-stone-700">Room</label>
               <input type="text" value={form.room}
                 onChange={(e) => setForm({ ...form, room: e.target.value })}
                 className={inputClass} placeholder="e.g. Studio A" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Capacity</label>
+              <label className="block text-sm font-medium text-stone-700">Capacity</label>
               <input type="number" min={1} value={form.capacity}
                 onChange={(e) => setForm({ ...form, capacity: Number(e.target.value) })}
                 className={inputClass} />
@@ -347,19 +347,19 @@ export default function ClassesPage() {
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Monthly Price ($)</label>
+              <label className="block text-sm font-medium text-stone-700">Monthly Price ($)</label>
               <input type="number" min={0} step="0.01" value={form.monthly_price}
                 onChange={(e) => setForm({ ...form, monthly_price: e.target.value })}
                 className={inputClass} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Drop-in Price ($)</label>
+              <label className="block text-sm font-medium text-stone-700">Drop-in Price ($)</label>
               <input type="number" min={0} step="0.01" value={form.drop_in_price}
                 onChange={(e) => setForm({ ...form, drop_in_price: e.target.value })}
                 className={inputClass} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Reg. Fee ($)</label>
+              <label className="block text-sm font-medium text-stone-700">Reg. Fee ($)</label>
               <input type="number" min={0} step="0.01" value={form.registration_fee}
                 onChange={(e) => setForm({ ...form, registration_fee: e.target.value })}
                 className={inputClass} />
@@ -368,13 +368,13 @@ export default function ClassesPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Min Age</label>
+              <label className="block text-sm font-medium text-stone-700">Min Age</label>
               <input type="number" min={0} value={form.min_age}
                 onChange={(e) => setForm({ ...form, min_age: e.target.value })}
                 className={inputClass} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Max Age</label>
+              <label className="block text-sm font-medium text-stone-700">Max Age</label>
               <input type="number" min={0} value={form.max_age}
                 onChange={(e) => setForm({ ...form, max_age: e.target.value })}
                 className={inputClass} />
@@ -382,22 +382,22 @@ export default function ClassesPage() {
           </div>
 
           <div className="flex items-center gap-6">
-            <label className="flex items-center gap-2.5 text-sm text-gray-700">
+            <label className="flex items-center gap-2.5 text-sm text-stone-700">
               <input type="checkbox" checked={form.is_public}
                 onChange={(e) => setForm({ ...form, is_public: e.target.checked })}
-                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500/30" />
+                className="h-4 w-4 rounded border-stone-300 text-primary focus:ring-primary/30" />
               Public (visible in catalog)
             </label>
-            <label className="flex items-center gap-2.5 text-sm text-gray-700">
+            <label className="flex items-center gap-2.5 text-sm text-stone-700">
               <input type="checkbox" checked={form.allow_drop_in}
                 onChange={(e) => setForm({ ...form, allow_drop_in: e.target.checked })}
-                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500/30" />
+                className="h-4 w-4 rounded border-stone-300 text-primary focus:ring-primary/30" />
               Allow drop-in
             </label>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Description</label>
+            <label className="block text-sm font-medium text-stone-700">Description</label>
             <textarea rows={3} value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               className={inputClass} />
@@ -409,7 +409,7 @@ export default function ClassesPage() {
             </p>
           )}
 
-          <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
+          <div className="flex justify-end gap-3 border-t border-stone-100 pt-4">
             <button type="button" onClick={closeModal}
               className="btn-outline h-11 rounded-xl px-5 text-sm font-medium">
               Cancel
@@ -424,7 +424,7 @@ export default function ClassesPage() {
 
       {/* Delete Confirmation */}
       <Modal open={!!deleteId} onClose={() => setDeleteId(null)} title="Delete Class">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-stone-600">
           Are you sure you want to delete this class? This action cannot be undone.
         </p>
         {deleteMutation.error && (
