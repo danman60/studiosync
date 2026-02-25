@@ -1,12 +1,12 @@
 'use client';
 
 import { TRPCProvider } from './trpc-provider';
-import { StudioProvider } from '@/contexts/StudioContext';
+import { StudioResolver } from './studio-resolver';
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
-    <StudioProvider studio={null} studioSlug={null}>
-      <TRPCProvider>{children}</TRPCProvider>
-    </StudioProvider>
+    <TRPCProvider>
+      <StudioResolver>{children}</StudioResolver>
+    </TRPCProvider>
   );
 }

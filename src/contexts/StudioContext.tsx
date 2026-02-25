@@ -1,10 +1,26 @@
 'use client';
 
 import { createContext, useContext } from 'react';
-import type { Studio } from '@/types/database';
+
+/** Minimal studio shape needed by the UI (subset of full Studio row) */
+export interface StudioInfo {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url?: string | null;
+  primary_color?: string | null;
+  secondary_color?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  website?: string | null;
+  address_line1?: string | null;
+  city?: string | null;
+  state?: string | null;
+  zip?: string | null;
+}
 
 interface StudioContextValue {
-  studio: Studio | null;
+  studio: StudioInfo | null;
   studioId: string | null;
   studioSlug: string | null;
 }
@@ -21,7 +37,7 @@ export function StudioProvider({
   studioSlug,
 }: {
   children: React.ReactNode;
-  studio: Studio | null;
+  studio: StudioInfo | null;
   studioSlug: string | null;
 }) {
   return (

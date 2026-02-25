@@ -2,15 +2,24 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Layers, Mail, CheckCircle, Zap } from 'lucide-react';
+import { Layers, Mail, CheckCircle, Zap, Shield, GraduationCap, Users } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 
 const IS_DEV = true;
+
+type DevRole = 'owner' | 'instructor' | 'parent';
+
+const DEV_BUTTONS: { role: DevRole; label: string; icon: typeof Zap; redirect: string; cookieRole: string; color: string }[] = [
+  { role: 'owner', label: 'Owner / Admin', icon: Shield, redirect: '/admin', cookieRole: 'owner', color: 'border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100' },
+  { role: 'instructor', label: 'Instructor', icon: GraduationCap, redirect: '/instructor', cookieRole: 'instructor', color: 'border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100' },
+  { role: 'parent', label: 'Parent', icon: Users, redirect: '/dashboard', cookieRole: 'parent', color: 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' },
+];
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'sent' | 'error' | 'dev-loading'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [loadingRole, setLoadingRole] = useState<DevRole | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,32 +44,34 @@ export default function LoginPage() {
     }
   };
 
-  const handleDevLogin = async () => {
+  const handleDevLogin = async (btn: typeof DEV_BUTTONS[number]) => {
     setStatus('dev-loading');
+    setLoadingRole(btn.role);
     setErrorMessage('');
 
     try {
-      // 1. Ensure dev user has a password
-      const res = await fetch('/api/auth/dev-login', { method: 'POST' });
+      const res = await fetch('/api/auth/dev-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: btn.role }),
+      });
       const body = await res.json().catch(() => null);
       if (!res.ok || !body) {
         throw new Error(body?.error ?? `Dev login failed (${res.status})`);
       }
-      const { email: devEmail, password } = body;
 
-      // 2. Sign in with password (creates proper browser session)
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithPassword({
-        email: devEmail,
-        password,
+        email: body.email,
+        password: body.password,
       });
       if (error) throw new Error(error.message);
 
-      // 3. Set role cookie and redirect to admin
-      document.cookie = 'user-role=owner; path=/; max-age=2592000';
-      window.location.href = '/admin';
+      document.cookie = `user-role=${btn.cookieRole}; path=/; max-age=2592000`;
+      window.location.href = btn.redirect;
     } catch (err) {
       setStatus('error');
+      setLoadingRole(null);
       setErrorMessage(err instanceof Error ? err.message : 'Dev login failed');
     }
   };
@@ -136,22 +147,34 @@ export default function LoginPage() {
           </form>
         )}
 
-        {/* Dev quick-login */}
+        {/* Dev quick-login buttons */}
         {IS_DEV && status !== 'sent' && (
-          <button
-            onClick={handleDevLogin}
-            disabled={status === 'dev-loading'}
-            className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-amber-300 bg-amber-50 text-sm font-semibold text-amber-700 transition-colors hover:bg-amber-100"
-          >
-            {status === 'dev-loading' ? (
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-amber-400/30 border-t-amber-600" />
-            ) : (
-              <>
-                <Zap size={16} />
-                Dev Login (Owner)
-              </>
-            )}
-          </button>
+          <div className="mt-5 space-y-2">
+            <p className="text-center text-xs font-medium uppercase tracking-wider text-stone-400">Dev Logins</p>
+            <div className="grid grid-cols-3 gap-2">
+              {DEV_BUTTONS.map((btn) => {
+                const Icon = btn.icon;
+                const isLoading = status === 'dev-loading' && loadingRole === btn.role;
+                return (
+                  <button
+                    key={btn.role}
+                    onClick={() => handleDevLogin(btn)}
+                    disabled={status === 'dev-loading'}
+                    className={`flex h-20 flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed text-xs font-semibold transition-colors ${btn.color}`}
+                  >
+                    {isLoading ? (
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current/30 border-t-current" />
+                    ) : (
+                      <>
+                        <Icon size={18} />
+                        {btn.label}
+                      </>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         )}
 
         <p className="mt-6 text-center text-sm text-stone-500">

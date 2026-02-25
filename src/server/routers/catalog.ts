@@ -94,7 +94,7 @@ export const catalogRouter = router({
     const supabase = createServiceClient();
     const { data, error } = await supabase
       .from('studios')
-      .select('id, name, slug, logo_url, primary_color, secondary_color, phone, email, website, city, state')
+      .select('id, name, slug, logo_url, primary_color, secondary_color, phone, email, website, address_line1, city, state, zip')
       .eq('id', ctx.studioId)
       .single();
 
