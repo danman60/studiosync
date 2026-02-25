@@ -2,17 +2,18 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Layers, Mail, CheckCircle, Zap, Shield, GraduationCap, Users } from 'lucide-react';
+import { Layers, Mail, CheckCircle, Shield, GraduationCap, Users } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 
 const IS_DEV = true;
+const DEV_PASSWORD = 'dev-studiosync-2024';
 
 type DevRole = 'owner' | 'instructor' | 'parent';
 
-const DEV_BUTTONS: { role: DevRole; label: string; icon: typeof Zap; redirect: string; cookieRole: string; color: string }[] = [
-  { role: 'owner', label: 'Owner / Admin', icon: Shield, redirect: '/admin', cookieRole: 'owner', color: 'border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100' },
-  { role: 'instructor', label: 'Instructor', icon: GraduationCap, redirect: '/instructor', cookieRole: 'instructor', color: 'border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100' },
-  { role: 'parent', label: 'Parent', icon: Users, redirect: '/dashboard', cookieRole: 'parent', color: 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' },
+const DEV_BUTTONS: { role: DevRole; label: string; email: string; icon: typeof Shield; redirect: string; cookieRole: string; color: string }[] = [
+  { role: 'owner', label: 'Owner / Admin', email: 'danieljohnabrahamson@gmail.com', icon: Shield, redirect: '/admin', cookieRole: 'owner', color: 'border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100' },
+  { role: 'instructor', label: 'Instructor', email: 'maria@demo.studiosync.net', icon: GraduationCap, redirect: '/instructor', cookieRole: 'instructor', color: 'border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100' },
+  { role: 'parent', label: 'Parent', email: 'jen@demo.studiosync.net', icon: Users, redirect: '/dashboard', cookieRole: 'parent', color: 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' },
 ];
 
 export default function LoginPage() {
@@ -50,22 +51,33 @@ export default function LoginPage() {
     setErrorMessage('');
 
     try {
-      const res = await fetch('/api/auth/dev-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role: btn.role }),
-      });
-      const body = await res.json().catch(() => null);
-      if (!res.ok || !body) {
-        throw new Error(body?.error ?? `Dev login failed (${res.status})`);
-      }
-
       const supabase = createClient();
+
+      // Try direct sign-in first (fast path — account already exists)
       const { error } = await supabase.auth.signInWithPassword({
-        email: body.email,
-        password: body.password,
+        email: btn.email,
+        password: DEV_PASSWORD,
       });
-      if (error) throw new Error(error.message);
+
+      if (error) {
+        // Account doesn't exist yet — provision it once via API
+        const res = await fetch('/api/auth/dev-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ role: btn.role }),
+        });
+        const body = await res.json().catch(() => null);
+        if (!res.ok || !body) {
+          throw new Error(body?.error ?? `Dev setup failed (${res.status})`);
+        }
+
+        // Now sign in with the newly created account
+        const { error: retryErr } = await supabase.auth.signInWithPassword({
+          email: btn.email,
+          password: DEV_PASSWORD,
+        });
+        if (retryErr) throw new Error(retryErr.message);
+      }
 
       document.cookie = `user-role=${btn.cookieRole}; path=/; max-age=2592000`;
       window.location.href = btn.redirect;
