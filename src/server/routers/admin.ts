@@ -920,7 +920,7 @@ export const adminRouter = router({
         .from('classes')
         .select('id, name, class_types(name), levels(name), staff(display_name)')
         .eq('studio_id', ctx.studioId)
-        .eq('is_active', true);
+        .eq('is_public', true);
 
       if (!classes?.length) return [];
 

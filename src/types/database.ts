@@ -519,8 +519,9 @@ export interface Database {
           author_id: string | null;
           title: string;
           body: string;
-          target_type: 'all' | 'class' | 'level' | 'class_type';
+          target_type: 'all' | 'class' | 'level' | 'class_type' | 'tag';
           target_id: string | null;
+          target_tag: string | null;
           published_at: string | null;
           is_draft: boolean;
           created_at: string;
@@ -530,7 +531,8 @@ export interface Database {
           id?: string;
           created_at?: string;
           updated_at?: string;
-          target_type?: 'all' | 'class' | 'level' | 'class_type';
+          target_type?: 'all' | 'class' | 'level' | 'class_type' | 'tag';
+          target_tag?: string | null;
           is_draft?: boolean;
         };
         Update: Partial<Database['studiosync']['Tables']['announcements']['Insert']>;

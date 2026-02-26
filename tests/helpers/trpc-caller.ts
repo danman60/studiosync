@@ -14,18 +14,20 @@ const TEST_STUDIO_ID = '11111111-1111-1111-1111-111111111111';
 const TEST_OWNER_USER_ID = '049f4db8-bf91-4ac9-adef-e87af7981fd8';
 const TEST_OWNER_STAFF_ID = '8143f03b-b10a-4333-9d63-d7a3b673feb4';
 
+// Fake but valid UUIDs for mock context (not in auth.users — that's OK, context is injected)
+const MOCK_INSTRUCTOR_USER_ID = 'aaaa0000-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+const MOCK_PARENT_USER_ID = 'bbbb0000-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
+
 // These will be populated by seed()
 let testInstructorStaffId: string | null = null;
 let testFamilyId: string | null = null;
-let testParentUserId: string | null = null;
 
 export function setTestInstructor(staffId: string) {
   testInstructorStaffId = staffId;
 }
 
-export function setTestFamily(familyId: string, userId: string) {
+export function setTestFamily(familyId: string) {
   testFamilyId = familyId;
-  testParentUserId = userId;
 }
 
 /**
@@ -46,18 +48,18 @@ function buildContext(role: 'public' | 'parent' | 'instructor' | 'admin' | 'owne
       return {
         studioId: TEST_STUDIO_ID,
         studioSlug: 'rhythm-grace',
-        userId: testParentUserId ?? 'test-parent-user-id',
+        userId: MOCK_PARENT_USER_ID,
         userRole: null,
         staffId: null,
-        familyId: testFamilyId ?? 'test-family-id',
+        familyId: testFamilyId,
       };
     case 'instructor':
       return {
         studioId: TEST_STUDIO_ID,
         studioSlug: 'rhythm-grace',
-        userId: 'test-instructor-user-id',
+        userId: MOCK_INSTRUCTOR_USER_ID,
         userRole: 'instructor',
-        staffId: testInstructorStaffId ?? 'test-instructor-staff-id',
+        staffId: testInstructorStaffId,
         familyId: null,
       };
     case 'admin':
